@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-09-06 18:13:43.413271", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-09-06 18:13:43.413271", 
+ "modified_by": "Administrator", 
+ "module": "Time Log Sheet", 
+ "name": "time-log-sheet", 
+ "owner": "Administrator", 
+ "page_name": "Time Log Sheet", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Time Log Sheet"
+}

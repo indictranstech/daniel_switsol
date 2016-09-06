@@ -1,0 +1,139 @@
+<style>
+.margin{
+	margin-top: 5px;
+}
+.hours,.minute{
+	width: 250%;
+}
+</style>
+<div class="row" style="border:1px solid #d1d8dd; padding-top:25px;padding-bottom:25px; border-top:0px;">
+	<div class="col-xs-3">
+		<div class="row">
+			<div class="col-xs-4">Start Time</div>
+			<div class="col-xs-3"><input class= "start_input_hours" type="text" placeholder="Hrs" value style="width:150%;" readonly="readonly"></div>
+			<div class="col-xs-1"></div>
+			<div class="col-xs-3"><input class= "start_input_minute" type="text" placeholder="Mins" readonly="readonly"
+				value style="width:150%;"></div>
+			<div class="col-xs-1"></div>
+		</div>	
+		<br>
+		<div class="row end-time">
+			<div class="col-xs-4">End Time</div>
+			<div class="col-xs-3"><input class= "end_input_hours" type="text" placeholder="Hrs" readonly="readonly"
+				value style="width:150%;"></div>
+			<div class="col-xs-1"></div>
+			<div class="col-xs-3"><input class= "end_input_minute" type="text" placeholder="Mins" readonly="readonly"
+				value style="width:150%;"></div>
+			<div class="col-xs-1"></div>
+		</div>
+		<br>
+		<div class="row duration">
+			<div class="col-xs-4">Total Duration</div>
+			<div class="col-xs-3"><input class= "input_hours" type="text" placeholder="Hrs"
+				value style="width:150%;" disabled></div>
+			<div class="col-xs-1"></div>
+			<div class="col-xs-3"><input class= "input_minute" type="text" placeholder="Mins"
+				value style="width:150%;" disabled></div>
+			<div class="col-xs-1"></div>
+		</div>
+	</div>
+	<div class="col-xs-3">
+		<span>Pick Up Hours</span>
+		{% for(var i=1, le=25; i < le; i = i + 6) { %}
+			<div class="row">
+				{% if (i == 1 || i == 7) { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ 0 }}{{ i }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ i }}></div>
+				{% } %}
+
+				{% if ((i + 1 == 2) || (i + 1 == 8)) { %}
+				<div class="col-xs-2"><input class="hours" type="button" value={{ 0 }}{{ i+1 }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ i+1 }}></div>
+				{% } %}
+
+				{% if (i + 2 == 3 || i + 2 == 9) { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ 0 }}{{ i+2 }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ i+2 }}></div>
+				{% } %}
+
+				{% if (i + 3 == 4) { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ 0 }}{{ i+3 }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ i+3 }}></div>
+				{% } %}
+
+				{% if (i + 4 == 5) { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ 0 }}{{ i+4 }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ i+4 }}></div>
+				{% } %}
+
+				{% if (i + 5 == 6) { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ 0 }}{{ i+5 }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "hours" type="button" value={{ i+5 }}></div>
+				{% } %}
+			</div>	
+		{% } %}
+	</div>
+	<div class="col-xs-1"></div>
+	<div class="col-xs-3" style="margin-left: -68px;">
+		<span>Pick Up Minutes</span>
+		{% for(var i=0, le=60; i < le; i = i + 20) { %}
+			<div class="row">
+				{% if (i + 0 == 0) { %}
+				<div class="col-xs-2"><input class= "minute" type="button" value={{ 0 }}{{ i }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "minute" type="button" value={{ i }}></div>
+				{% } %}
+				{% if (i + 5 == 5) { %}
+				<div class="col-xs-2"><input class= "minute" type="button" value={{ 0 }}{{ i+5 }}></div>
+				{% } else { %}
+				<div class="col-xs-2"><input class= "minute" type="button" value={{ i+5 }}></div>
+				{% } %}
+				<div class="col-xs-2"><input class= "minute" type="button" value={{ i+10 }}></div>
+				<div class="col-xs-2"><input class= "minute" type="button" value={{ i+15 }}></div>
+				<div class="col-xs-4"></div>
+			</div>	
+		{% } %}
+	</div>
+	<div class="col-xs-6"></div>
+	<br><br><br>
+	<div class="col-xs-12" style="padding-top:20px; margin-left:20px;">
+		<input class= "submit hover" type="button" value="Submit" style="border-radius: 4px; width: 8%;">
+	</div>
+</div>
+
+<div class="row" style="border:1px solid #d1d8dd; padding-top:25px;padding-bottom:25px; border-top:0px;">
+	<div class="col-xs-6">  
+		<div class="row">
+			<div class="col-xs-12" style=" font-size:160%;">
+				<font color="#0101DF"> Dashboard Snapshot - </font>
+			</div>
+			<div class="col-xs-12" style="padding-top:25px;">
+				<div class="col-xs-6" id="weekly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged Last Week :</font></b></div>
+				<div class="col-xs-6" style="padding-left:0px;"><input class= "weekly_hrs" type="text" value style="width:40%;  border-radius: 5px; padding-left:3px;" disabled></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12" style="padding-top:15px;">
+				<div class="col-xs-6" id="monthly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged This Month :</font></b></div>
+				<div class="col-xs-6" style="padding-left:0px;"><input class= "monthly_hrs" type="text" value style="width:40%;  border-radius: 5px; padding-left:3px;" disabled></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6">
+		<div class="row">
+			<div class="col-xs-12" style=" font-size:110%; padding-top:55px;"><b><font color="#36414c">Other Reports - </font></b></div>
+			<div class="col-xs-12" style=" font-size:100%; padding-top:15px;">
+				<li><a href="#query-report/Daily Timesheet Summary">Total Hours Worked Against Activity </a></li>
+			</div>
+			<div class="col-xs-12" style=" font-size:100%; padding-top:10px;">
+				<li><a href="#query-report/Daily Unapproved Timesheet Summary">Un-approved Timesheets  </a></li>
+			</div>
+		</div>
+	</div>
+</div>	

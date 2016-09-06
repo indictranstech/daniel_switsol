@@ -1,0 +1,7 @@
+## Switsol
+
+Switsol
+
+#### License
+
+MIT

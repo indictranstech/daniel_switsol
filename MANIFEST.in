@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include switsol *.css
+recursive-include switsol *.csv
+recursive-include switsol *.html
+recursive-include switsol *.ico
+recursive-include switsol *.js
+recursive-include switsol *.json
+recursive-include switsol *.md
+recursive-include switsol *.png
+recursive-include switsol *.py
+recursive-include switsol *.svg
+recursive-include switsol *.txt
+recursive-exclude switsol *.pyc

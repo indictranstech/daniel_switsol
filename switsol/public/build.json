@@ -1,0 +1,13 @@
+{
+	
+	"js/switsol.desk.min.css": [
+		"public/js/jquery.signature.css"
+	],
+
+	"js/switsol.desk.min.js": [
+		"public/js/signature.html",		
+		"public/js/jquery.signature.min.js",
+		"public/js/excanvas.js",
+		"public/js/jquery.signature.js"
+	]
+}
