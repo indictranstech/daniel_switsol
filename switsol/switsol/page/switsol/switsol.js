@@ -15,7 +15,6 @@ timelog = Class.extend({
 		this.page = $(wrapper).find('.layout-main-section-wrapper');
 		this.wrapper = $(wrapper).find('.page-content');
 		this.set_fields();
-		// this.on_submit();
 	},
 	set_fields: function() {
 		var me = this;
@@ -24,7 +23,8 @@ timelog = Class.extend({
 				<div class='col-xs-2 customer'></div>\
 				<div class='col-xs-2 project'></div>\
   				<div class='col-xs-2 activity'></div>\
-  				<div class='col-xs-4'></div>\
+  				<div class='col-xs-2 logsheet' style='padding-top: 20px;'></div>\
+  				<div class='col-xs-2'></div>\
   				</div>"
 		me.page.html(html)
 		me.customer_link = frappe.ui.form.make_control({
@@ -79,11 +79,22 @@ timelog = Class.extend({
 			render_input: true
 		});
 		me.activity.refresh();
+		me.logsheet = frappe.ui.form.make_control({
+			parent: me.page.find(".logsheet"),
+			df: {
+				fieldtype: "Button",
+				fieldname: "logsheet",
+				label: __("Loged Sheets")
+			},
+			render_input: true
+		});
+		me.logsheet.refresh();
 		__html = frappe.render_template("switsol")
 		me.page.append(__html)
 		me.set_hours();
 		me.on_submit();
 		me.calulate_hours();
+		me.get_loged_sheets();
 	},
 	set_hours:function(){
 		var hours = ""
@@ -198,6 +209,7 @@ timelog = Class.extend({
 		frappe.call({
 			method: "switsol.switsol.page.switsol.switsol.make_timesheet",
 			args: {
+				"customer": client,
 				"activity":me.activity.$input.val(),
 				"project": me.project.$input.val(),
 				"from_date_time": start,
@@ -241,6 +253,42 @@ timelog = Class.extend({
 			callback: function(r) {
 				$(".weekly_hrs").val(r.message[0])
 				$(".monthly_hrs").val(r.message[1])
+			}
+		})
+	},
+	get_loged_sheets: function(){
+		var me = this;
+		console.log(me.page.find('.logsheet'))
+		console.log($('.logsheet'))
+		me.page.find('.logsheet').css("width", "150px")
+		$(".logsheet").find("button[data-fieldname='logsheet']").on("click", function(){
+			date = $(".date").find("input[data-fieldname='date']").val()
+			if (date){
+				date = date.split("-")
+				date = date[2]+"-"+date[1]+"-"+date[0]
+				frappe.call({
+					method: "switsol.switsol.page.switsol.switsol.get_loged_timesheets",
+					args: {
+						"date": date
+					},
+					callback: function(r) {
+						if (r.message){
+							var di = new frappe.ui.Dialog({
+	                            title: __("Loged Timesheets Details"),
+	                            fields: [
+	                                {"fieldtype":"HTML", "label":__("Loged Timesheets"), "reqd":1, "fieldname":"loged_sheets"}
+	                            ]
+	                        })
+	                        $(di.body).find("[data-fieldname='loged_sheets']").html(frappe.render_template("switsol_logsheet", {"data":r.message}))
+	                        di.show();
+	                        $(di.body).find("[data-fieldname='loged_sheets']").css({"width": "710px", "height":"250px", "overflow-x": "scroll"})
+	                        $(".modal-content").css({"width": "750px"})
+						}
+					}
+				})
+			}
+			else{
+				msgprint(__("Please select Date first for populating Loged Timesheet details..."));
 			}
 		})
 	},

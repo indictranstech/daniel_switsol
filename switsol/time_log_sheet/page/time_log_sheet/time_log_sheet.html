@@ -10,20 +10,24 @@
 	<div class="col-xs-3">
 		<div class="row">
 			<div class="col-xs-4">Start Time</div>
-			<div class="col-xs-3"><input class= "start_input_hours" type="text" placeholder="Hrs" value style="width:150%;" readonly="readonly"></div>
+			<div class="col-xs-3"><input class= "start_input_hours" placeholder="Hrs" value style="width:150%;" type="number" min="1" max="24" step="" 
+				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
 			<div class="col-xs-1"></div>
-			<div class="col-xs-3"><input class= "start_input_minute" type="text" placeholder="Mins" readonly="readonly"
-				value style="width:150%;"></div>
+			<div class="col-xs-3"><input class= "start_input_minute" placeholder="Mins"
+				value style="width:150%;" type="number" min="0" max="55" step="5" 
+				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
 			<div class="col-xs-1"></div>
 		</div>	
 		<br>
 		<div class="row end-time">
 			<div class="col-xs-4">End Time</div>
-			<div class="col-xs-3"><input class= "end_input_hours" type="text" placeholder="Hrs" readonly="readonly"
-				value style="width:150%;"></div>
+			<div class="col-xs-3"><input class= "end_input_hours" placeholder="Hrs"
+				value style="width:150%;" type="number" min="1" max="24" step="" 
+				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
 			<div class="col-xs-1"></div>
-			<div class="col-xs-3"><input class= "end_input_minute" type="text" placeholder="Mins" readonly="readonly"
-				value style="width:150%;"></div>
+			<div class="col-xs-3"><input class= "end_input_minute" placeholder="Mins"
+				value style="width:150%;" type="number" min="0" max="55" step="5"
+				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
 			<div class="col-xs-1"></div>
 		</div>
 		<br>

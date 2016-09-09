@@ -24,6 +24,7 @@ timelog = Class.extend({
 				<div class='col-xs-2 customer'></div>\
 				<div class='col-xs-2 project'></div>\
   				<div class='col-xs-2 activity'></div>\
+  				<div class='col-xs-2 logsheet' style='padding-top: 20px;'></div>\
   				<div class='col-xs-4'></div>\
   				</div>"
 		me.page.html(html)
@@ -79,13 +80,80 @@ timelog = Class.extend({
 			render_input: true
 		});
 		me.activity.refresh();
+		me.logsheet = frappe.ui.form.make_control({
+			parent: me.page.find(".logsheet"),
+			df: {
+				fieldtype: "Button",
+				fieldname: "logsheet",
+				label: __("Loged Sheets")
+			},
+			render_input: true
+		});
+		me.logsheet.refresh();
 		__html = frappe.render_template("time_log_sheet")
 		me.page.append(__html)
 		me.set_hours();
 		me.on_submit();
 		me.calulate_hours();
+		me.set_limit_to_input_hours_and_minute();
+		me.get_loged_sheets();
 	},
+	set_limit_to_input_hours_and_minute :function(){
+		var me = this;
+		console.log()
+		$(me.page).find(".start_input_hours").change(function(){
+			me._selected = "start_input_hours"
+			me.common_for_limit()
+		})
+		$(me.page).find(".end_input_hours").change(function(){
+			me._selected = "end_input_hours"
+			me.common_for_limit()
+		})
+		$(me.page).find(".start_input_minute").change(function(){
+			me._selected = "start_input_minute"
+			me.common_for_limit()
+		})
+		$(me.page).find(".end_input_minute").change(function(){
+			me._selected = "end_input_minute"
+			me.common_for_limit()
+		})
+	},
+	common_for_limit:function(){
+		var me = this;
+		var field = $("."+me._selected)
+		if((flt(field.val()) > flt(field.attr("max"))) || (flt(field.val()) < flt(field.attr("min"))) ) {
+			field.val(flt(field.attr("min")))
+		}
+		if((flt(field.val()) > 0) && (flt(field.attr("max")) == 55)){
+			if(flt(field.val()) % 5 != 0){
+				field.val(flt(field.attr("min")))		
+			}
+		}	
+	},	
 	set_hours:function(){
+		var current_time = frappe.datetime.now_time();
+		current_hours = current_time.split(":")[0]
+		$(".start_input_hours").val(current_hours)
+		$(".end_input_hours").val(current_hours)
+		
+		current_minute = current_time.split(":")[1]
+		
+		if((flt(current_minute) <= 60) && (flt(current_minute) > 55)){
+			current_minute = 0
+		}
+		
+		if((flt(current_minute) < 5) && (flt(current_minute) > 0)){
+			current_minute = 5
+		}
+		
+		if((flt(current_minute) > 5) && (flt(current_minute) % 5 != 0)){
+			add_minute = 5 - (flt(current_minute) % 5)
+			current_minute = flt(current_minute) + add_minute
+		}
+
+		$(".start_input_minute").val(current_minute)
+		$(".end_input_minute").val(current_minute)
+		
 		var hours = ""
 		var minute = ""
 		$(".start_input_hours").click(function(){
@@ -241,6 +309,42 @@ timelog = Class.extend({
 			callback: function(r) {
 				$(".weekly_hrs").val(r.message[0])
 				$(".monthly_hrs").val(r.message[1])
+			}
+		})
+	},
+	get_loged_sheets: function(){
+		var me = this;
+		console.log(me.page.find('.logsheet'))
+		console.log($('.logsheet'))
+		me.page.find('.logsheet').css("width", "150px")
+		$(".logsheet").find("button[data-fieldname='logsheet']").on("click", function(){
+			date = $(".date").find("input[data-fieldname='date']").val()
+			if (date){
+				date = date.split("-")
+				date = date[2]+"-"+date[1]+"-"+date[0]
+				frappe.call({
+					method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.get_loged_timesheets",
+					args: {
+						"date": date
+					},
+					callback: function(r) {
+						if (r.message){
+							var di = new frappe.ui.Dialog({
+	                            title: __("Loged Timesheets Details"),
+	                            fields: [
+	                                {"fieldtype":"HTML", "label":__("Loged Timesheets"), "reqd":1, "fieldname":"loged_sheets"}
+	                            ]
+	                        })
+	                        $(di.body).find("[data-fieldname='loged_sheets']").html(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
+	                        di.show();
+	                        $(di.body).find("[data-fieldname='loged_sheets']").css({"width": "710px", "height":"250px", "overflow-x": "scroll"})
+	                        $(".modal-content").css({"width": "750px"})
+						}
+					}
+				})
+			}
+			else{
+				msgprint(__("Please select Date first for populating Loged Timesheet details..."));
 			}
 		})
 	},

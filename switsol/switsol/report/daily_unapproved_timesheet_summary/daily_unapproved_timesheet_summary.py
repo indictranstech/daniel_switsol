@@ -31,12 +31,18 @@ def get_data():
 
 
 @frappe.whitelist()
-def update_timesheet(list_of_timesheet,signature):
-	print signature
+def update_timesheet(list_of_timesheet,signature,signature_svg):
+	signature_svg = json.loads(signature_svg)
+	#print signature_svg,"\n\n\n\n"
+	#str(signature_svg).split("\n")
+	#signature_svg = "image/svg+xml, " + signature_svg
+	# frappe.errprint(signature_svg)
+	# frappe.errprint("image/svg+xml, " + str(signature_svg))
 	list_of_timesheet = json.loads(list_of_timesheet)
 	for time_sheet in list_of_timesheet:
 		time_sheet_doc = frappe.get_doc("Timesheet",time_sheet)
 		time_sheet_doc.signature_json = str(signature)
 		time_sheet_doc.docstatus = 1
+		time_sheet_doc.signatre_svg = signature_svg
 		time_sheet_doc.save(ignore_permissions=True);
 	return "Sucees"
