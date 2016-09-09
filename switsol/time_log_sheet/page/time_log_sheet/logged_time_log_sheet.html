@@ -1,0 +1,38 @@
+<div>
+	<table class="table table-bordered table-hover item-table" style="width:1000px;">
+		<tr style="color:black; background-color:  #e8e5e4  ;">
+			<th>Client</th>
+			<th>Project</th>
+			<th>Activity</th>
+			<th>Start Time</th>
+			<th>End Time</th>
+			<th>Hours</th>
+			<th>Status</th>
+		</tr>
+		{% for(var i=0, l=data.length; i < l; i++) { %}
+		<tr style="line-height: 1.5; font-size: 14px; margin-bottom:0px;">
+			<td style="width: 180px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].customer }}
+			</td>
+			<td style="width: 200px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].project }}
+			</td>
+			<td style="width: 150px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].activity_type }}
+			</td>
+			<td style="width: 180px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].from_time }}
+			</td>
+			<td style="width: 180px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].to_time }}
+			</td>
+			<td style="width: 100px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].hours }}
+			</td>
+			<td style="width: 120px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1.5;">
+				{{ data[i].status }}
+			</td>
+		</tr>
+		{% } %}
+	</table>
+</div>

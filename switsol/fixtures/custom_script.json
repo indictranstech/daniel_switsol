@@ -3,9 +3,9 @@
   "docstatus": 0, 
   "doctype": "Custom Script", 
   "dt": "Timesheet", 
-  "modified": "2016-09-06 15:43:54.726677", 
+  "modified": "2016-09-09 19:58:12.931366", 
   "name": "Timesheet-Client", 
-  "script": "frappe.ui.form.on(\"Timesheet\",\"refresh\",function(frm) {\n\tif(cur_frm.doc.signature_json){\n\t\tvar sign = \"\"\n\t\tsign = JSON.parse(\"[\" + cur_frm.doc.signature_json + \"]\")\n\t\tconsole.log(sign)\n                $('[data-fieldname=\"signature\"]').show() \n\t\t$('[data-fieldname=\"signature\"]').signature()\n                $('[data-fieldname=\"signature\"]').signature({disabled: true});  \n\t\t$('[data-fieldname=\"signature\"]').signature(\"draw\", sign[0])\n        }\n        else {\n          $('[data-fieldname=\"signature\"]').hide()\n        }  \n})", 
+  "script": "frappe.ui.form.on(\"Timesheet\",\"refresh\",function(frm) {\n\tif(cur_frm.doc.signature_json){\n\t\tvar sign = \"\"\n\t\tsign = JSON.parse(\"[\" + cur_frm.doc.signature_json + \"]\")\n\t\tconsole.log(sign[0])\n                $('[data-fieldname=\"signature\"]').show() \n\t\t$('[data-fieldname=\"signature\"]').signature()\n                $('[data-fieldname=\"signature\"]').signature({disabled: true});  \n\t\t$('[data-fieldname=\"signature\"]').signature(\"draw\", sign[0])\n                $('[data-fieldname=\"signature_svg\"]').css(\"width\", \"5cm\")\n        }\n        else {\n          $('[data-fieldname=\"signature\"]').hide()\n        }  \n})", 
   "script_type": "Client"
  }
 ]

@@ -64,9 +64,22 @@ def calculate_total_hours(week_start, week_end, month_start, month_end):
 
 		monthly_hours = frappe.db.sql(""" select ifnull(sum(tsd.hours),0) from `tabTimesheet`ts, 
 				`tabTimesheet Detail` tsd where ts.name = tsd.parent and ts.employee = '%s' and ts.docstatus != 2 
-				and tsd.from_time between '%s' and '%s' """%(emp[0]['name'], month_start, month_end), as_list=1,debug=1)
+				and tsd.from_time between '%s' and '%s' """%(emp[0]['name'], month_start, month_end), as_list=1)
 		monthly_hours = "%.3f" % monthly_hours[0][0]
 
 		return last_week_hours, monthly_hours
 	else:
 		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))
+
+
+
+@frappe.whitelist()
+def get_loged_timesheets(date):
+	emp = frappe.db.get_values("Employee", {"user_id":frappe.session.user}, ["name"], as_dict= True)
+	if emp:
+		timesheets = frappe.db.sql(""" select tsd.customer, tsd.project, tsd.activity_type, tsd.from_time, tsd.to_time, 
+				tsd.hours, ts.status from `tabTimesheet`ts , `tabTimesheet Detail` tsd where ts.employee = '%s' 
+				and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent """%(emp[0]['name'],date+ " %"), as_dict=1)
+		return timesheets
+	else:
+		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))		

@@ -53,6 +53,8 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 		});
 		$(me.dialog.fields_dict.signature.wrapper).find("#json").click(function() {
 			me.sign = $(me.dialog.fields_dict.signature.wrapper).find("#sig").signature("toJSON")
+			me.svg = $(me.dialog.fields_dict.signature.wrapper).find("#sig").signature("toSVG")
+			console.log(me.svg,JSON.stringify(me.svg))
 			//$(me.dialog.fields_dict.signature.wrapper).find("#resig").signature("draw", me.sign)
 			me.update_timesheet();
 		});
@@ -67,7 +69,8 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 			method:'switsol.switsol.report.daily_unapproved_timesheet_summary.daily_unapproved_timesheet_summary.update_timesheet',
 			args: {
 				"list_of_timesheet":me.list_of_timesheet,
-				"signature":JSON.stringify(me.sign)
+				"signature":JSON.stringify(me.sign),
+				"signature_svg":JSON.stringify(me.svg).replace("\n")
 			},
 			callback: function(r) {
 				if(r.message) {
