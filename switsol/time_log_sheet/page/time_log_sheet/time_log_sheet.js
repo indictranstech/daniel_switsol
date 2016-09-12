@@ -99,23 +99,28 @@ timelog = Class.extend({
 		me.get_loged_sheets();
 	},
 	set_limit_to_input_hours_and_minute :function(){
-		var me = this;
-		console.log()
-		$(me.page).find(".start_input_hours").change(function(){
+		var me = this
+		$(me.page).find(".start_input_hours").click(function(){
 			me._selected = "start_input_hours"
 			me.common_for_limit()
+			me.common_for_calculation_of_hours();
 		})
-		$(me.page).find(".end_input_hours").change(function(){
+		$(me.page).find(".end_input_hours").click(function(){
 			me._selected = "end_input_hours"
 			me.common_for_limit()
+			me.common_for_calculation_of_hours();
 		})
-		$(me.page).find(".start_input_minute").change(function(){
+		$(me.page).find(".start_input_minute").click(function(){
 			me._selected = "start_input_minute"
 			me.common_for_limit()
+			me.common_for_calculation_of_minute();
 		})
-		$(me.page).find(".end_input_minute").change(function(){
+		$(me.page).find(".end_input_minute").click(function(){
+			me.minute = String($(this).attr("class"))
+			me.hours = ""
 			me._selected = "end_input_minute"
 			me.common_for_limit()
+			me.common_for_calculation_of_minute();
 		})
 	},
 	common_for_limit:function(){
@@ -131,15 +136,17 @@ timelog = Class.extend({
 		}	
 	},	
 	set_hours:function(){
+		var me = this;
 		var current_time = frappe.datetime.now_time();
-		current_hours = current_time.split(":")[0]
-		$(".start_input_hours").val(current_hours)
-		$(".end_input_hours").val(current_hours)
+		var current_hours = current_time.split(":")[0]
+		$(".input_hours").val(1)
+		$(".input_minute").val(0)
 		
 		current_minute = current_time.split(":")[1]
 		
 		if((flt(current_minute) <= 60) && (flt(current_minute) > 55)){
 			current_minute = 0
+			current_hours = flt(current_hours) + 1
 		}
 		
 		if((flt(current_minute) < 5) && (flt(current_minute) > 0)){
@@ -154,70 +161,68 @@ timelog = Class.extend({
 		$(".start_input_minute").val(current_minute)
 		$(".end_input_minute").val(current_minute)
 		
-		var hours = ""
-		var minute = ""
-		$(".start_input_hours").click(function(){
-			hours = String($(this).attr("class"))
-			minute = ""
-		})
-		$(".end_input_hours").click(function(){
-			hours = String($(this).attr("class"))
-			minute = ""
-		})
-		$(".start_input_minute").click(function(){
-			minute = String($(this).attr("class"))
-			hours = ""
-		})
-		$(".end_input_minute").click(function(){
-			minute = String($(this).attr("class"))
-			hours = ""
-		})
+		$(".start_input_hours").val(current_hours)
+		$(".end_input_hours").val(flt(current_hours) + 1)
+
 		$(".hours").click(function(){
-			$("."+hours).val($(this).attr("value"))
-			if($(".end_input_hours").val() && hours == "start_input_hours"){
-				difference = (flt($(".end_input_hours").val()) - flt($(".start_input_hours").val()))
-				if(difference >= 0){
-					$(".input_hours").val(difference)
-				}
-				else if(difference < 0){
-					difference = 24 - difference
-					$(".input_hours").val(difference)	
-				}
-			}
-			if($(".start_input_hours").val() && hours == "end_input_hours"){
-				difference = (flt($(".end_input_hours").val()) - flt($(".start_input_hours").val()))
-				if(difference >= 0){
-					$(".input_hours").val(difference)
-				}
-				else if(difference < 0){
-					difference = 24 + difference
-					$(".input_hours").val(difference)	
-				}
-			}
+			console.log("in hours hours",me._selected)
+			$("."+me._selected).val($(this).attr("value"))
+			me.common_for_calculation_of_hours();
 		});
 		$(".minute").click(function(){
-			$("."+minute).val($(this).attr("value"))
-			if($(".end_input_minute").val() && minute == "start_input_minute"){
-				diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
-				if(diff >= 0){
-					$(".input_minute").val(diff)
-				}
-				else if(diff < 0){
-					diff = 60 - diff
-					$(".input_minute").val(diff)	
-				}
-			}
-			if($(".start_input_minute").val() && minute == "end_input_minute"){
-				diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
-				if(diff >= 0){
-					$(".input_minute").val(diff)
-				}
-				else if(diff < 0){
-					diff = 60 + diff
-					$(".input_minute").val(diff)	
-				}
-			}
+			$("."+me._selected).val($(this).attr("value"))
+			me.common_for_calculation_of_minute();
 		});
+	},
+	common_for_calculation_of_hours:function(){
+		var me = this;
+		if($(".end_input_hours").val() && me._selected == "start_input_hours"){
+			difference = flt($(".end_input_hours").val()) - flt($(".start_input_hours").val())
+			if(difference > 0){
+				$(".input_hours").val(difference)
+			}
+			else if(difference <= 0){
+				difference = 1
+				$(".input_hours").val(difference)
+				$(".start_input_hours").val(flt($(".end_input_hours").val()) -1)
+			}
+		}
+		if($(".start_input_hours").val() && me._selected == "end_input_hours"){
+			difference = (flt($(".end_input_hours").val()) - flt($(".start_input_hours").val()))
+			if(difference > 0){
+				$(".input_hours").val(difference)
+			}
+			else if(difference <= 0){
+				difference = 1
+				$(".input_hours").val(difference)	
+				$(".end_input_hours").val(flt($(".start_input_hours").val()) + 1)
+			}
+		}
+	},
+	common_for_calculation_of_minute:function(){
+		var me = this;
+		if($(".end_input_minute").val() && me._selected == "start_input_minute"){
+			diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
+			if(diff > 0){
+				$(".input_minute").val(diff)
+			}
+			else if(diff <= 0){
+				diff = 0
+				$(".start_input_minute").val(flt($(".end_input_minute").val()))
+				$(".input_minute").val(diff)
+			}
+		}
+		if($(".start_input_minute").val() && me._selected == "end_input_minute"){
+			diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
+			if(diff > 0){
+				$(".input_minute").val(diff)
+			}
+			else if(diff <= 0){
+				diff = 0
+				$(".input_minute").val(diff)	
+				$(".end_input_minute").val(flt($(".start_input_minute").val()))
+			}
+		}
 	},
 	on_submit:function(){
 		var me = this;
