@@ -93,6 +93,7 @@ timelog = Class.extend({
 		__html = frappe.render_template("time_log_sheet")
 		me.page.append(__html)
 		me.set_hours();
+		me.common_for_limit();
 		me.on_submit();
 		me.calulate_hours();
 		me.set_limit_to_input_hours_and_minute();
@@ -102,44 +103,49 @@ timelog = Class.extend({
 		var me = this
 		$(me.page).find(".start_input_hours").click(function(){
 			me._selected = "start_input_hours"
-			me.common_for_limit()
 			me.common_for_calculation_of_hours();
 		})
 		$(me.page).find(".end_input_hours").click(function(){
 			me._selected = "end_input_hours"
-			me.common_for_limit()
 			me.common_for_calculation_of_hours();
 		})
 		$(me.page).find(".start_input_minute").click(function(){
 			me._selected = "start_input_minute"
-			me.common_for_limit()
 			me.common_for_calculation_of_minute();
 		})
 		$(me.page).find(".end_input_minute").click(function(){
-			me.minute = String($(this).attr("class"))
-			me.hours = ""
 			me._selected = "end_input_minute"
-			me.common_for_limit()
 			me.common_for_calculation_of_minute();
 		})
 	},
 	common_for_limit:function(){
 		var me = this;
-		var field = $("."+me._selected)
-		if((flt(field.val()) > flt(field.attr("max"))) || (flt(field.val()) < flt(field.attr("min"))) ) {
-			field.val(flt(field.attr("min")))
-		}
-		if((flt(field.val()) > 0) && (flt(field.attr("max")) == 55)){
-			if(flt(field.val()) % 5 != 0){
-				field.val(flt(field.attr("min")))		
+		$(me.page).find(".start_input_hours").change(function(){
+			if(flt($(this).val()) > 60){
+				$(this).val(1)
 			}
-		}	
+		})
+		$(me.page).find(".end_input_hours").change(function(){
+			if(flt($(this).val()) > 60){
+				$(this).val(1)
+			}
+		})
+		$(me.page).find(".start_input_minute").change(function(){
+			if(flt($(this).val()) > 55){
+				$(this).val(0)
+			}
+		})
+		$(me.page).find(".end_input_minute").change(function(){
+			if(flt($(this).val()) > 55){
+				$(this).val(0)
+			}
+		})
 	},	
 	set_hours:function(){
 		var me = this;
 		var current_time = frappe.datetime.now_time();
 		var current_hours = current_time.split(":")[0]
-		$(".input_hours").val(1)
+		$(".input_hours").val(0)
 		$(".input_minute").val(0)
 		
 		current_minute = current_time.split(":")[1]
@@ -162,40 +168,44 @@ timelog = Class.extend({
 		$(".end_input_minute").val(current_minute)
 		
 		$(".start_input_hours").val(current_hours)
-		$(".end_input_hours").val(flt(current_hours) + 1)
+		$(".end_input_hours").val(flt(current_hours))
 
 		$(".hours").click(function(){
 			console.log("in hours hours",me._selected)
-			$("."+me._selected).val($(this).attr("value"))
-			me.common_for_calculation_of_hours();
+			if(me._selected == "start_input_hours" || me._selected == "end_input_hours"){
+				$("."+me._selected).val($(this).attr("value"))
+				me.common_for_calculation_of_hours();
+			}
 		});
 		$(".minute").click(function(){
-			$("."+me._selected).val($(this).attr("value"))
-			me.common_for_calculation_of_minute();
+			if(me._selected == "start_input_minute" || me._selected == "end_input_minute"){
+				$("."+me._selected).val($(this).attr("value"))
+				me.common_for_calculation_of_minute();
+			}
 		});
 	},
 	common_for_calculation_of_hours:function(){
 		var me = this;
 		if($(".end_input_hours").val() && me._selected == "start_input_hours"){
 			difference = flt($(".end_input_hours").val()) - flt($(".start_input_hours").val())
-			if(difference > 0){
+			if(difference >= 0){
 				$(".input_hours").val(difference)
 			}
-			else if(difference <= 0){
-				difference = 1
+			else if(difference < 0){
+				difference = 0
 				$(".input_hours").val(difference)
-				$(".start_input_hours").val(flt($(".end_input_hours").val()) -1)
+				$(".start_input_hours").val(flt($(".end_input_hours").val()))
 			}
 		}
 		if($(".start_input_hours").val() && me._selected == "end_input_hours"){
 			difference = (flt($(".end_input_hours").val()) - flt($(".start_input_hours").val()))
-			if(difference > 0){
+			if(difference >= 0){
 				$(".input_hours").val(difference)
 			}
-			else if(difference <= 0){
-				difference = 1
+			else if(difference < 0){
+				difference = 0
 				$(".input_hours").val(difference)	
-				$(".end_input_hours").val(flt($(".start_input_hours").val()) + 1)
+				$(".end_input_hours").val(flt($(".start_input_hours").val()))
 			}
 		}
 	},
@@ -203,10 +213,10 @@ timelog = Class.extend({
 		var me = this;
 		if($(".end_input_minute").val() && me._selected == "start_input_minute"){
 			diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
-			if(diff > 0){
+			if(diff >= 0){
 				$(".input_minute").val(diff)
 			}
-			else if(diff <= 0){
+			else if(diff < 0){
 				diff = 0
 				$(".start_input_minute").val(flt($(".end_input_minute").val()))
 				$(".input_minute").val(diff)
@@ -214,10 +224,10 @@ timelog = Class.extend({
 		}
 		if($(".start_input_minute").val() && me._selected == "end_input_minute"){
 			diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
-			if(diff > 0){
+			if(diff >= 0){
 				$(".input_minute").val(diff)
 			}
-			else if(diff <= 0){
+			else if(diff < 0){
 				diff = 0
 				$(".input_minute").val(diff)	
 				$(".end_input_minute").val(flt($(".start_input_minute").val()))
@@ -235,9 +245,9 @@ timelog = Class.extend({
 			if (date && client && project && activity){
 				me.date = date.split("-")
 				me.date = me.date[2]+"-"+me.date[1]+"-"+me.date[0]
-				
+					
 				if($(".start_input_hours").val() && $(".end_input_hours").val() && $(".start_input_minute").val() && $(".end_input_minute").val()){
-					if ($(".start_input_hours").val() <= $(".end_input_hours").val()){
+					if ((flt($(".start_input_hours").val()) <= flt($(".end_input_hours").val())) && (flt($(".start_input_minute").val()) < flt($(".end_input_minute").val()))) {
 						me.start = String(me.date)+" "+ $(".start_input_hours").val()+":"+$(".start_input_minute").val()+":"+"00"
 						me.end	= String(me.date)+" "+ $(".end_input_hours").val()+":"+ $(".end_input_minute").val()+":"+"00"
 						if(frappe.datetime.now_datetime() >= me.end){
@@ -265,7 +275,7 @@ timelog = Class.extend({
 		start = me.start
 		var d = new Date(me.start);
 		d.setHours(d.getHours() + cint($(".input_hours").val()));
-		d.setMinutes(d.getMinutes() + cint($(".input_minute").val()));
+		d.setMinutes(d.getMinutes() + cint($(".input_minute").val()));	
 		end = moment(d).format("YYYY-MM-DD HH:mm:ss")
 		hours = moment(end).diff(moment(start),"seconds") / 3600
 		frappe.call({

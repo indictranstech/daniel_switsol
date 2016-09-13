@@ -23,7 +23,7 @@ def execute(filters=None):
 	return columns, data
 
 def get_data():
-	time_sheet = frappe.db.sql(""" select ts.name, ts.employee, ts.total_hours,
+	time_sheet = frappe.db.sql(""" select ts.name, ts.employee, format(ts.total_hours,3),
 		ts.status,"" from  
 		`tabTimesheet` ts where docstatus = 0 order by ts.name""", as_list=1,debug=1)
 
