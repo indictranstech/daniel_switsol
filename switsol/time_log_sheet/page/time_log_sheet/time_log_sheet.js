@@ -19,13 +19,13 @@ timelog = Class.extend({
 	},
 	set_fields: function() {
 		var me = this;
-		html = "<div class='row'  style='border:1px solid #d1d8dd; padding-bottom:10px;'>\
-  				<div class='col-xs-2 date'></div>\
-				<div class='col-xs-2 customer'></div>\
-				<div class='col-xs-2 project'></div>\
-  				<div class='col-xs-2 activity'></div>\
-  				<div class='col-xs-2 logsheet' style='padding-top: 20px;'></div>\
-  				<div class='col-xs-4'></div>\
+		html = "<div class='row'  style='border:1px solid #d1d8dd;padding-left:10px; padding-bottom:10px;'>\
+  				<div class='col-md-2 date'></div>\
+				<div class='col-md-2 customer'></div>\
+				<div class='col-md-2 project'></div>\
+  				<div class='col-md-2 activity'></div>\
+  				<div class='col-md-2 logsheet' style='padding-top: 20px;'></div>\
+  				<div class='col-md-4'></div>\
   				</div>"
 		me.page.html(html)
 		me.customer_link = frappe.ui.form.make_control({
@@ -34,7 +34,7 @@ timelog = Class.extend({
 			fieldtype: "Link",
 			options: "Customer",
 			fieldname: "customer",
-			placeholder: "Select Client"
+			placeholder: "Client"
 			},
 			render_input: true
 		});
@@ -85,7 +85,7 @@ timelog = Class.extend({
 			df: {
 				fieldtype: "Button",
 				fieldname: "logsheet",
-				label: __("Loged Sheets")
+				label: __("Logged Sheets")
 			},
 			render_input: true
 		});
