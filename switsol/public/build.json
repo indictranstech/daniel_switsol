@@ -8,6 +8,7 @@
 		"public/js/signature.html",		
 		"public/js/jquery.signature.min.js",
 		"public/js/excanvas.js",
-		"public/js/jquery.signature.js"
+		"public/js/jquery.signature.js",
+		"public/js/jquery.ui.touch-punch.min.js"
 	]
 }

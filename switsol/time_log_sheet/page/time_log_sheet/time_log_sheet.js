@@ -98,6 +98,7 @@ timelog = Class.extend({
 		me.calulate_hours();
 		me.set_limit_to_input_hours_and_minute();
 		me.get_loged_sheets();
+		me.add_logged_sheets();
 	},
 	set_limit_to_input_hours_and_minute :function(){
 		var me = this
@@ -329,8 +330,6 @@ timelog = Class.extend({
 	},
 	get_loged_sheets: function(){
 		var me = this;
-		console.log(me.page.find('.logsheet'))
-		console.log($('.logsheet'))
 		me.page.find('.logsheet').css("width", "150px")
 		$(".logsheet").find("button[data-fieldname='logsheet']").on("click", function(){
 			date = $(".date").find("input[data-fieldname='date']").val()
@@ -345,7 +344,7 @@ timelog = Class.extend({
 					callback: function(r) {
 						if (r.message){
 							var di = new frappe.ui.Dialog({
-	                            title: __("Loged Timesheets Details"),
+	                            title: __("Logged Timesheets Details"),
 	                            fields: [
 	                                {"fieldtype":"HTML", "label":__("Loged Timesheets"), "reqd":1, "fieldname":"loged_sheets"}
 	                            ]
@@ -355,11 +354,48 @@ timelog = Class.extend({
 	                        $(di.body).find("[data-fieldname='loged_sheets']").css({"width": "710px", "height":"250px", "overflow-x": "scroll"})
 	                        $(".modal-content").css({"width": "750px"})
 						}
+						else{
+							msgprint("No Logged Timesheet found for this date...")
+						}
 					}
 				})
 			}
 			else{
-				msgprint(__("Please select Date first for populating Loged Timesheet details..."));
+				msgprint(__("Please select Date first for populating Logged Timesheet details..."));
+			}
+		})
+	},
+	add_logged_sheets: function(){
+		var me = this;
+		me.page.find('.dtls').hide();
+		me.page.find('.logged-sheets').hide();
+		$(".date").find("input[data-fieldname='date']").change(function(){
+			date = $(".date").find("input[data-fieldname='date']").val()
+			me.page.find('.dtls').hide();
+			me.page.find('.logged-sheets').hide();
+			$('.logged-sheets').empty();
+			if (date){
+				date = date.split("-")
+				date = date[2]+"-"+date[1]+"-"+date[0]
+				frappe.call({
+					method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.get_loged_timesheets",
+					args: {
+						"date": date
+					},
+					callback: function(r) {
+						if (r.message){
+							me.page.find('.dtls').show();
+							me.page.find('.logged-sheets').show();
+							$('.logged-sheets').append(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
+						}
+						else{
+							msgprint("No Logged Timesheet found for this date...")
+						}
+					}
+				})
+			}
+			else{
+				msgprint(__("Please select Date first for populating Logged Timesheet details.."));
 			}
 		})
 	},
