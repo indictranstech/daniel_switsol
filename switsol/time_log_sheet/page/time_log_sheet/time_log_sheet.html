@@ -7,8 +7,8 @@
 }
 </style>
 <div class="row" style="border:1px solid #d1d8dd;padding-left:10px;padding-top:25px;padding-bottom:25px; border-top:0px;">
-	<div class="col-md-3 col-xs-10" id="_numbers">
-						<div class="row">
+	<div class="col-md-3 col-xs-10" id="_numbers" style="padding-bottom: 20px;">
+		<div class="row">
 			<div class="col-xs-4">Start Time</div>
 			<div class="col-xs-3"><input class= "start_input_hours" placeholder="Hrs" value style="width:150%;" type="number" min="1" max="24" step="" 
 				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
@@ -42,7 +42,7 @@
 		</div>		
 	</div>
 	<div class="col-md-1 col-xs-2"></div>
-	<div class="col-md-3 col-xs-10 _buttons">
+	<div class="col-md-3 col-xs-10 _buttons" style="padding-bottom: 20px;">
 		<span>Pick Up Hours</span>
 		{% for(var i=1, le=25; i < le; i = i + 6) { %}
 			<div class="row">
@@ -108,16 +108,18 @@
 	<div class="col-md-2 col-xs-2"></div>
 	<!-- <div class="col-xs-6"></div> -->
 	<br><br><br>
-	<div class="col-md-12 col-xs-12" style="padding-top:20px; margin-left:20px;">
-		<input class= "submit hover" type="button" value="Submit" style="border-radius: 4px; width: 10%;">
+	<!-- <div class="col-md-12 col-xs-12" style="padding-top:20px; margin-left:20px;"> -->
+	<div class="col-md-12 col-xs-12" style="padding-top:20px;">
+		<input class= "submit hover" type="button" value="Submit">
 	</div>
 </div>
 
 <div class="row" style="border:1px solid #d1d8dd;padding-left:10px; border-top:0px;">
-	<div class="col-xs-12 dtls" style="padding-left:10px;padding-top:15px;padding-bottom:10px; font-size:130%;">
+	<div class="col-md-12 dtls" style="padding-left:10px;padding-top:15px;padding-bottom:10px; font-size:130%;">
 		<font color="#0101DF">Logged Timesheets Details</font>
 	</div>
-	<div class="logged-sheets" id="loggedsheet" style="padding-left:10px;  height: 200px; overflow-y: auto;"></div>
+	<div class="col-md-12 logged-sheets" id="loggedsheet" style="padding-left:10px;"></div>
+	<!-- <div class="col-md-12 logged-sheets" id="loggedsheet" style="padding-left:10px;  height: 200px; overflow-y: auto;"></div> -->
 </div>
 
 <div class="row" style="border:1px solid #d1d8dd;padding-left:10px; padding-top:25px;padding-bottom:25px; border-top:0px;">
@@ -127,14 +129,14 @@
 				<font color="#0101DF"> Dashboard Snapshot - </font>
 			</div>
 			<div class="col-xs-12" style="padding-top:25px;">
-				<div class="col-xs-6" id="weekly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged Last Week :</font></b></div>
-				<div class="col-xs-6" style="padding-left:0px;"><input class= "weekly_hrs" type="text" value style="width:70%;  border-radius: 5px; padding-left:3px;" disabled></div>
+				<div class="col-xs-7" id="weekly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged Last Week :</font></b></div>
+				<div class="col-xs-5" style="padding-left:0px;"><input class= "weekly_hrs" type="text" value style="width:70%;  border-radius: 5px; padding-left:3px;" disabled></div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12" style="padding-top:15px;">
-				<div class="col-xs-6" id="monthly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged This Month :</font></b></div>
-				<div class="col-xs-6" style="padding-left:0px;"><input class= "monthly_hrs" type="text" value style="width:70%;  border-radius: 5px; padding-left:3px;" disabled></div>
+				<div class="col-xs-7" id="monthly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged This Month :</font></b></div>
+				<div class="col-xs-5" style="padding-left:0px;"><input class= "monthly_hrs" type="text" value style="width:70%;  border-radius: 5px; padding-left:3px;" disabled></div>
 			</div>
 		</div>
 	</div>

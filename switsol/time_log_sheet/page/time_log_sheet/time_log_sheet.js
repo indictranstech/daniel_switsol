@@ -343,16 +343,24 @@ timelog = Class.extend({
 					},
 					callback: function(r) {
 						if (r.message){
-							var di = new frappe.ui.Dialog({
+							this.dialog = new frappe.ui.Dialog({
 	                            title: __("Logged Timesheets Details"),
 	                            fields: [
 	                                {"fieldtype":"HTML", "label":__("Loged Timesheets"), "reqd":1, "fieldname":"loged_sheets"}
 	                            ]
-	                        })
-	                        $(di.body).find("[data-fieldname='loged_sheets']").html(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
-	                        di.show();
-	                        $(di.body).find("[data-fieldname='loged_sheets']").css({"width": "710px", "height":"250px", "overflow-x": "scroll"})
-	                        $(".modal-content").css({"width": "750px"})
+	                        });
+	                        /*this.dialog.$wrapper.find('.modal-dialog').css("width", "1000px");
+       						this.dialog.$wrapper.find('.modal-dialog').css("height", "1000px");*/
+	                        //$(di.body).find("[data-fieldname='loged_sheets']").html(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
+	                        html = $(frappe.render_template("logged_time_log_sheet",{
+            	   				"data":r.message
+            	   			})).appendTo(this.dialog.fields_dict.loged_sheets.wrapper);
+	                        this.dialog.show();
+	                        $($(this.dialog.$wrapper).children()[1]).addClass("modal-lg")
+	                        //$(cur_dialog.$wrapper).find('.modal-dialog').css("width", "800px");
+       						//di.dialog.$wrapper.find('.modal-dialog').css("height", "1000px");
+	                        //$(di.body).find("[data-fieldname='loged_sheets']").css({"width": "710px", "height":"250px", "overflow-x": "scroll"})
+	                        //$(".modal-content").css({"width": "750px"})
 						}
 						else{
 							msgprint("No Logged Timesheet found for this date...")

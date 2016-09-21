@@ -1,8 +1,9 @@
 import frappe
 from frappe import _
+from frappe.utils.password import check_password
 
 @frappe.whitelist(allow_guest=True)
-def make_user_logged(user_name,email):
+def make_user_logged(user_name,password,email):
 	
 	save = False
 
@@ -20,7 +21,8 @@ def make_user_logged(user_name,email):
 			"first_name": user_name,
 			"email": email,
 			"enabled": 1,
-			"user_type": "Website User"
+			"new_password": password,
+			"user_type": "System User"
 		})
 
 		user.flags.ignore_permissions = True
@@ -37,13 +39,19 @@ def make_user_logged(user_name,email):
 
 		redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In')
 
-	else:
+	if email == check_password(email,password):
+		print "email","\n\n\n\n",email
 		frappe.local.login_manager.user = email
 		frappe.local.login_manager.post_login()
 
 		redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In')
+	# else:
+	# 	frappe.local.login_manager.user = email
+	# 	frappe.local.login_manager.post_login()
 
+	# 	redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In')
 
+#http://localhost:9093/api/method/switsol.switsol.make_user.make_user_logged?user_name=jitendra&email=jitendra.k@indictranstech.com&password=khatri
 def redirect_login(desk_user):
 	# redirect!
 	frappe.local.response["type"] = "redirect"
