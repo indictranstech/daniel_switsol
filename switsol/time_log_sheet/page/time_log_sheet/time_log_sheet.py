@@ -82,4 +82,9 @@ def get_loged_timesheets(date):
 				and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent """%(emp[0]['name'],date+ " %"), as_dict=1)
 		return timesheets
 	else:
-		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))		
+		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))
+
+# def ping(request=None,usr=None):
+# 	return {"req_data":request,"usr":usr, "message":"success"}				
+	# user_data = frappe.db.get_values("User",{"username":user_name,"email":email},["username","email"],as_dict=True)
+	# return {"user_data":user_data,"message":"success"}
