@@ -1,0 +1,42 @@
+<div class="contacts table-responsive" style="padding-left: 10px;padding-right: 10px;">
+	<table class="table table-bordered table-hover item-table" style="width:1000px;">
+		<tr>
+			<th>Name</th>
+			<th>Mobile No</th>
+			<th>Phone</th>
+			<th>Status</th>
+			<th>Update Contact</th>
+		</tr>
+		{% for(var i=0, l=data.length; i < l; i++) { %}
+		<tr>
+			<td>
+				{{ data[i].first_name }}
+			</td>
+			<td>
+				{{ data[i].mobile_no }}
+			</td>
+			<td>
+				{{ data[i].phone }}
+			</td>
+			<td>
+				{{ data[i].status }}
+			</td>
+			<td>
+				<!-- <a href={{ data[i].name }}>Update</a> -->
+				<button type="button" class="update_contact" contact-name={{ JSON.stringify(data[i].name) }} >
+				Update
+			</button>
+			</td>
+		</tr>
+		{% } %}
+	</table>
+</div>
+<br>
+<div class="row">
+	<div class="col-xs-6">
+		<button type="button" class="add_contact">
+			Add Contact
+		</button>
+	</div>
+	<div class="col-xs-6"></div>
+</div>
