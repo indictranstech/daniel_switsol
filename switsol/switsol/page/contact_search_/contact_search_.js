@@ -161,7 +161,8 @@ render_contact = Class.extend({
 				"doctype":me.doctype, 
 				"doc_name":me.contact_name,
 				"new_contact":"Yes",
-				"call_receive_time":String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[1]
+				"call_receive_time":String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[1],
+				"contact_type":me.doctype
 			};
 			frappe.set_route('Form', 'Contact', tn);
 		})
@@ -186,7 +187,8 @@ render_contact = Class.extend({
 				"doc_name":me.contact_name,
 				"new_contact":"No",
 				"mobile_no": String($(me.page).find("input[data-fieldname='mobile_no']").val().split("/")[0]),
-				"call_receive_time":String(($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[1])
+				"call_receive_time":String(($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[1]),
+				"contact_type":me.doctype
 			};
 			frappe.set_route('Form', 'Contact',$(this).attr("contact-name"));
 		})

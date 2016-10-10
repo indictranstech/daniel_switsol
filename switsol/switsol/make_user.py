@@ -174,6 +174,7 @@ def get_call_logs_from_customer(source_name, target_doc=None):
 	target_doc.client = str(customer.name)
 	target_doc.phone_number = str(customer.call_comming_from).split("/")[0]
 	target_doc.contact_person = str(customer.call_comming_from).split("/")[1]
+	target_doc.contact_type = "Customer"
 	target_doc.start_time = str(datetime.now()).split(".")[0]
 	target_doc.call_attendant = frappe.session.user
 
@@ -182,7 +183,7 @@ def get_call_logs_from_customer(source_name, target_doc=None):
 @frappe.whitelist()
 def get_call_logs_from_supplier(source_name, target_doc=None):
 	supplier = frappe.get_doc("Supplier",source_name)
-	target_doc = get_mapped_doc("Customer", source_name,
+	target_doc = get_mapped_doc("Supplier", source_name,
 		{
 			"Supplier": {
 				"doctype": "Call Logs",
@@ -192,6 +193,7 @@ def get_call_logs_from_supplier(source_name, target_doc=None):
 	target_doc.client = str(supplier.name)
 	target_doc.phone_number = str(supplier.call_comming_from).split("/")[0]
 	target_doc.contact_person = str(supplier.call_comming_from).split("/")[1]
+	target_doc.contact_type = "Supplier"	
 	target_doc.start_time = datetime.now()
 	target_doc.call_attendant = frappe.session.user	
 	return target_doc	
@@ -199,16 +201,17 @@ def get_call_logs_from_supplier(source_name, target_doc=None):
 @frappe.whitelist()
 def get_call_logs_from_sales_partner(source_name, target_doc=None):
 	sales_partner = frappe.get_doc("Sales Partner",source_name)
-	target_doc = get_mapped_doc("Customer", source_name,
+	target_doc = get_mapped_doc("Sales Partner", source_name,
 		{
 			"Sales Partner": {
 				"doctype": "Call Logs",
 			},
 		}, target_doc)
 
-	target_doc.client = str
+	target_doc.client = str(sales_partner.name)
 	target_doc.phone_number = str(sales_partner.call_comming_from).split("/")[0]
 	target_doc.contact_person = str(sales_partner.call_comming_from).split("/")[1]
+	target_doc.contact_type = "Sales Partner"
 	target_doc.start_time = datetime.now()
 	target_doc.call_attendant = frappe.session.user	
 	return target_doc
