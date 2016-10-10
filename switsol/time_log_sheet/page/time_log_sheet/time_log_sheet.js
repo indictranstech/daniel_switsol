@@ -248,7 +248,7 @@ timelog = Class.extend({
 				me.date = me.date[2]+"-"+me.date[1]+"-"+me.date[0]
 					
 				if($(".start_input_hours").val() && $(".end_input_hours").val() && $(".start_input_minute").val() && $(".end_input_minute").val()){
-					if ((flt($(".start_input_hours").val()) <= flt($(".end_input_hours").val())) && (flt($(".start_input_minute").val()) < flt($(".end_input_minute").val()))) {
+					if ((flt($(".start_input_hours").val()) < flt($(".end_input_hours").val())) && (flt($(".start_input_minute").val()) <= flt($(".end_input_minute").val()))) {
 						me.start = String(me.date)+" "+ $(".start_input_hours").val()+":"+$(".start_input_minute").val()+":"+"00"
 						me.end	= String(me.date)+" "+ $(".end_input_hours").val()+":"+ $(".end_input_minute").val()+":"+"00"
 						if(frappe.datetime.now_datetime() >= me.end){

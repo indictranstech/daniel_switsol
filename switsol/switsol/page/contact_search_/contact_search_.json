@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-10-04 11:21:40.088453", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-10-04 11:21:40.088453", 
+ "modified_by": "Administrator", 
+ "module": "Switsol", 
+ "name": "contact_search-", 
+ "owner": "Administrator", 
+ "page_name": "contact_search ", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Contact Search"
+}

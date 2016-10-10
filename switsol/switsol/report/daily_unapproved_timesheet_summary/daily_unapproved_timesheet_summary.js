@@ -15,7 +15,7 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 	make_signature_dialog:function(report){
 		var me = this;
 		this.dialog = new frappe.ui.Dialog({
-            		title: "Refund Process",
+            		title: "Signature",
                 	fields: [
                    		{"fieldtype": "HTML" , "fieldname": "signature" , "label": "Signature"}
                    	]
