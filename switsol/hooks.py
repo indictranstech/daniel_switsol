@@ -10,7 +10,6 @@ app_icon = "octicon octicon-file-directory"
 app_color = "grey"
 app_email = "jitendra.k@indictranstech.com"
 app_license = "MIT"
-
 boot_session = "switsol.boot.boot_session"
 # Includes in <head>
 # ------------------

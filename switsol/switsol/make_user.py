@@ -158,7 +158,7 @@ def redirect_login(desk_user,url):
 
 # new url
 
-http://5.148.186.248:9090/api/method/switsol.switsol.make_user.logged_and_redirect?user_name=&email=&password=&contact_no=
+#http://5.148.186.248:9090/api/method/switsol.switsol.make_user.logged_and_redirect?user_name=&email=&password=&contact_no=
 #http://localhost:9090/api/method/switsol.switsol.make_user.logged_and_redirect?user_name=jitendra&email=jitendra.k@indictranstech.com&password=khatri&contact_no=4555
 
 @frappe.whitelist()
