@@ -35,6 +35,9 @@ render_contact = Class.extend({
   				<div class='row' style='padding-left: 10px;padding-right: 10px;'>\
   				<div class='col-md-6' id='mobile_no'></div>\
   				<div class='col-md-6'></div>\
+  				<div class='row' style='padding-left: 10px;padding-right: 10px;'>\
+  				<div class='col-md-12 render_contact'></div>\
+  				</div>\
   				<div>"
 		me.page.html(html)
 		me.customer_link = frappe.ui.form.make_control({
@@ -112,23 +115,30 @@ render_contact = Class.extend({
 				},
 				callback: function(r) {
 					if (r.message){
-						$(me.page).find(".contacts").empty();
-						$(me.page).find(".add_contact").empty();
+						//$(me.page).find(".contacts").empty();
+						//$(me.page).find(".add_contact").empty();
+						//$(me.page).find(".add-contact").empty();
+						$(me.page).find('.render_contact').empty();
 						__html = frappe.render_template("contact_search",{"data":r.message})
-						me.page.append(__html)
+						me.page.find('.render_contact').append(__html)
 						me.add_contact();
 						me.update_contact();
 					}
 					else{
-						$(me.page).find(".contacts").empty();
-						$(me.page).find(".add_contact").empty();
-						html = "<div class='row add_contact'>\
+						console.log("in else cond")
+						//$(me.page).find(".contacts").empty();
+						//$(me.page).find(".add_contact").empty();
+						//$(me.page).find(".add-contact").empty();
+						/*html = "<div class='row add_contact'>\
 								<div class='col-xs-6'>\
 								<button type='button' class='add_contact'>Add Contact</button>\
 								</div>\
 								<div class='col-xs-6'></div>\
-								</div>"
-						me.page.append(html)
+								</div>"*/
+						$(me.page).find('.render_contact').empty();
+						__html = frappe.render_template("contact_search",{"data":""})
+						me.page.find('.render_contact').append(__html)
+						//me.page.append(html)
 						me.add_contact();
 					}
 				}
