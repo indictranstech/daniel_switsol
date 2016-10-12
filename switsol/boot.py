@@ -6,3 +6,5 @@ def boot_session(bootinfo):
 	import frappe
 	bootinfo.contact_no = frappe.db.sql("""select value from 
 						`tabSingles` where field = "voip_contact_no" """,as_list=1)[0][0]
+	bootinfo.contact_person_list = frappe.db.sql("""select value from 
+						`tabSingles` where field = "contact_person_list" """,as_list=1)[0][0]

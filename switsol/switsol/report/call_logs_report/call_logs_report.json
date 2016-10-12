@@ -1,19 +1,18 @@
 {
  "add_total_row": 0, 
- "apply_user_permissions": 1, 
+ "apply_user_permissions": 0, 
  "creation": "2016-10-07 16:37:37.223079", 
  "disabled": 0, 
  "docstatus": 0, 
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "modified": "2016-10-07 18:29:52.754298", 
+ "modified": "2016-10-10 14:57:32.635972", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "Call Logs Report", 
  "owner": "Administrator", 
- "query": "SELECT\n date(creation) as \"Date::100\",\n phone_number as \"Contact Number::120\",\n contact_person as \"Contact Person::120\",\n client as \"Client::120\", \n time(start_time) as \"Start Time::100\",\n time(end_time) as \"End Time::100\",\n TIMEDIFF(time(start_time),time(end_time)) as \"Call Length::150\",\n call_attendant as \"Agent/Call attendant::150\",\n name as \"call Log Id:Link/Call Logs:150\"\nFROM\n `tabCall Logs` \norder by\n name asc;", 
  "ref_doctype": "Call Logs", 
  "report_name": "Call Logs Report", 
- "report_type": "Query Report"
+ "report_type": "Script Report"
 }

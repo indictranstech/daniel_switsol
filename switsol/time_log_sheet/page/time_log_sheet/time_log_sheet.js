@@ -214,10 +214,18 @@ timelog = Class.extend({
 		var me = this;
 		if($(".end_input_minute").val() && me._selected == "start_input_minute"){
 			diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
+			hour_diff = (flt($(".end_input_hours").val()) - flt($(".start_input_hours").val()))
+			
+			minute_multiple = 
+			console.log("my 123 diff",diff,"hour_diff",hour_diff)
 			if(diff >= 0){
 				$(".input_minute").val(diff)
 			}
-			else if(diff < 0){
+			else if(diff < 0 && hour_diff > 0){
+				$(".input_minute").val( flt($(".end_input_minute").val()) + (60 - flt($(".start_input_minute").val())))
+				$(".input_hours").val(0)
+			}
+			else if(diff < 0 && hour_diff <= 0){
 				diff = 0
 				$(".start_input_minute").val(flt($(".end_input_minute").val()))
 				$(".input_minute").val(diff)
@@ -225,10 +233,16 @@ timelog = Class.extend({
 		}
 		if($(".start_input_minute").val() && me._selected == "end_input_minute"){
 			diff = (flt($(".end_input_minute").val()) - flt($(".start_input_minute").val()))
+			hour_diff = (flt($(".end_input_hours").val()) - flt($(".start_input_hours").val()))
+			
 			if(diff >= 0){
 				$(".input_minute").val(diff)
 			}
-			else if(diff < 0){
+			else if(diff < 0 && hour_diff > 0){
+				$(".input_minute").val( flt($(".end_input_minute").val()) + (60 - flt($(".start_input_minute").val())))
+				$(".input_hours").val(0)
+			}
+			else if(diff < 0 && hour_diff <= 0){
 				diff = 0
 				$(".input_minute").val(diff)	
 				$(".end_input_minute").val(flt($(".start_input_minute").val()))

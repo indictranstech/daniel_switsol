@@ -45,112 +45,76 @@ def logged_and_redirect(user_name,password,email,contact_no):
 
 def make_redirect_url(email,contact_no,flag=None):
 	if frappe.db.get_value("Contact",{"mobile_no":contact_no},"name"):
-		contact_person = frappe.db.get_value("Contact",{"mobile_no":contact_no},"name")
-		contact_doc = frappe.get_doc("Contact",frappe.db.get_value("Contact",{"mobile_no":contact_no},"name"))
-		if contact_doc.customer:
-			url = "Form/Customer/{0}".format(contact_doc.customer)			
-			customer_doc = frappe.get_doc("Customer",contact_doc.customer)
-			customer_doc.call_comming_from = contact_no+"/"+contact_person
-			customer_doc.save(ignore_permissions=True)
-			set_redirect_url(email,url,flag)
+		contact_not_found = "No"
+		contact_person_list = frappe.db.sql("""select name,CASE WHEN customer IS NULL AND supplier IS NULL THEN concat("sales_partner","-",sales_partner) 
+													WHEN sales_partner IS NULL AND supplier IS NULL THEN concat("customer","-",customer) 
+													WHEN customer IS NULL AND sales_partner IS NULL THEN concat("supplier","-",supplier) ELSE "" 
+												END as contact_person from `tabContact` where mobile_no = '{0}'""".format(contact_no),as_dict=1)
+		if len(contact_person_list) > 1:
+			contact_person_name_str = ""
+			for e in contact_person_list:
+				contact_person_name_str += e["contact_person"]+","
+				if e["contact_person"].split("-")[0] == "supplier":
+					frappe.db.sql("""update `tabSupplier` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+e["name"],e["contact_person"].split("-")[1]))		
+				if e["contact_person"].split("-")[0] == "customer":
+					frappe.db.sql("""update `tabCustomer` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+e["name"],e["contact_person"].split("-")[1]))
+				if e["contact_person"].split("-")[0] == "sales_partner":
+					frappe.db.sql("""update `tabSales Partner` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+e["name"],e["contact_person"].split("-")[1]))
+			frappe.db.sql("""update `tabSingles` set value = '{0}' 
+			where field = "contact_person_list" """.format(contact_person_name_str))			
+			url = "contact_search-"
+			set_redirect_url(email,url,contact_not_found,flag)
 
-		# if contact_doc.user:
-		# 	url = "Form/User/{0}".format(contact_doc.user)
-		# 	#customer_doc.call_comming_from = contact_no+"/"+contact_person
-		# 	set_redirect_url(email,url,flag)
+		if len(contact_person_list) == 1:				
+			contact_person = frappe.db.get_value("Contact",{"mobile_no":contact_no},"name")
+			contact_doc = frappe.get_doc("Contact",frappe.db.get_value("Contact",{"mobile_no":contact_no},"name"))
+			if contact_doc.customer:
+				url = "Form/Customer/{0}".format(contact_doc.customer)			
+				frappe.db.sql("""update `tabCustomer` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+contact_person,contact_doc.customer))
+				# customer_doc = frappe.get_doc("Customer",contact_doc.customer)
+				# customer_doc.call_comming_from = contact_no+"/"+contact_person
+				# customer_doc.save(ignore_permissions=True)
+				set_redirect_url(email,url,contact_not_found,flag)
 
-		if contact_doc.supplier:
-			url = "Form/Supplier/{0}".format(contact_doc.supplier)
-			supplier_doc = frappe.get_doc("Supplier",contact_doc.supplier)
-			supplier_doc.call_comming_from = contact_no+"/"+contact_person
-			supplier_doc.save(ignore_permissions=True)
-			set_redirect_url(email,url,flag)
-			
-		if contact_doc.sales_partner:
-			sales_partner_doc = frappe.get_doc("Sales Partner",contact_doc.sales_partner)
-			sales_partner_doc.call_comming_from = contact_no+"/"+contact_person
-			sales_partner_doc.save(ignore_permissions=True)
-			url = "Form/Sales Partner/{0}".format(contact_doc.sales_partner)			
-			set_redirect_url(email,url,flag)		
+			if contact_doc.supplier:
+				url = "Form/Supplier/{0}".format(contact_doc.supplier)
+				frappe.db.sql("""update `tabSupplier` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+contact_person,contact_doc.supplier))
+				# supplier_doc = frappe.get_doc("Supplier",contact_doc.supplier)
+				# supplier_doc.call_comming_from = contact_no+"/"+contact_person
+				# supplier_doc.save(ignore_permissions=True)
+				set_redirect_url(email,url,contact_not_found,flag)
+				
+			if contact_doc.sales_partner:
+				url = "Form/Sales Partner/{0}".format(contact_doc.sales_partner)			
+				frappe.db.sql("""update `tabSales Partner` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+contact_person,contact_doc.sales_partner))
+				# sales_partner_doc = frappe.get_doc("Sales Partner",contact_doc.sales_partner)
+				# sales_partner_doc.call_comming_from = contact_no+"/"+contact_person
+				# sales_partner_doc.save(ignore_permissions=True)
+				set_redirect_url(email,url,contact_not_found,flag)		
 
 	else:
 		url = "contact_search-"
-		set_redirect_url(email,url,flag)		
-		#frappe.request.path.startswith("/api/")
+		contact_not_found = "Yes"
+		set_redirect_url(email,url,contact_not_found,flag)
 
 
-	
-
-# def make_redirect_url(email,customer,contact_no,flag=None):
-# 	if frappe.db.exists("Customer",customer):
-# 		url = "Form/Customer/{0}".format(customer)
-# 		customer_doc = frappe.get_doc("Customer",customer)
-# 		contact_list = frappe.db.sql("""select name,customer,mobile_no from `tabContact`
-# 			where customer = '{0}' """.format(customer),as_dict=1)
-
-# 		if contact_list and len(contact_list) == 1 and contact_list[0]["mobile_no"] == contact_no:
-# 			contact_person = frappe.db.get_value("Contact",{"customer":customer,"mobile_no":contact_no},'name')
-# 			customer_doc.call_comming_from = contact_no+"/"+contact_person
-# 			set_redirect_url(email,url,flag)
-		
-# 		if contact_list and len(contact_list) == 1 and contact_list[0]["mobile_no"] != contact_no:
-# 			first_name =  "2"+ "-" + frappe.db.get_value("Contact",{"customer":customer},'customer')
-# 			contact_person = make_new_contact(customer,contact_no,first_name)
-# 			customer_doc.call_comming_from = contact_no+"/"+contact_person
-# 			set_redirect_url(email,url,flag)	
-
-# 		if contact_list and len(contact_list) == 2:
-# 			mobile_no = []
-# 			for row in contact_list:
-# 				mobile_no.append(row["mobile_no"])
-# 			if contact_no in mobile_no:	
-# 				set_redirect_url(email,url,flag)	
-# 				contact_person = frappe.db.get_value("Contact",{"customer":customer,"mobile_no":contact_no},'name')
-# 				customer_doc.call_comming_from = contact_no+"/"+contact_person
-# 			else:
-# 				contact_doc = frappe.get_doc("Contact",contact_list[1]["name"])
-# 				contact_doc.mobile_no = contact_no
-# 				contact_doc.save(ignore_permissions=True)
-# 				set_redirect_url(email,url,flag)
-# 				contact_person = frappe.db.get_value("Contact",{"customer":customer,"mobile_no":contact_no},'name')
-# 				customer_doc.call_comming_from = contact_no+"/"+contact_person
-
-# 		if not contact_list:
-# 			contact_person = make_new_contact(customer,contact_no)
-# 			customer_doc.call_comming_from = contact_no+"/"+contact_person
-			
-# 			set_redirect_url(email,url,flag)
-#         customer_doc.save(ignore_permissions=True)
-# 	if not frappe.db.exists("Customer",customer):
-# 		url = "List/Customer"								
-# 		set_redirect_url(email,url,flag)
-
-# def make_new_contact(customer,contact_no,first_name=None):
-# 	contact = frappe.new_doc("Contact")
-# 	contact.mobile_no = contact_no
-# 	contact.customer = customer
-# 	contact.first_name = first_name if first_name else customer
-# 	contact.save(ignore_permissions = True)	
-# 	return contact.name
-
-
-
-def set_redirect_url(email,url,flag):
+def set_redirect_url(email,url,contact_not_found,flag):
 	if flag:
-		redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In',url=url)	
+		redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In',url=url,contact_not_found=contact_not_found)	
 	else:
 		frappe.local.login_manager.user = email
 		frappe.local.login_manager.post_login()
-		redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In',url=url)
+		redirect_login(desk_user=frappe.local.response.get('message') == 'Logged In',url=url,contact_not_found=contact_not_found)
 
 
-def redirect_login(desk_user,url):
+def redirect_login(desk_user,url,contact_not_found):
 	# redirect!
 	frappe.local.response["type"] = "redirect"
 	# the #desktop is added to prevent a facebook redirect bug
 	frappe.local.response["location"] = "/desk#{0}".format(url)
-	frappe.db.sql("""update `tabSingles` set value = {0} 
-		where field = "voip_contact_no" """.format(frappe.local.form_dict["contact_no"]))
+	if contact_not_found == "Yes":
+		frappe.db.sql("""update `tabSingles` set value = {0} 
+			where field = "voip_contact_no" """.format(frappe.local.form_dict["contact_no"]))
 
 # old url
 
@@ -174,6 +138,7 @@ def get_call_logs_from_customer(source_name, target_doc=None):
 	target_doc.client = str(customer.name)
 	target_doc.phone_number = str(customer.call_comming_from).split("/")[0]
 	target_doc.contact_person = str(customer.call_comming_from).split("/")[1]
+	target_doc.contact_type = "Customer"
 	target_doc.start_time = str(datetime.now()).split(".")[0]
 	target_doc.call_attendant = frappe.session.user
 
@@ -182,7 +147,7 @@ def get_call_logs_from_customer(source_name, target_doc=None):
 @frappe.whitelist()
 def get_call_logs_from_supplier(source_name, target_doc=None):
 	supplier = frappe.get_doc("Supplier",source_name)
-	target_doc = get_mapped_doc("Customer", source_name,
+	target_doc = get_mapped_doc("Supplier", source_name,
 		{
 			"Supplier": {
 				"doctype": "Call Logs",
@@ -192,6 +157,7 @@ def get_call_logs_from_supplier(source_name, target_doc=None):
 	target_doc.client = str(supplier.name)
 	target_doc.phone_number = str(supplier.call_comming_from).split("/")[0]
 	target_doc.contact_person = str(supplier.call_comming_from).split("/")[1]
+	target_doc.contact_type = "Supplier"	
 	target_doc.start_time = datetime.now()
 	target_doc.call_attendant = frappe.session.user	
 	return target_doc	
@@ -199,16 +165,17 @@ def get_call_logs_from_supplier(source_name, target_doc=None):
 @frappe.whitelist()
 def get_call_logs_from_sales_partner(source_name, target_doc=None):
 	sales_partner = frappe.get_doc("Sales Partner",source_name)
-	target_doc = get_mapped_doc("Customer", source_name,
+	target_doc = get_mapped_doc("Sales Partner", source_name,
 		{
 			"Sales Partner": {
 				"doctype": "Call Logs",
 			},
 		}, target_doc)
 
-	target_doc.client = str
+	target_doc.client = str(sales_partner.name)
 	target_doc.phone_number = str(sales_partner.call_comming_from).split("/")[0]
 	target_doc.contact_person = str(sales_partner.call_comming_from).split("/")[1]
+	target_doc.contact_type = "Sales Partner"
 	target_doc.start_time = datetime.now()
 	target_doc.call_attendant = frappe.session.user	
 	return target_doc
