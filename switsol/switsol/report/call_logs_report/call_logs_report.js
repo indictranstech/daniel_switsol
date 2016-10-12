@@ -9,31 +9,16 @@ frappe.query_reports["Call Logs Report"] = {
 			"fieldtype": "Data"
 		},
 	],
-	/*onload: function(report) {
+	onload: function(report) {
 		var me = this;
-		var reporter = frappe.query_reports["Call Logs Report"];
-		reporter.add_filters(report);
-	},
-	add_filters:function(report){
-		var me = this;
-		if (cur_frm){
-			if(cur_frm.doc.doctype == "Call Logs"){
-				console.log(cur_frm.doc.doctype)
-			}
-			else if(cur_frm.doc.doctype == "Contact"){
-				console.log(cur_frm.doc.doctype)	
-			}
-			else if(cur_frm.doc.doctype == "Customer"){
-				console.log(cur_frm.doc.doctype)
-			}
-			else if(cur_frm.doc.doctype == "Supplier"){
-				console.log(cur_frm.doc.doctype)
-			}
-			else if(cur_frm.doc.doctype == "Sales Partner"){
-				console.log(cur_frm.doc.doctype)
-			}
-		}
-	}*/
-		//frappe.query_report.filters_by_name.client_info.set_value("asfdfdssdfsdfdsf")
-
+		$(cur_page.page).find('.layout-main-section').find(".page-form").hide();
+		$(cur_page.page).find('.page-head').find(".page-actions").find('button.show-all').remove();
+		html = "<button type='button' class='btn btn-secondary btn-default btn-sm show-all' onClick='show_all()'>Show All</button>"
+		$($(cur_page.page).find('.page-head').find(".page-actions")[0]).append(html);
+	}
 }
+
+show_all = function(){
+		frappe.query_report.filters_by_name.client_info.set_value("");
+		frappe.query_report.trigger_refresh();
+	}

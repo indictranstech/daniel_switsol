@@ -23,6 +23,23 @@ render_contact = Class.extend({
 			console.log("in my cond",$(me.page).find("input[data-fieldname='mobile_no']"))
 			$(me.page).find("input[data-fieldname='mobile_no']").val(""+frappe.boot.contact_no+"/"+frappe.datetime.now_datetime())			
 		}
+		if (frappe.boot.contact_person_list){
+			console.log(frappe.boot.contact_person_list.split(","))
+			var contact_person_list = frappe.boot.contact_person_list.split(",")
+			$(me.page).find("input[data-fieldname='mobile_no']").hide();
+			$(me.page).find("#message").text("Choose one of contact Person")
+			$.each(contact_person_list,function(i,d){
+				if(d.split("-")[0] == "supplier"){
+					$(me.page).find("input[data-fieldname='supplier']").val(d.split("-")[1])			
+				}
+				if(d.split("-")[0] == "sales_partner"){
+					$(me.page).find("input[data-fieldname='sales_partner']").val(d.split("-")[1])				
+				}
+				if(d.split("-")[0] == "customer"){
+					$(me.page).find("input[data-fieldname='customer']").val(d.split("-")[1])
+				}
+			})
+		}
 	},
 	set_fields: function() {
 		var me = this;
@@ -33,8 +50,9 @@ render_contact = Class.extend({
   				<div class='col-md-4  reference_contact' id='supplier'></div>\
   				</div>\
   				<div class='row' style='padding-left: 10px;padding-right: 10px;'>\
-  				<div class='col-md-6' id='mobile_no'></div>\
-  				<div class='col-md-6'></div>\
+  				<div class='col-md-4' id='mobile_no'></div>\
+  				<div class='col-md-4' id='message'></div>\
+  				<div class='col-md-4'></div>\
   				<div class='row' style='padding-left: 10px;padding-right: 10px;'>\
   				<div class='col-md-12 render_contact'></div>\
   				</div>\
@@ -45,6 +63,7 @@ render_contact = Class.extend({
 			df: {
 			fieldtype: "Link",
 			options: "Customer",
+			label:"Customer",
 			fieldname: "customer",
 			placeholder: "Client"
 			},
@@ -56,6 +75,7 @@ render_contact = Class.extend({
 			df: {
 			fieldtype: "Link",
 			options: "Sales Partner",
+			label:"Sales Partner",
 			fieldname: "sales_partner",
 			placeholder: "Sales Partner"
 			},
@@ -68,6 +88,7 @@ render_contact = Class.extend({
 				fieldtype: "Link",
 				fieldname: "supplier",
 				options:"Supplier",
+				label:"Supplier",
 				placeholder: "Supplier",
 			},
 			render_input: true
