@@ -3,6 +3,7 @@ from frappe import _
 from frappe.utils.password import check_password
 from datetime import datetime,date
 from frappe.model.mapper import get_mapped_doc
+#from switsol.switsol.boot import boot_session
 
 @frappe.whitelist(allow_guest=True)
 def logged_and_redirect(user_name,password,email,contact_no):
@@ -68,6 +69,8 @@ def make_redirect_url(email,contact_no,flag=None):
 		if len(contact_person_list) == 1:				
 			contact_person = frappe.db.get_value("Contact",{"mobile_no":contact_no},"name")
 			contact_doc = frappe.get_doc("Contact",frappe.db.get_value("Contact",{"mobile_no":contact_no},"name"))
+			frappe.db.sql("""update `tabSingles` set value = 'ABCD' 
+			where field = "contact_person_list" """)
 			if contact_doc.customer:
 				url = "Form/Customer/{0}".format(contact_doc.customer)			
 				frappe.db.sql("""update `tabCustomer` set call_comming_from  = '{0}' where name =  '{1}'""".format(contact_no+"/"+contact_person,contact_doc.customer))
@@ -124,6 +127,14 @@ def redirect_login(desk_user,url,contact_not_found):
 
 #http://5.148.186.248:9090/api/method/switsol.switsol.make_user.logged_and_redirect?user_name=&email=&password=&contact_no=
 #http://localhost:9090/api/method/switsol.switsol.make_user.logged_and_redirect?user_name=jitendra&email=jitendra.k@indictranstech.com&password=khatri&contact_no=4555
+
+
+
+
+@frappe.whitelist()
+def get_contact_no_and_contact_person_list():
+	return frappe.db.sql("""select value,field from `tabSingles` 
+						where doctype = "VOIP Contact" """,as_dict=1)
 
 @frappe.whitelist()
 def get_call_logs_from_customer(source_name, target_doc=None):

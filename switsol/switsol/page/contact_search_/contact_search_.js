@@ -19,11 +19,42 @@ render_contact = Class.extend({
 	},
 	onload:function(){
 		var me =this;
-		if (frappe.boot.contact_no){
+		/*if (frappe.boot.contact_no != "1234"){
 			console.log("in my cond",$(me.page).find("input[data-fieldname='mobile_no']"))
 			$(me.page).find("input[data-fieldname='mobile_no']").val(""+frappe.boot.contact_no+"/"+frappe.datetime.now_datetime())			
-		}
-		if (frappe.boot.contact_person_list){
+		}*/
+		frappe.call({
+			method: "switsol.switsol.make_user.get_contact_no_and_contact_person_list",
+			freeze: true,
+			freeze_message: __("Please Wait..."),
+			callback: function(r) {
+				console.log(r.message,"r.message")
+				if(r.message){
+					$.each(r.message,function(i,d){
+						if(d["field"] == "contact_person_list" && d["value"] != "ABCD"){ 
+							console.log(d["value"],"d[]")	
+							$.each(d["value"].split(","),function(i,d){
+								if(d.split("-")[0] == "supplier"){
+									$(me.page).find("input[data-fieldname='supplier']").val(d.split("-")[1])			
+								}
+								if(d.split("-")[0] == "sales_partner"){
+									$(me.page).find("input[data-fieldname='sales_partner']").val(d.split("-")[1])				
+								}
+								if(d.split("-")[0] == "customer"){
+									$(me.page).find("input[data-fieldname='customer']").val(d.split("-")[1])
+								}
+							})
+							$(me.page).find("input[data-fieldname='mobile_no']").hide();
+							$(me.page).find("#message").text("Choose one of contact Person")
+						}
+						if(d["field"] == "voip_contact_no" && d["value"] != "ABCD"){
+							$(me.page).find("input[data-fieldname='mobile_no']").val(""+d["value"] +"/"+frappe.datetime.now_datetime())
+						}
+					})
+				}	
+			}
+		})
+		/*if (frappe.boot.contact_person_list != "ABCD"){
 			console.log(frappe.boot.contact_person_list.split(","))
 			var contact_person_list = frappe.boot.contact_person_list.split(",")
 			$(me.page).find("input[data-fieldname='mobile_no']").hide();
@@ -39,7 +70,7 @@ render_contact = Class.extend({
 					$(me.page).find("input[data-fieldname='customer']").val(d.split("-")[1])
 				}
 			})
-		}
+		}*/
 	},
 	set_fields: function() {
 		var me = this;
