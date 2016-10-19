@@ -118,7 +118,7 @@ def redirect_login(desk_user,url,contact_not_found):
 	if contact_not_found == "Yes":
 		frappe.db.sql("""update `tabSingles` set value = {0} 
 			where field = "voip_contact_no" """.format(frappe.local.form_dict["contact_no"]))
-
+		frappe.db.commit()
 # old url
 
 #http://localhost:9090/api/method/switsol.switsol.make_user.logged_and_redirect?user_name=jitendra&email=jitendra.k@indictranstech.com&password=khatri&customer=Sangram&contact_no=4555

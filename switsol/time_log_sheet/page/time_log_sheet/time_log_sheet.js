@@ -295,6 +295,7 @@ timelog = Class.extend({
 		d.setMinutes(d.getMinutes() + cint($(".input_minute").val()));	
 		end = moment(d).format("YYYY-MM-DD HH:mm:ss")
 		hours = moment(end).diff(moment(start),"seconds") / 3600
+		
 		frappe.call({
 			method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.make_timesheet",
 			args: {
