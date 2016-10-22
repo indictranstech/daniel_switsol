@@ -32,9 +32,10 @@ timelog = Class.extend({
 			parent: me.page.find(".customer"),
 			df: {
 			fieldtype: "Link",
+			label:"Customer",
 			options: "Customer",
-			fieldname: "customer",
-			placeholder: "Client"
+			placeholder: __("Customer"),
+			fieldname: "customer"
 			},
 			render_input: true
 		});
@@ -43,8 +44,9 @@ timelog = Class.extend({
 			parent: me.page.find(".date"),
 			df: {
 				fieldtype: "Date",
+				label:"Date",
 				fieldname: "date",
-				placeholder: "Date",
+				placeholder: __("Date"),
 				default: frappe.datetime.get_today()
 			},
 			render_input: true
@@ -54,9 +56,10 @@ timelog = Class.extend({
 			parent: me.page.find(".project"),
 			df: {
 				fieldtype: "Link",
+				label:"Project",
 				fieldname: "project",
 				options:"Project",
-				placeholder: "Project",
+				placeholder: __("Project"),
 				"get_query": function() {
 					return {
 						"doctype": "Project",
@@ -74,8 +77,9 @@ timelog = Class.extend({
 			df: {
 				fieldtype: "Link",
 				fieldname: "activity",
+				label:"Activity",
 				options:"Activity Type",
-				placeholder: "Activity"
+				placeholder: __("Activity")
 			},
 			render_input: true
 		});
@@ -279,7 +283,7 @@ timelog = Class.extend({
 					}
 				}
 				else{
-					msgprint(__("Please select Start Time and End Time befor Submit..."));
+					msgprint(__("Please select Start Time and End Time befor Submit"));
 				}
 			}
 			else{

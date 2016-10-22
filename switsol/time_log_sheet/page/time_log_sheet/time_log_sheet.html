@@ -9,7 +9,7 @@
 <div class="row" style="border:1px solid #d1d8dd;padding-left:10px;padding-top:25px;padding-bottom:25px; border-top:0px;">
 	<div class="col-md-3 col-xs-10" id="_numbers" style="padding-bottom: 20px;">
 		<div class="row">
-			<div class="col-xs-4">Start Time</div>
+			<div class="col-xs-4">{%= __("Start Time") %}</div>
 			<div class="col-xs-3"><input class= "start_input_hours" placeholder="Hrs" value style="width:150%;" type="number" min="1" max="24" step="" 
 				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
 			<div class="col-xs-1"></div>
@@ -20,7 +20,7 @@
 		</div>	
 		<br>
 		<div class="row end-time">
-			<div class="col-xs-4">End Time</div>
+			<div class="col-xs-4">{%= __("End Time") %}</div>
 			<div class="col-xs-3"><input class= "end_input_hours" placeholder="Hrs"
 				value style="width:150%;" type="number" min="1" max="24" step="" 
 				onkeypress="return event.charCode >= 48 && event.charCode <= 57"></div>
@@ -32,7 +32,7 @@
 		</div>
 		<br>
 		<div class="row duration">
-			<div class="col-xs-4">Total Duration</div>
+			<div class="col-xs-4">{%= __("Total Duration") %}</div>
 			<div class="col-xs-3"><input class= "input_hours" type="text" placeholder="Hrs"
 				value style="width:150%;" disabled></div>
 			<div class="col-xs-1"></div>
@@ -43,7 +43,7 @@
 	</div>
 	<div class="col-md-1 col-xs-2"></div>
 	<div class="col-md-3 col-xs-10 _buttons" style="padding-bottom: 20px;">
-		<span>Pick Up Hours</span>
+		<span>{%= __("Pick Up Hours") %}</span>
 		{% for(var i=1, le=25; i < le; i = i + 6) { %}
 			<div class="row">
 				{% if (i == 1 || i == 7) { %}
@@ -86,7 +86,7 @@
 	</div>
 	<div class="col-md-1 col-xs-2"></div>
 	<div class="col-md-3 col-xs-10 _buttons">
-		<span>Pick Up Minutes</span>
+		<span>{%= __("Pick Up Minutes") %}</span>
 		{% for(var i=0, le=60; i < le; i = i + 20) { %}
 			<div class="row">
 				{% if (i + 0 == 0) { %}
@@ -110,13 +110,13 @@
 	<br><br><br>
 	<!-- <div class="col-md-12 col-xs-12" style="padding-top:20px; margin-left:20px;"> -->
 	<div class="col-md-12 col-xs-12" style="padding-top:20px;">
-		<input class= "submit hover" type="button" value="Submit">
+		<input class= "submit hover" type="button" value={%= __("Submit") %}>
 	</div>
 </div>
 
 <div class="row" style="border:1px solid #d1d8dd;padding-left:10px; border-top:0px;">
 	<div class="col-md-12 dtls" style="padding-left:10px;padding-top:15px;padding-bottom:10px; font-size:130%;">
-		<font color="#0101DF">Logged Timesheets Details</font>
+		<font color="#0101DF">{%= __("Logged Timesheets Details") %}</font>
 	</div>
 	<div class="col-md-12 logged-sheets" id="loggedsheet" style="padding-left:10px;"></div>
 	<!-- <div class="col-md-12 logged-sheets" id="loggedsheet" style="padding-left:10px;  height: 200px; overflow-y: auto;"></div> -->
@@ -126,28 +126,28 @@
 	<div class="col-md-6 col-xs-12">  
 		<div class="row">
 			<div class="col-xs-12" style="font-size:160%;">
-				<font color="#0101DF"> Dashboard Snapshot - </font>
+				<font color="#0101DF">{%= __(" Dashboard Snapshot - ") %}</font>
 			</div>
 			<div class="col-xs-12" style="padding-top:25px;">
-				<div class="col-xs-7" id="weekly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged Last Week :</font></b></div>
+				<div class="col-xs-7" id="weekly" style="padding-left:0px;"><b><font color="#36414c">{%= __("Total Hours Logged Last Week ") %}:</font></b></div>
 				<div class="col-xs-5" style="padding-left:0px;"><input class= "weekly_hrs" type="text" value style="width:70%;  border-radius: 5px; padding-left:3px;" disabled></div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-xs-12" style="padding-top:15px;">
-				<div class="col-xs-7" id="monthly" style="padding-left:0px;"><b><font color="#36414c">Total Hours Logged This Month :</font></b></div>
+				<div class="col-xs-7" id="monthly" style="padding-left:0px;"><b><font color="#36414c">{%= __("Total Hours Logged This Month ") %}:</font></b></div>
 				<div class="col-xs-5" style="padding-left:0px;"><input class= "monthly_hrs" type="text" value style="width:70%;  border-radius: 5px; padding-left:3px;" disabled></div>
 			</div>
 		</div>
 	</div>
 	<div class="col-md-6 col-xs-12">
 		<div class="row">
-			<div class="col-xs-12" style=" font-size:110%; padding-top:55px;"><b><font color="#36414c">Other Reports - </font></b></div>
+			<div class="col-xs-12" style=" font-size:110%; padding-top:55px;"><b><font color="#36414c">{%= __("Other Reports") %} - </font></b></div>
 			<div class="col-xs-12" style=" font-size:100%; padding-top:15px;">
-				<li><a href="#query-report/Daily Timesheet Summary">Total Hours Worked Against Activity </a></li>
+				<li><a href="#query-report/Daily Timesheet Summary">{%= __("Total Hours Worked Against Activity") %}</a></li>
 			</div>
 			<div class="col-xs-12" style=" font-size:100%; padding-top:10px;">
-				<li><a href="#query-report/Daily Unapproved Timesheet Summary">Un-approved Timesheets  </a></li>
+				<li><a href="#query-report/Daily Unapproved Timesheet Summary">{%= __("Un-approved Timesheets") %}</a></li>
 			</div>
 		</div>
 	</div>
