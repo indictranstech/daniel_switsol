@@ -96,7 +96,7 @@ render_contact = Class.extend({
 			options: "Customer",
 			label:"Customer",
 			fieldname: "customer",
-			placeholder: "Client"
+			placeholder: __("Customer")
 			},
 			render_input: true
 		});
@@ -108,7 +108,7 @@ render_contact = Class.extend({
 			options: "Sales Partner",
 			label:"Sales Partner",
 			fieldname: "sales_partner",
-			placeholder: "Sales Partner"
+			placeholder: __("Sales Partner")
 			},
 			render_input: true
 		});
@@ -120,7 +120,7 @@ render_contact = Class.extend({
 				fieldname: "supplier",
 				options:"Supplier",
 				label:"Supplier",
-				placeholder: "Supplier",
+				placeholder: __("Supplier"),
 			},
 			render_input: true
 		});

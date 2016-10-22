@@ -2,11 +2,11 @@
 <div class="contacts table-responsive" style="padding-left: 10px;padding-right: 10px;">
 	<table class="table table-bordered table-hover item-table" style="width:1000px;">
 		<tr>
-			<th>Name</th>
-			<th>Mobile No</th>
-			<th>Phone</th>
-			<th>Status</th>
-			<th>Update Contact</th>
+			<th>{%= __("Name") %}</th>
+			<th>{%= __("Mobile No") %}</th>
+			<th>{%= __("Phone") %}</th>
+			<th>{%= __("Status") %}</th>
+			<th>{%= __("Update Contact") %}</th>
 		</tr>
 		{% for(var i=0, l=data.length; i < l; i++) { %}
 		<tr>
@@ -24,8 +24,7 @@
 			</td>
 			<td>
 				<!-- <a href={{ data[i].name }}>Update</a> -->
-				<button type="button" class="update_contact" contact-name={{ JSON.stringify(data[i].name) }} >
-				Update
+				<button type="button" class="update_contact" contact-name={{ JSON.stringify(data[i].name) }} >{%= __("Update") %}
 			</button>
 			</td>
 		</tr>
@@ -36,7 +35,7 @@
 <div class="row add-contact" style="padding-left: 10px;padding-right: 10px;">
 	<div class="col-xs-6">
 		<button type="button" class="add_contact">
-			Add Contact
+			{%= __("Add Contact") %}
 		</button>
 	</div>
 	<div class="col-xs-6"></div>
@@ -45,7 +44,7 @@
 <div class="row add-contact" style="padding-left: 10px;padding-right: 10px;">
 	<div class="col-xs-6">
 		<button type="button" class="add_contact">
-			Add Contact
+			{%= __("Add Contact") %}
 		</button>
 	</div>
 	<div class="col-xs-6"></div>
