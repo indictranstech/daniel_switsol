@@ -38,9 +38,9 @@ def get_cond(filters):
 	return cond	
 
 def get_colums():
-	columns = [("Call Log Id") + ":Link/Call Logs:"] + [("Date") + ":Date:80"] + [("Phone Number") + ":Data:70"] + \
-			  [("Conact Person") + ":Link/Contact:150"] + \
-			  [("Client") + ":Dynamic Link/"+("Contact Type")+":100"] + [("Contact Type") + ":Data:100"] + [("Start Time") + ":Data:100"] + \
-			  [("End Time") + ":Data:80"] + [("Call Length") + ":Data:80"] + \
-			  [("Agent/Call attendant") + ":Link/User:180"] + [("Subject") + ":Small Text:180"]
+	columns = [("Telefon Protokoll") + ":Link/Call Logs:"] + [("Date") + ":Date:80"] + [("Telefonnummer") + ":Data:70"] + \
+			  [("Contact Person") + ":Link/Contact:150"] + \
+			  [("Customer") + ":Dynamic Link/"+("Contact Type")+":100"] + [("Contact Type") + ":Data:100"] + [("Start Time") + ":Data:100"] + \
+			  [("End Time") + ":Data:80"] + [("Dauer des Anrufs") + ":Data:80"] + \
+			  [("Mitarbeiter") + ":Link/User:180"] + [("Subject") + ":Small Text:180"]
 	return columns

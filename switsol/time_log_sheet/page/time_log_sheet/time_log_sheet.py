@@ -6,6 +6,7 @@ from frappe import _, msgprint
 
 @frappe.whitelist()
 def make_timesheet(activity,project,from_date_time,to_date_time,hours):
+	print from_date_time,to_date_time,"\n\n\n\n\n\n"
 	emp = frappe.db.get_values("Employee", {"user_id":frappe.session.user}, ["name","employee_name"], as_dict= True)
 	date = from_date_time.split(" ")[0]
 	if emp:
@@ -37,7 +38,7 @@ def make_timesheet(activity,project,from_date_time,to_date_time,hours):
 			tsd.project = project
 			ts.save(ignore_permissions=True)
 	else:
-		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))
+		frappe.throw(_("Logged In user has not an Employee to create Timesheet. Please create Employee at first."))
 
 @frappe.whitelist()
 def calculate_total_hours(week_start, week_end, month_start, month_end):
@@ -69,7 +70,7 @@ def calculate_total_hours(week_start, week_end, month_start, month_end):
 
 		return last_week_hours, monthly_hours
 	else:
-		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))
+		frappe.throw(_("Logged In user has not an Employee to create Timesheet. Please create Employee at first."))
 
 
 
@@ -82,7 +83,7 @@ def get_loged_timesheets(date):
 				and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent """%(emp[0]['name'],date+ " %"), as_dict=1)
 		return timesheets
 	else:
-		frappe.throw(_("Logged In user have not an Employee to create Timesheet. Please create Employee first.."))
+		frappe.throw(_("Logged In user has not an Employee to create Timesheet. Please create Employee at first."))
 
 # def ping(request=None,usr=None):
 # 	return {"req_data":request,"usr":usr, "message":"success"}				

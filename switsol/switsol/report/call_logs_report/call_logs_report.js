@@ -1,7 +1,7 @@
 // Copyright (c) 2016, Switsol and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Call Logs Report"] = {
+frappe.query_reports[("Call Logs Report")] = {
 	"filters": [
 		{
 			"fieldname":"client_info",
@@ -13,7 +13,7 @@ frappe.query_reports["Call Logs Report"] = {
 		var me = this;
 		$(cur_page.page).find('.layout-main-section').find(".page-form").hide();
 		$(cur_page.page).find('.page-head').find(".page-actions").find('button.show-all').remove();
-		html = "<button type='button' class='btn btn-secondary btn-default btn-sm show-all' onClick='show_all()'>Show All</button>"
+		html = "<button type='button' class='btn btn-secondary btn-default btn-sm show-all' onClick='show_all()'>Zeige alles</button>" // Show All button
 		$($(cur_page.page).find('.page-head').find(".page-actions")[0]).append(html);
 	}
 }

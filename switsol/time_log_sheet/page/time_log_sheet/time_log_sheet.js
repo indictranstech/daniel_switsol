@@ -1,7 +1,7 @@
 frappe.pages['time-log-sheet'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
-		title: 'Time Log Sheet',
+		title: __('Time Log Sheet'),
 		single_column: true
 	});
 	wrapper.timelog = new timelog(wrapper)
@@ -89,7 +89,7 @@ timelog = Class.extend({
 			df: {
 				fieldtype: "Button",
 				fieldname: "logsheet",
-				label: __("Logged Sheets")
+				label: __("Logged sheets")
 			},
 			render_input: true
 		});
@@ -265,8 +265,8 @@ timelog = Class.extend({
 
 			if (date && client && project && activity){
 				me.date = date.split("-")
-				me.date = me.date[2]+"-"+me.date[1]+"-"+me.date[0]
-					
+				me.date = me.date[0]+"-"+me.date[1]+"-"+me.date[2]
+				//me.date = me.date[2]+"-"+me.date[1]+"-"+me.date[0]
 				if($(".start_input_hours").val() && $(".end_input_hours").val() && $(".start_input_minute").val() && $(".end_input_minute").val()){
 					if ((flt($(".start_input_hours").val()) < flt($(".end_input_hours").val())) && (flt($(".start_input_minute").val()) <= flt($(".end_input_minute").val()))) {
 						me.start = String(me.date)+" "+ $(".start_input_hours").val()+":"+$(".start_input_minute").val()+":"+"00"
@@ -275,7 +275,7 @@ timelog = Class.extend({
 							me.make_timesheet();
 						}
 						else{
-							msgprint(__("Timesheet log creation should be valid up to current time. Please chose valide date & time."));
+							msgprint(__("Timesheet log creation should be valid up to current time. Please chose valide date & time"));
 						}												
 					}
 					else{
@@ -283,11 +283,11 @@ timelog = Class.extend({
 					}
 				}
 				else{
-					msgprint(__("Please select Start Time and End Time befor Submit"));
+					msgprint(__("Please select Start Time and End Time before Submit"));
 				}
 			}
 			else{
-				msgprint(__("Please select Client, Project, Activity and Date befor Submit..."));
+				msgprint(__("Please select Client, Project, Activity and Date before Submit"));
 			}
 		})
 	},
@@ -300,6 +300,7 @@ timelog = Class.extend({
 		end = moment(d).format("YYYY-MM-DD HH:mm:ss")
 		hours = moment(end).diff(moment(start),"seconds") / 3600
 		
+		console.log("start",start,"end",end)
 		frappe.call({
 			method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.make_timesheet",
 			args: {
@@ -323,7 +324,7 @@ timelog = Class.extend({
 				$(".input_hours").val("")
 				$(".input_minute").val("")
 				me.calulate_hours();
-				msgprint("Timesheet log created successfully...")
+				msgprint(__("Timesheet log created successfully"))
 			}
 		})
 	},
@@ -384,13 +385,13 @@ timelog = Class.extend({
 	                        //$(".modal-content").css({"width": "750px"})
 						}
 						else{
-							msgprint("No Logged Timesheet found for this date...")
+							msgprint(__("Logged Timesheets not found for this date"))
 						}
 					}
 				})
 			}
 			else{
-				msgprint(__("Please select Date first for populating Logged Timesheet details..."));
+				msgprint(__("Please select Date first for populating Logged Timesheet details"));
 			}
 		})
 	},
@@ -418,13 +419,13 @@ timelog = Class.extend({
 							$('.logged-sheets').append(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
 						}
 						else{
-							msgprint("No Logged Timesheet found for this date...")
+							msgprint(__("Logged Timesheets not found for this date"))
 						}
 					}
 				})
 			}
 			else{
-				msgprint(__("Please select Date first for populating Logged Timesheet details.."));
+				msgprint(__("Please select Date first for populating Logged Timesheet details"));
 			}
 		})
 	},

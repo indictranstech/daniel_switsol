@@ -8,14 +8,14 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 		//Create a button for setting the default supplier
 		var me = this;
 		var reporter = frappe.query_reports["Daily Unapproved Timesheet Summary"];
-		report.page.add_inner_button(__("Make Approved"), function() {				
+		report.page.add_inner_button(__("Bewilligen"), function() { // Make Approved Button				
 			reporter.make_signature_dialog(report);
 		});
 	},
 	make_signature_dialog:function(report){
 		var me = this;
 		this.dialog = new frappe.ui.Dialog({
-            		title: "Signature",
+            		title: __("Signature"),
                 	fields: [
                    		{"fieldtype": "HTML" , "fieldname": "signature" , "label": "Signature"}
                    	]
