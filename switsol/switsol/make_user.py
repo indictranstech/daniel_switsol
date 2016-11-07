@@ -124,6 +124,20 @@ def get_contact_no_and_contact_person_list():
 	return frappe.db.sql("""select value,field from `tabSingles` 
 						where doctype = "VOIP Contact" """,as_dict=1)
 
+@frappe.whitelist()
+def update_reference_person_after_making_call_logs(reference_person,reference_type):
+	if reference_type == "Customer":
+		reference_person_doc = frappe.get_doc("Customer",reference_person)
+	elif reference_type == "Supplier":
+		reference_person_doc = frappe.get_doc("Supplier",reference_person)	
+	elif reference_type == "Sales Partner":
+		reference_person_doc = frappe.get_doc("Sales Partner",reference_person)	
+
+	if reference_person_doc:
+		reference_person_doc.call_comming_from = ""
+		reference_person_doc.save(ignore_permissions=True)	
+	
+
 
 # old url
 
