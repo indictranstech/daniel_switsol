@@ -83,9 +83,10 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 	"formatter":function (row, cell, value, columnDef, dataContext, default_formatter) {
         value = default_formatter(row, cell, value, columnDef, dataContext);
         console.log(columnDef.id,"columnDef.id")
-        console.log(dataContext['Zeiterfassung'],"dataContext['Timesheet']")
+        console.log(dataContext['Zeiterfassung'],"dataContext['Zeiterfassung']")
+        console.log(dataContext['Timesheet'],"dataContext['Timesheet']")
         console.log(columnDef,"columnDef")
-	    if(columnDef.id == " ") {
+	    if(columnDef.id == "") {
 	    	if(dataContext['Zeiterfassung']){
             	value = "<input type='checkbox' class='_select' value="+dataContext['Zeiterfassung']+" >" + value + "</input>";
 	    	}

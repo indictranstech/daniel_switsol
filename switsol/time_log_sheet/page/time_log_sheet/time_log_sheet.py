@@ -14,6 +14,7 @@ def make_timesheet(activity,project,from_date_time,to_date_time,hours):
 				where ts.employee = '%s' and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent
 				"""%(emp[0]['name'],date+ "%"), as_list=1)
 		if sheet:
+			print "if sheet","\n\n\n\n\n\n"
 			ts = frappe.get_doc("Timesheet", sheet[0][0])
 			ts.total_hours = flt(sheet[0][1]) + flt(hours)
 			tsd = ts.append('time_logs', {})
@@ -24,6 +25,7 @@ def make_timesheet(activity,project,from_date_time,to_date_time,hours):
 			tsd.project = project
 			ts.save(ignore_permissions=True)
 		else:
+			print "else sheet","\n\n\n\n\n\n"
 			ts = frappe.new_doc("Timesheet")
 			ts.status = "Draft"
 			ts.company = frappe.db.get_single_value('Global Defaults', 'default_company')
