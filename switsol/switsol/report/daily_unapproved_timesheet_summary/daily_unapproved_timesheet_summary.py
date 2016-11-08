@@ -10,7 +10,11 @@ def execute(filters=None):
 	if not filters:
 		filters = {}
 
-	columns = [_("Timesheet") + ":Link/Timesheet:120", _("Customer") + "::120", _("Project") + "::120", _("Employee") + "::120", _("Total Hours") + "::120", _("Status") + "::70",_(" ") + "::30" ]
+	columns = [_("Date") + "::120",_("Start Time") + "::120",_("End Time") + "::120",_("Total Hours") + "::120",\
+				_("Employee") + "::120", _("Customer") + "::120",\
+			 	_("Project") + "::120", \
+			 	_("Timesheet") + ":Link/Timesheet:120", _("Status") +\
+			  	"::70",_("") + "::30" ]
 		
 	conditions = "ts.docstatus = 0"
 	if filters.get("from_date"):
@@ -23,8 +27,9 @@ def execute(filters=None):
 	return columns, data
 
 def get_data():
-	time_sheet = frappe.db.sql(""" select ts.name,td.customer,
-								td.project,ts.employee,format(ts.total_hours,3),ts.status,"" from  
+	time_sheet = frappe.db.sql(""" select date(td.from_time),time(td.from_time),time(td.to_time),format(td.hours,3),
+								ts.employee,td.customer,
+								td.project,ts.name,ts.status from  
 								`tabTimesheet` ts,`tabTimesheet Detail` td 
 								where td.parent = ts.name and ts.docstatus = 0 and td.idx = 1 order by ts.name""", as_list=1,debug=1)
 	#time_sheet_details = frappe.db.sql("""select td.project,td""")
