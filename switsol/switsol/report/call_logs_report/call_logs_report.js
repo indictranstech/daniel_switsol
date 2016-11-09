@@ -15,6 +15,13 @@ frappe.query_reports[("Call Logs Report")] = {
 		$(cur_page.page).find('.page-head').find(".page-actions").find('button.show-all').remove();
 		html = "<button type='button' class='btn btn-secondary btn-default btn-sm show-all' onClick='show_all()'>Zeige alles</button>" // Show All button
 		$($(cur_page.page).find('.page-head').find(".page-actions")[0]).append(html);
+	},
+	"formatter":function (row, cell, value, columnDef, dataContext, default_formatter) {
+        value = default_formatter(row, cell, value, columnDef, dataContext);
+    	if(dataContext['Subject']){
+        	value = "<a href="+JSON.stringify('#Form/Call Logs/'+dataContext['Telefon Protokoll'])+">" + value + "</a>";
+    	}
+	    return value;
 	}
 }
 
