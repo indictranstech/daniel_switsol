@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 import frappe
 import json
+from datetime import datetime,date
 from frappe import _
 
 def execute(filters=None):
@@ -50,5 +51,6 @@ def update_timesheet(list_of_timesheet,signature,signature_svg):
 		time_sheet_doc.signature_json = str(signature)
 		time_sheet_doc.docstatus = 1
 		time_sheet_doc.signatre_svg = signature_svg
+		time_sheet_doc.signature_time = datetime.now()
 		time_sheet_doc.save(ignore_permissions=True);
 	return "Sucees"

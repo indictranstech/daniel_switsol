@@ -301,7 +301,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-11-09 11:20:07.390361", 
+ "modified": "2016-11-09 16:00:05.106590", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "Call Logs", 
@@ -329,7 +329,7 @@
    "write": 1
   }
  ], 
- "quick_entry": 1, 
+ "quick_entry": 0, 
  "read_only": 0, 
  "read_only_onload": 0, 
  "sort_field": "modified", 
