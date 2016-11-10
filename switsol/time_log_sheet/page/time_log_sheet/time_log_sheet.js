@@ -306,6 +306,7 @@ timelog = Class.extend({
 			args: {
 				"activity":me.activity.$input.val(),
 				"project": me.project.$input.val(),
+				"customer":me.customer_link.$input.val(),
 				"from_date_time": start,
 				"to_date_time": end,
 				"hours": hours

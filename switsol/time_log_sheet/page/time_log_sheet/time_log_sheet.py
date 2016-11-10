@@ -5,7 +5,7 @@ from frappe.utils import flt, cstr, get_datetime, getdate, today, date_diff, cin
 from frappe import _, msgprint
 
 @frappe.whitelist()
-def make_timesheet(activity,project,from_date_time,to_date_time,hours):
+def make_timesheet(activity,project,customer,from_date_time,to_date_time,hours):
 	print from_date_time,to_date_time,"\n\n\n\n\n\n"
 	emp = frappe.db.get_values("Employee", {"user_id":frappe.session.user}, ["name","employee_name"], as_dict= True)
 	date = from_date_time.split(" ")[0]
@@ -23,6 +23,7 @@ def make_timesheet(activity,project,from_date_time,to_date_time,hours):
 			tsd.to_time = to_date_time
 			tsd.hours = flt(hours)
 			tsd.project = project
+			tsd.customer = customer
 			ts.save(ignore_permissions=True)
 		else:
 			print "else sheet","\n\n\n\n\n\n"
@@ -38,6 +39,7 @@ def make_timesheet(activity,project,from_date_time,to_date_time,hours):
 			tsd.to_time = to_date_time
 			tsd.hours = flt(hours)
 			tsd.project = project
+			tsd.customer = customer
 			ts.save(ignore_permissions=True)
 	else:
 		frappe.throw(_("Logged In user has not an Employee to create Timesheet. Please create Employee at first."))
