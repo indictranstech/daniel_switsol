@@ -12,8 +12,8 @@ def execute(filters=None):
 		filters = {}
 
 	columns = [_("Date") + "::120",_("Start Time") + "::120",_("End Time") + "::120",_("Total Hours") + "::120",\
-				_("Employee") + "::120", _("Customer") + "::120",\
-			 	_("Project") + "::120", \
+				_("Employee") + ":Link/Employee:120", _("Customer") + ":Link/Customer:120",\
+			 	_("Project") + ":Link/Project:120", \
 			 	_("Timesheet") + ":Link/Timesheet:120", _("Status") +\
 			  	"::70",_("") + "::30" ]
 		
