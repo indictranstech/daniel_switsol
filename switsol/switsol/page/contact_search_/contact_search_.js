@@ -1,7 +1,7 @@
 frappe.pages['contact_search-'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
-		title: 'Contact Search',
+		title: __('Contact Search'),
 		single_column: true
 	});
 	wrapper.contact_search = new render_contact(wrapper)
@@ -201,8 +201,12 @@ render_contact = Class.extend({
 		var me =this;
 		$(me.page).find(".add_contact").click(function(){
 			tn = frappe.model.make_new_doc_and_get_name('Contact');
-			locals['Contact'][tn].mobile_no = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];
-
+			if(String($(this).attr("number-type")) == "mobile"){
+				locals['Contact'][tn].mobile_no = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];
+			}
+			else if(String($(this).attr("number-type")) == "phone"){
+				locals['Contact'][tn].phone = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];		
+			}
 			if (String(me.active) == "customer"){
 				me.doctype = "Customer"
 				locals['Contact'][tn].customer = me.contact_name
@@ -223,6 +227,7 @@ render_contact = Class.extend({
 				"doctype":me.doctype, 
 				"doc_name":me.contact_name,
 				"new_contact":"Yes",
+				"mobile_no": String($(me.page).find("input[data-fieldname='mobile_no']").val().split("/")[0]),
 				"call_receive_time":String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[1],
 				"contact_type":me.doctype
 			};
@@ -249,6 +254,7 @@ render_contact = Class.extend({
 				"doc_name":me.contact_name,
 				"new_contact":"No",
 				"mobile_no": String($(me.page).find("input[data-fieldname='mobile_no']").val().split("/")[0]),
+				"mobile_or_phone":String($(this).attr("number-type")),
 				"call_receive_time":String(($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[1]),
 				"contact_type":me.doctype
 			};
