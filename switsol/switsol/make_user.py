@@ -42,12 +42,12 @@ def logged_and_redirect(user_name,password,email,contact_no):
 
 def make_redirect_url(email,contact_no,flag=None):
 	print contact_no,"contact_no","\n\n\n\n\n"
-	if frappe.db.get_value("Contact",{"mobile_no":contact_no},"name"):
+	if frappe.db.get_value("Contact",{"mobile_no":contact_no},"name") or frappe.db.get_value("Contact",{"phone":contact_no},"name"):
 		contact_not_found = "No"
 		contact_person_list = frappe.db.sql("""select name,CASE WHEN customer IS NULL AND supplier IS NULL THEN concat("sales_partner","-",sales_partner) 
 													WHEN sales_partner IS NULL AND supplier IS NULL THEN concat("customer","-",customer) 
 													WHEN customer IS NULL AND sales_partner IS NULL THEN concat("supplier","-",supplier) ELSE "" 
-												END as contact_person from `tabContact` where mobile_no = '{0}'""".format(contact_no),as_dict=1)
+												END as contact_person from `tabContact` where mobile_no = '{0}' or phone = '{0}' """.format(contact_no),as_dict=1)
 		if len(contact_person_list) > 1:
 			contact_person_name_str = ""
 			for e in contact_person_list:
@@ -64,8 +64,8 @@ def make_redirect_url(email,contact_no,flag=None):
 			set_redirect_url(email,url,contact_not_found,flag)
 
 		if len(contact_person_list) == 1:				
-			contact_person = frappe.db.get_value("Contact",{"mobile_no":contact_no},"name")
-			contact_doc = frappe.get_doc("Contact",frappe.db.get_value("Contact",{"mobile_no":contact_no},"name"))
+			contact_person = frappe.db.get_value("Contact",{"mobile_no":contact_no},"name") if frappe.db.get_value("Contact",{"mobile_no":contact_no},"name") else frappe.db.get_value("Contact",{"phone":contact_no},"name")
+			contact_doc = frappe.get_doc("Contact",frappe.db.get_value("Contact",{"mobile_no":contact_no},"name") if frappe.db.get_value("Contact",{"mobile_no":contact_no},"name") else frappe.db.get_value("Contact",{"phone":contact_no},"name"))
 			update_tabsingles("ABCD","contact_person_list")
 
 			if contact_doc.customer:

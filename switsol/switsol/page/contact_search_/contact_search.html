@@ -6,7 +6,7 @@
 			<th>{%= __("Mobile No") %}</th>
 			<th>{%= __("Phone") %}</th>
 			<th>{%= __("Status") %}</th>
-			<th>{%= __("Update Contact") %}</th>
+			<!-- <th>{%= __("Update Contact") %}</th> -->
 		</tr>
 		{% for(var i=0, l=data.length; i < l; i++) { %}
 		<tr>
@@ -14,19 +14,23 @@
 				{{ data[i].first_name }}
 			</td>
 			<td>
-				{{ data[i].mobile_no }}
+				{{ data[i].mobile_no }} {% if (data[i].mobile_no != "-") { %} <button type="button" class="update_contact" number-type="mobile" contact-name={{ JSON.stringify(data[i].name) }} style="float: right;">{%= __("Update") %}
+			</button>
+				{% } %}
 			</td>
 			<td>
-				{{ data[i].phone }}
+				{{ data[i].phone }} {% if (data[i].phone != "-") { %} <button type="button" class="update_contact" number-type="phone" contact-name={{ JSON.stringify(data[i].name) }} style="float: right;">{%= __("Update") %}
+			</button>
+				{% } %}
 			</td>
 			<td>
 				{{ data[i].status }}
 			</td>
-			<td>
-				<!-- <a href={{ data[i].name }}>Update</a> -->
+			<!-- <td>
+				<a href={{ data[i].name }}>Update</a>
 				<button type="button" class="update_contact" contact-name={{ JSON.stringify(data[i].name) }} >{%= __("Update") %}
 			</button>
-			</td>
+			</td> -->
 		</tr>
 		{% } %}
 	</table>
@@ -34,19 +38,39 @@
 <br>
 <div class="row add-contact" style="padding-left: 10px;padding-right: 10px;">
 	<div class="col-xs-6">
-		<button type="button" class="add_contact">
+		<div class="clearfix">
+			<label class="control-label" style="padding-right: 0px;">Number as mobile</label>
+		</div>
+		<button type="button" class="add_contact" number-type="mobile">
 			{%= __("Add Contact") %}
 		</button>
 	</div>
-	<div class="col-xs-6"></div>
+	<div class="col-xs-6">
+		<div class="clearfix">
+			<label class="control-label" style="padding-right: 0px;">Number as phone</label>
+		</div>
+		<button type="button" class="add_contact" number-type="phone">
+			{%= __("Add Contact") %}
+		</button>
+	</div>
 </div>
 {% } else { %}
 <div class="row add-contact" style="padding-left: 10px;padding-right: 10px;">
 	<div class="col-xs-6">
-		<button type="button" class="add_contact">
+		<div class="clearfix">
+			<label class="control-label" style="padding-right: 0px;">Number as mobile</label>
+		</div>
+		<button type="button" class="add_contact" number-type="mobile">
 			{%= __("Add Contact") %}
 		</button>
 	</div>
-	<div class="col-xs-6"></div>
+	<div class="col-xs-6">
+		<div class="clearfix">
+			<label class="control-label" style="padding-right: 0px;">Number as phone</label>
+		</div>
+		<button type="button" class="add_contact" number-type="phone">
+			{%= __("Add Contact") %}
+		</button>
+	</div>
 </div>
 {% } %}
