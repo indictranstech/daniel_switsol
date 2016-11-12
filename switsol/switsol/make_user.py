@@ -76,7 +76,7 @@ def make_redirect_url(email,contact_no,flag=None):
 
 			if contact_doc.supplier:
 				url = "Form/Supplier/{0}".format(contact_doc.supplier)
-				update_call_comming_from("Customer",contact_no+"/"+contact_person,contact_doc.supplier)
+				update_call_comming_from("Supplier",contact_no+"/"+contact_person,contact_doc.supplier)
 				set_redirect_url(email,url,contact_not_found,flag)
 
 				
