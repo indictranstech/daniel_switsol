@@ -52,5 +52,14 @@
   "name": "Call Logs-Client", 
   "script": "frappe.ui.form.on(\"Call Logs\",{ \n\tvalidate:function(frm) {\n\t\tif(cur_frm.doc.__islocal && cur_frm.doc.start_time){\n\t\t\tcur_frm.set_value(\"end_time\",frappe.datetime.now_datetime().split(\" \")[1])\n\t\t\tfrappe.call({\n\t\t\t\tmethod: \"switsol.switsol.make_user.update_reference_person_after_making_call_logs\",\n\t\t\t\targs: {\n\t\t\t\t\t\"reference_person\": cur_frm.doc.client,\n\t\t\t\t\t\"reference_type\":cur_frm.doc.contact_type\n\t\t\t\t},\n\t\t\t\tcallback: function(r) {\n\t\t\t\t\n\t\t\t\t}\n\t\t\t})\n\t\t}\n\t},\t\n\trefresh:function(frm) {\n\t\tif(cur_frm.doc.client && !cur_frm.doc.__islocal){\n\t\t\t// Show Logs\t\n\t\t\tcur_frm.add_custom_button(__('Anrufe Anzeigen'), \n\t\t\tfunction() {\n\t\t\t\tconsole.log(\"hihihi\")\n\t\t\t\tshow_logs()                      \n\t\t\t}, \"icon-exclamation\", \"btn-default show_logs\");\t\t\n\t\t}\n\t},  \t\n})\n\n\nshow_logs = function(){\n\tif(frappe.route_options){\n\t\tconsole.log(\"in if cond\")\n\t\tfrappe.route_options[\"client_info\"] = cur_frm.doc.doctype+\"//\"+cur_frm.doc.name+\"//\"+cur_frm.doc.client+\"//\"+cur_frm.doc.phone_number\n\t}\n\telse{\n\t\tconsole.log(\"in else cond\")\n        console.log(cur_frm.doc.doctype+\"//\"+cur_frm.doc.name+\"//\"+cur_frm.doc.client+\"//\"+cur_frm.doc.phone_number,\"aaaaaaaaaa\") \t\n\t\tfrappe.route_options = {\n\t\t\t\"client_info\":cur_frm.doc.doctype+\"//\"+cur_frm.doc.name+\"//\"+cur_frm.doc.client+\"//\"+cur_frm.doc.phone_number\n\t\t}\n\t} \n\tfrappe.set_route(\"query-report\", \"Call Logs Report\");\n}", 
   "script_type": "Client"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
+  "dt": "User", 
+  "modified": "2016-11-14 11:41:44.707338", 
+  "name": "User-Client", 
+  "script": "frappe.ui.form.on(\"User\", \"refresh\", function(frm) {\n\tif(!cur_frm.doc.__islocal && cur_frm.doc.email && user == cur_frm.doc.email) {\n\t\tcur_frm.add_custom_button(__('Get Salt Key'),\n\t\tfunction() {\n\t\t\tconsole.log(\"hihihi\")\n\t\t\tfrappe.call({\n\t\t\t\tmethod: \"switsol.switsol.make_user.get_salt_key\",\n\t\t\t\targs: {\n\t\t\t\t\t\"user\": cur_frm.doc.email\n\t\t\t\t},\n\t\t\t\tcallback: function(r) {\n\t\t\t\t\tif(r.message){\n                                                console.log(r.message)\n\t\t\t\t\t\tfrappe.msgprint(\n{title:__(\"Salt Key\"), indicator:'red',\n\t\t\t\tmessage: __(\"<b>\"+r.message[0][\"salt\"]+\"</b>\")})\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t})\n\t\t})\n\t}\n})                      ", 
+  "script_type": "Client"
  }
 ]
