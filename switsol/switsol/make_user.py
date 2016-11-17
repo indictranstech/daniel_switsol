@@ -36,8 +36,14 @@ def logged_and_redirect(user_name,password,email,contact_no):
 		flag = "User already logged in"
 		make_redirect_url(email,contact_no,flag)	
 
-	elif email == check_password(email,password):
-		make_redirect_url(email,contact_no)
+	# elif email == check_password(email,password):
+	# 	make_redirect_url(email,contact_no)
+
+	elif password == get_salt_key(email)[0]["salt"]:
+		make_redirect_url(email,contact_no)	
+
+	else:
+		raise frappe.AuthenticationError('Incorrect User or key')	
 	 		
 
 def make_redirect_url(email,contact_no,flag=None):
@@ -136,6 +142,13 @@ def update_reference_person_after_making_call_logs(reference_person,reference_ty
 	if reference_person_doc:
 		reference_person_doc.call_comming_from = ""
 		reference_person_doc.save(ignore_permissions=True)	
+
+
+@frappe.whitelist()
+def get_salt_key(user):
+	return frappe.db.sql("""select name, salt 
+							from `__Auth` where doctype="User" 
+							and name="{0}" """.format(user),as_dict=1)		
 	
 
 
