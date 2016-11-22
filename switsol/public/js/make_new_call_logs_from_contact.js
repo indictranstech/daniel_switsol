@@ -5,6 +5,7 @@ $.extend(erpnext.utils, {
 			.html(frappe.render_template("address_list",
 				cur_frm.doc.__onload))
 			.find(".btn-address").on("click", function() {
+				console.log("my file trigger of address")
 				frappe.new_doc("Address");
 			});
 
@@ -17,15 +18,12 @@ $.extend(erpnext.utils, {
 					frappe.new_doc("Contact");
 				}
 			);
-			console.log("my file trigger")
-			$(frm.fields_dict['contact_html'].wrapper)
-				.html(frappe.render_template("contact_list",
-					cur_frm.doc.__onload))
-				.find(".outgoing-call").on("click", function() {
-					make_new_call_log_from_contact($(this).attr("contact-name"),$(this).attr("phone-number"));
-				}
-			);
 		}
+		console.log("my file trigger")
+		$(frm.fields_dict['contact_html'].wrapper).find(".outgoing-call").on("click", function() {
+				make_new_call_log_from_contact($(this).attr("contact-name"),$(this).attr("phone-number"));
+			}
+		);
 	}
 })	
 
