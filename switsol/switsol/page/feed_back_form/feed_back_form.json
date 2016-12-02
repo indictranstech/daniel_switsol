@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-12-01 17:53:03.476951", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-12-01 17:55:53.767291", 
+ "modified_by": "Administrator", 
+ "module": "Switsol", 
+ "name": "feed_back_form", 
+ "owner": "Administrator", 
+ "page_name": "feed_back", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Feed Back From"
+}
