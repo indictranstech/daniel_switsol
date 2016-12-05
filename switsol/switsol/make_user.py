@@ -146,6 +146,9 @@ def update_reference_person_after_making_call_logs(reference_person,reference_ty
 
 @frappe.whitelist()
 def get_salt_key(user):
+	# print frappe.db.sql("""select name, salt 
+	# 						from `__Auth` where doctype="User" 
+	# 						and name="{0}" """.format(user),as_dict=1)
 	return frappe.db.sql("""select name, salt 
 							from `__Auth` where doctype="User" 
 							and name="{0}" """.format(user),as_dict=1)		

@@ -7,7 +7,7 @@
  "allow_multiple": 0, 
  "allow_print": 0, 
  "amount": 0.0, 
- "creation": "2016-12-01 18:41:56.134757", 
+ "creation": "2016-12-02 19:09:06.675919", 
  "doc_type": "Feed Back", 
  "docstatus": 0, 
  "doctype": "Web Form", 
@@ -15,7 +15,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2016-12-02 15:48:34.402358", 
+ "modified": "2016-12-05 19:23:29.771972", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -39,6 +39,26 @@
    "reqd": 1
   }, 
   {
+   "fieldname": "company", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Company", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "seminar_course", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Seminar / Course", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
    "fieldtype": "Column Break", 
    "hidden": 0, 
    "max_length": 0, 
@@ -57,24 +77,6 @@
    "reqd": 1
   }, 
   {
-   "fieldtype": "Section Break", 
-   "hidden": 0, 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
-  }, 
-  {
-   "fieldname": "company", 
-   "fieldtype": "Data", 
-   "hidden": 0, 
-   "label": "Company", 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
-  }, 
-  {
    "fieldname": "date", 
    "fieldtype": "Date", 
    "hidden": 0, 
@@ -83,16 +85,6 @@
    "max_value": 0, 
    "read_only": 0, 
    "reqd": 1
-  }, 
-  {
-   "fieldname": "seminar_course", 
-   "fieldtype": "Data", 
-   "hidden": 0, 
-   "label": "Seminar / Course", 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
   }, 
   {
    "fieldname": "trainer", 
@@ -137,7 +129,7 @@
   }, 
   {
    "fieldname": "remarks_target", 
-   "fieldtype": "Data", 
+   "fieldtype": "Text", 
    "hidden": 0, 
    "label": "Remarks Target", 
    "max_length": 0, 
@@ -177,8 +169,19 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "", 
+   "fieldtype": "Column Break", 
+   "hidden": 0, 
+   "label": "", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
    "fieldname": "remarks_room", 
-   "fieldtype": "Data", 
+   "fieldtype": "Text", 
    "hidden": 0, 
    "label": "Remarks Room", 
    "max_length": 0, 
@@ -251,8 +254,19 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "", 
+   "fieldtype": "Column Break", 
+   "hidden": 0, 
+   "label": "", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
    "fieldname": "remarks_coach", 
-   "fieldtype": "Data", 
+   "fieldtype": "Text", 
    "hidden": 0, 
    "label": "Remarks Coach", 
    "max_length": 0, 
@@ -303,10 +317,10 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "suitability_knowledge_skills", 
+   "fieldname": "benefits_of_practice", 
    "fieldtype": "Select", 
    "hidden": 0, 
-   "label": "Suitability of exercises to improve knowledge / skills", 
+   "label": "Benefits of the exercises for practice", 
    "max_length": 0, 
    "max_value": 0, 
    "options": "1\n2\n3\n4\n5\n6\n7\n8\n9", 
@@ -314,10 +328,31 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "benefits_of_practice", 
+   "fieldname": "changes_content", 
+   "fieldtype": "Text", 
+   "hidden": 0, 
+   "label": "Changes content", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "", 
+   "fieldtype": "Column Break", 
+   "hidden": 0, 
+   "label": "", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "suitability_knowledge_skills", 
    "fieldtype": "Select", 
    "hidden": 0, 
-   "label": "Benefits of the exercises for practice", 
+   "label": "Suitability of exercises to improve knowledge / skills", 
    "max_length": 0, 
    "max_value": 0, 
    "options": "1\n2\n3\n4\n5\n6\n7\n8\n9", 
@@ -347,18 +382,8 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "changes_content", 
-   "fieldtype": "Data", 
-   "hidden": 0, 
-   "label": "Changes content", 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
-  }, 
-  {
    "fieldname": "comments_contents", 
-   "fieldtype": "Data", 
+   "fieldtype": "Text", 
    "hidden": 0, 
    "label": "Comments Contents", 
    "max_length": 0, 
@@ -387,10 +412,10 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "professional_tasks", 
+   "fieldname": "advancement_opportunities", 
    "fieldtype": "Select", 
    "hidden": 0, 
-   "label": "Influence of this training on the efficiency in the accomplishment of your professional tasks", 
+   "label": "Influence of this training with regard to your career advancement opportunities", 
    "max_length": 0, 
    "max_value": 0, 
    "options": "1\n2\n3\n4\n5\n6\n7\n8\n9", 
@@ -398,10 +423,21 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "advancement_opportunities", 
+   "fieldname": "", 
+   "fieldtype": "Column Break", 
+   "hidden": 0, 
+   "label": "", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "professional_tasks", 
    "fieldtype": "Select", 
    "hidden": 0, 
-   "label": "Influence of this training with regard to your career advancement opportunities", 
+   "label": "Influence of this training on the efficiency in the accomplishment of your professional tasks", 
    "max_length": 0, 
    "max_value": 0, 
    "options": "1\n2\n3\n4\n5\n6\n7\n8\n9", 
@@ -440,6 +476,27 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "subjects_interest", 
+   "fieldtype": "Text", 
+   "hidden": 0, 
+   "label": "Are there other subjects that interest you?", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "", 
+   "fieldtype": "Column Break", 
+   "hidden": 0, 
+   "label": "", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
    "fieldname": "new_horizons", 
    "fieldtype": "Select", 
    "hidden": 0, 
@@ -462,18 +519,8 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "subjects_interest", 
-   "fieldtype": "Data", 
-   "hidden": 0, 
-   "label": "Are there other subjects that interest you?", 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
-  }, 
-  {
    "fieldname": "comments_suggestions", 
-   "fieldtype": "Data", 
+   "fieldtype": "Text", 
    "hidden": 0, 
    "label": "Any comments or suggestions?", 
    "max_length": 0, 
