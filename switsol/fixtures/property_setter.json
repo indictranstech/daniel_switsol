@@ -10,11 +10,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "naming_series", 
-  "modified": "2016-12-02 19:01:28.210455", 
+  "modified": "2016-12-06 10:32:25.793455", 
   "name": "Sales Order-naming_series-options", 
   "property": "options", 
   "property_type": "Text", 
-  "value": "SO-"
+  "value": "AN-"
  }, 
  {
   "_assign": null, 
@@ -27,11 +27,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "naming_series", 
-  "modified": "2016-12-02 19:01:31.017810", 
+  "modified": "2016-12-06 10:36:28.024177", 
   "name": "Quotation-naming_series-options", 
   "property": "options", 
   "property_type": "Text", 
-  "value": "QTN-"
+  "value": "AB-"
  }, 
  {
   "_assign": null, 
@@ -916,5 +916,39 @@
   "property": "read_only_onload", 
   "property_type": "Check", 
   "value": null
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Sales Order", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "naming_series", 
+  "modified": "2016-12-06 10:32:25.751721", 
+  "name": "Sales Order-naming_series-default", 
+  "property": "default", 
+  "property_type": "Text", 
+  "value": "AN-"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Quotation", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "naming_series", 
+  "modified": "2016-12-06 10:36:27.972337", 
+  "name": "Quotation-naming_series-default", 
+  "property": "default", 
+  "property_type": "Text", 
+  "value": "AB-"
  }
 ]
