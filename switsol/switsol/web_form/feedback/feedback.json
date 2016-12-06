@@ -12,10 +12,11 @@
  "docstatus": 0, 
  "doctype": "Web Form", 
  "idx": 0, 
+ "introduction_text": "Dear student, dear participant.\nYour experience with this course is very important to us. \nFor our quality assurance we are dependent on your comments \nand assessments. Please take a moment to share your observations \nand impressions.\nWe thank you for your help - your New Horizons team", 
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2016-12-05 19:23:29.771972", 
+ "modified": "2016-12-06 15:48:12.335467", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -26,7 +27,7 @@
  "show_sidebar": 1, 
  "sidebar_items": [], 
  "success_url": "/feedback", 
- "title": "Feedback", 
+ "title": "Feed back", 
  "web_form_fields": [
   {
    "fieldname": "first_name", 
@@ -192,7 +193,7 @@
   {
    "fieldtype": "Section Break", 
    "hidden": 0, 
-   "label": "TRAINER INSTRUCTOR", 
+   "label": "TRAINER / INSTRUCTOR", 
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 

@@ -57,9 +57,9 @@
   "docstatus": 0, 
   "doctype": "Custom Script", 
   "dt": "User", 
-  "modified": "2016-11-14 11:41:44.707338", 
+  "modified": "2016-12-06 16:10:13.717585", 
   "name": "User-Client", 
-  "script": "frappe.ui.form.on(\"User\", \"refresh\", function(frm) {\n\tif(!cur_frm.doc.__islocal && cur_frm.doc.email && user == cur_frm.doc.email) {\n\t\tcur_frm.add_custom_button(__('Get Salt Key'),\n\t\tfunction() {\n\t\t\tconsole.log(\"hihihi\")\n\t\t\tfrappe.call({\n\t\t\t\tmethod: \"switsol.switsol.make_user.get_salt_key\",\n\t\t\t\targs: {\n\t\t\t\t\t\"user\": cur_frm.doc.email\n\t\t\t\t},\n\t\t\t\tcallback: function(r) {\n\t\t\t\t\tif(r.message){\n                                                console.log(r.message)\n\t\t\t\t\t\tfrappe.msgprint(\n{title:__(\"Salt Key\"), indicator:'red',\n\t\t\t\tmessage: __(\"<b>\"+r.message[0][\"salt\"]+\"</b>\")})\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t})\n\t\t})\n\t}\n})                      ", 
+  "script": "frappe.ui.form.on(\"User\", \"refresh\", function(frm) {\n\tif(!cur_frm.doc.__islocal && cur_frm.doc.email && user == cur_frm.doc.email) {\n\t\tcur_frm.add_custom_button(__(\"SaltKey generieren\"),\n\t\tfunction() {\n\t\t\tconsole.log(\"hihihi\")\n\t\t\tfrappe.call({\n\t\t\t\tmethod: \"switsol.switsol.make_user.get_salt_key\",\n\t\t\t\targs: {\n\t\t\t\t\t\"user\": cur_frm.doc.email\n\t\t\t\t},\n\t\t\t\tcallback: function(r) {\n\t\t\t\t\tif(r.message){\n                                                console.log(r.message)\n\t\t\t\t\t\tfrappe.msgprint(\n{title:__(\"Salt Key\"), indicator:'red',\n\t\t\t\tmessage: __(\"<b>\"+r.message[0][\"salt\"]+\"</b>\")})\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t})\n\t\t})\n\t}\n})                      ", 
   "script_type": "Client"
  }
 ]
