@@ -950,5 +950,22 @@
   "property": "default", 
   "property_type": "Text", 
   "value": "AB-"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Translation", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "language_code", 
+  "modified": "2016-12-06 15:25:55.123862", 
+  "name": "Translation-language_code-width", 
+  "property": "width", 
+  "property_type": null, 
+  "value": "244"
  }
 ]
