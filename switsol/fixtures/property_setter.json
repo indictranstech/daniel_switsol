@@ -10,11 +10,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "naming_series", 
-  "modified": "2016-12-06 10:32:25.793455", 
+  "modified": "2016-12-07 10:40:35.919015", 
   "name": "Sales Order-naming_series-options", 
   "property": "options", 
   "property_type": "Text", 
-  "value": "AN-"
+  "value": "AB-"
  }, 
  {
   "_assign": null, 
@@ -27,11 +27,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "naming_series", 
-  "modified": "2016-12-06 10:36:28.024177", 
+  "modified": "2016-12-07 10:40:28.835246", 
   "name": "Quotation-naming_series-options", 
   "property": "options", 
   "property_type": "Text", 
-  "value": "AB-"
+  "value": "AN-"
  }, 
  {
   "_assign": null, 
@@ -928,11 +928,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "naming_series", 
-  "modified": "2016-12-06 10:32:25.751721", 
+  "modified": "2016-12-07 10:40:35.887207", 
   "name": "Sales Order-naming_series-default", 
   "property": "default", 
   "property_type": "Text", 
-  "value": "AN-"
+  "value": "AB-"
  }, 
  {
   "_assign": null, 
@@ -945,11 +945,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "naming_series", 
-  "modified": "2016-12-06 10:36:27.972337", 
+  "modified": "2016-12-07 10:40:28.805663", 
   "name": "Quotation-naming_series-default", 
   "property": "default", 
   "property_type": "Text", 
-  "value": "AB-"
+  "value": "AN-"
  }, 
  {
   "_assign": null, 
