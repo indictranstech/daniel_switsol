@@ -967,5 +967,39 @@
   "property": "width", 
   "property_type": null, 
   "value": "244"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Feed Back", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "how_satisfied_training", 
+  "modified": "2016-12-07 15:57:40.074217", 
+  "name": "Feed Back-how_satisfied_training-width", 
+  "property": "width", 
+  "property_type": null, 
+  "value": "260"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Feed Back", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "main_goal", 
+  "modified": "2016-12-07 15:57:42.349943", 
+  "name": "Feed Back-main_goal-width", 
+  "property": "width", 
+  "property_type": null, 
+  "value": "222"
  }
 ]
