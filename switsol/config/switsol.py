@@ -24,13 +24,7 @@ def get_data():
 					"name": "feed_back_summary",
 					"label": _("Feed Back Summary"),
 					"description": _("Feed Back Summary Charts"),
-				},
-				{
-					"type": "page",
-					"name": "training_satisfaction",
-					"label": _("Feed Back Training Satisfaction"),
-					"description": _("Feed Back Training Satisfaction"),
-				},
+				}
 			]
 		}
 	]			
