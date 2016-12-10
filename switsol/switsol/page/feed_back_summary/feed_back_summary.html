@@ -1,0 +1,82 @@
+
+<div class="row report">
+	{% if (Object.keys(data.total_of_leader).length > 0) { %}
+	<div class="col-xs-6">
+		<div>
+			<div class="col-xs-12 c3" id="total_of_leader" style="height:270px"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("Total performance of the course leader") %}</b>
+			</div>
+		</div>
+	</div>
+	{% } %}
+	{% if (Object.keys(data.comprehensan_t_content).length > 0) { %}
+	<div class="col-xs-6">
+		<div>
+			<div class="col-xs-12 c3" id="comprehensan_content" style="height:270px"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("Comprehensibility of the training content") %}</b>
+			</div>
+		</div>
+	</div>
+	{% } %}
+</div>
+
+<div class="row report">
+	{% if (Object.keys(data.advancement_opportunities).length > 0) { %}
+	<div class="col-xs-6">
+		<div>
+			<div class="col-xs-12 c3" id="advancement_opportunities" style="height:270px"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("Influence of this training with regard to your career advancement opportunities") %}</b>
+			</div>
+		</div>
+	</div>
+	{% } %}
+	{% if (Object.keys(data.quality_training_room).length > 0) { %}
+	<div class="col-xs-6">
+		<div>
+			<div class="col-xs-12 c3" id="quality" style="height:270px"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("Quality training room") %}</b>
+			</div>
+		</div>
+	</div>
+	{% } %}
+</div>
+
+
+<div class="row report">
+	{% if (Object.keys(data.how_satisfied).length > 0) { %}
+	<div class="col-xs-6">
+		<div>
+			<div class="col-xs-12 c3" id="training_satisfaction_chart" style="height:270px"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("How satisfied are you with this training?") %}</b>
+			</div>
+		</div>
+	</div>
+	{% } %}
+	{% if (Object.keys(data.main_goal).length > 0) { %}
+	<div class="col-xs-6">
+		<div>
+			<div class="col-xs-12 c3" id="main_goal" style="height:350px"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("Main Goal") %}</b>
+			</div>
+		</div>
+	</div>
+	{% } %}
+</div>
