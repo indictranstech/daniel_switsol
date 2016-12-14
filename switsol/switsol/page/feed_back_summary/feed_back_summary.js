@@ -98,7 +98,17 @@ feed_back_summary = Class.extend({
 	set_chart: function(){
 		var me = this;
 		console.log(me.data['total_of_leader'],"total_of_leader")
-		
+		me.color_codes = {
+            		1: '#8B0000',
+            		2: '#FF0000',
+            		3: '#FFA500',
+            		4: '#A52A2A',
+            		5: '#EE82EE',
+            		6: '#800080', 
+            		7: '#90EE90',
+            		8: '#008000',
+            		9: '#0000FF',
+        		}
 		var chart1 = c3.generate({
 	        bindto:'#total_of_leader',
 	        data: {
@@ -114,6 +124,8 @@ feed_back_summary = Class.extend({
 						["9",me.data['total_of_leader']['9'] ? me.data['total_of_leader']['9']:0],
 				],
 				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
 	        },
       	});
 		var chart2 = c3.generate({
@@ -131,6 +143,8 @@ feed_back_summary = Class.extend({
 						["9",me.data['comprehensan_t_content']['9'] ? me.data['comprehensan_t_content']['9']:0],
 				],
 				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
 	        },
       	});
 		var chart2 = c3.generate({
@@ -149,6 +163,8 @@ feed_back_summary = Class.extend({
 						["9",me.data['advancement_opportunities']['9'] ? me.data['advancement_opportunities']['9']:0],
 				],
 				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
 	        },
       	});
 		var chart4 = c3.generate({
@@ -173,6 +189,7 @@ feed_back_summary = Class.extend({
 						[__("Preparation for a certification test"),me.data['main_goal']['Preparation for a certification test'] ? me.data['main_goal']['Preparation for a certification test']:0],
 						[__("Better understanding of a product before buying new software"),me.data['main_goal']['Better understanding of a product before buying new software'] ? me.data['main_goal']['Better understanding of a product before buying new software']:0],
 						[__("Preparing for a career change"),me.data['main_goal']['Preparing for a career change'] ? me.data['main_goal']['Preparing for a career change']:0],
+						[__("Other"),me.data['main_goal']['Other'] ? me.data['main_goal']['Other']:0],
 				],
 				type : 'pie',
 	        },
@@ -193,6 +210,8 @@ feed_back_summary = Class.extend({
 						["9",me.data['quality_training_room']['9'] ? me.data['quality_training_room']['9']:0],
 				],
 				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
 	        },
       	});
 	}
