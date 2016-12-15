@@ -9,13 +9,14 @@ def get_data(seminar_course):
 	# data1 = frappe.db.sql("""select main_goal,how_satisfied_training
 	# 						from `tabFeed Back` {0} """.format(seminar_course),as_list=1)
 	data2 = frappe.db.sql("""select quality_training_room,total_of_leader,comprehensan_t_content,advancement_opportunities,
-							main_goal,how_satisfied_training as how_satisfied
+							main_goal,other_please_specify,how_satisfied_training as how_satisfied
 							from `tabFeed Back` {0} """.format(seminar_course),as_dict=1)
+	print data2,"data2","\n\n\n\n\n"
 	data_dict = {'quality_training_room':{},
 				'total_of_leader':{},
 				'comprehensan_t_content':{},
 				'advancement_opportunities':{},
-				'main_goal':{},
+				'main_goal':{"other_please_specify":0},
 				'how_satisfied':{}
 				}
 	# for i in sum(data1,[]):
@@ -25,6 +26,10 @@ def get_data(seminar_course):
 			data_dict['main_goal'][j['main_goal']] = data_dict['main_goal'][j['main_goal']] + 1
 		else:
 			data_dict['main_goal'][j['main_goal']] = 1
+		
+		if j['other_please_specify']:
+			data_dict['main_goal']['other_please_specify'] = data_dict['main_goal']['other_please_specify'] + 1
+		
 		if j['how_satisfied'] in data_dict['how_satisfied'].keys():
 			data_dict['how_satisfied'][j['how_satisfied']] = data_dict['how_satisfied'][j['how_satisfied']] + 1
 		else:
