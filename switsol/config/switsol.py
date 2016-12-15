@@ -26,5 +26,19 @@ def get_data():
 					"description": _("Feed Back Summary Charts"),
 				}
 			]
+		},
+		{
+			"label": _("Reports"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "report",
+					"is_query_report": True,
+					"name": "Feed Back",
+					"label": _("Feed Back"),
+					"description": _("Record of Feed Back"),
+					"doctype": "Feed Back",
+				}
+			]
 		}
 	]			

@@ -15,12 +15,12 @@ def get_data(filters):
 		print "\n\n\n\n\n\n","filters",filters
 		result = frappe.db.sql("""select name,date(creation),phone_number,contact_person,client,contact_type, 
  								time(start_time),time(end_time),TIMEDIFF(time(start_time),time(end_time)),call_attendant,subject
- 								FROM `tabCall Logs` {0} order by name asc""" .format(get_cond(filters)),as_list=1,debug=1)
+ 								FROM `tabCall Logs` {0} order by name asc""" .format(get_cond(filters)),as_list=1)
 
 	else:
 		result = frappe.db.sql("""select name,date(creation),phone_number,contact_person,client,contact_type, 
  								time(start_time),time(end_time),TIMEDIFF(time(start_time),time(end_time)),call_attendant,subject
- 								FROM `tabCall Logs` order by name asc""",as_list=1,debug=1)	
+ 								FROM `tabCall Logs` order by name asc""",as_list=1)	
 	return result
 
 def get_cond(filters):
