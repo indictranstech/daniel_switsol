@@ -85,7 +85,7 @@ feed_back_summary = Class.extend({
 			},
 			callback: function(r) {
 				if (r.message){
-					console.log(r.message)
+					console.log(r.message,"dddddddddddddddd")
 					me.data = r.message;
 					var __html = frappe.render_template("feed_back_summary",{"data":r.message})
 					$(me.page).find(".pie-chart").empty();
@@ -97,7 +97,7 @@ feed_back_summary = Class.extend({
 	},
 	set_chart: function(){
 		var me = this;
-		console.log(me.data['total_of_leader'],"total_of_leader")
+		//console.log(me.data['total_of_leader'],"total_of_leader")
 		me.color_codes = {
             		1: '#8B0000',
             		2: '#FF0000',

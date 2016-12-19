@@ -16,7 +16,8 @@ def get_data(seminar_course):
 				'total_of_leader':{},
 				'comprehensan_t_content':{},
 				'advancement_opportunities':{},
-				'main_goal':{"other_please_specify":0},
+				'main_goal':{},
+				#'main_goal':{"other_please_specify":0},
 				'how_satisfied':{}
 				}
 	# for i in sum(data1,[]):
@@ -28,8 +29,11 @@ def get_data(seminar_course):
 			data_dict['main_goal'][j['main_goal']] = 1
 		
 		if j['other_please_specify']:
-			data_dict['main_goal']['other_please_specify'] = data_dict['main_goal']['other_please_specify'] + 1
-		
+			if 'other_please_specify' in data_dict['main_goal'].keys():
+				data_dict['main_goal']['other_please_specify'] = data_dict['main_goal']['other_please_specify'] + 1
+			else:
+				data_dict['main_goal']['other_please_specify'] = 1	
+
 		if j['how_satisfied'] in data_dict['how_satisfied'].keys():
 			data_dict['how_satisfied'][j['how_satisfied']] = data_dict['how_satisfied'][j['how_satisfied']] + 1
 		else:
