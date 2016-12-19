@@ -20,7 +20,7 @@ def get_call_log_data(customer):
 	# 	WHEN reference_type = "Customer" THEN reference_name = '{0}' ELSE 1=1 END 
 	# 	and status = "Open" and date(creation) >= '{1}' order by creation asc""".format(customer,datetime.now().date()),as_list=1)
 	
-	todo_details = frappe.db.sql("""select concat(date," - ",owner) from `tabToDo`
+	todo_details = frappe.db.sql("""select concat(date," - ",owner),name from `tabToDo`
 					where (reference_type in ("Contact","Customer") and reference_name = "{0}"  and date >= "{1}")
 					or (reference_type in ("Contact","Customer") and reference_name in
 					(select name from `tabContact` where customer = "{0}") and date >= "{1}")
@@ -53,4 +53,4 @@ def get_call_log_data(customer):
 		call_log_communication_datails = communication_details[0][0]+"//"+"Communication"+"/"+communication_details[0][2]
 
 	return {"call_log_communication_datails":call_log_communication_datails,
-			"todo_details":todo_details[0][0] if todo_details else ""}
+			"todo_details":todo_details[0][0]+"//"+todo_details[0][1] if todo_details else ""}
