@@ -10,7 +10,7 @@ def get_data(seminar_course):
 	# 						from `tabFeed Back` {0} """.format(seminar_course),as_list=1)
 	data2 = frappe.db.sql("""select quality_training_room,total_of_leader,comprehensan_t_content,advancement_opportunities,
 							main_goal,other_please_specify,how_satisfied_training as how_satisfied
-							from `tabFeed Back` {0} """.format(seminar_course),as_dict=1)
+							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
 	print data2,"data2","\n\n\n\n\n"
 	data_dict = {'quality_training_room':{},
 				'total_of_leader':{},
