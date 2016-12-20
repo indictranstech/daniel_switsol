@@ -10,20 +10,20 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Feed Back",
+					"name": "Feedback",
 					"description": _("Feed Back"),
 				},
 			]
 		},
 		{
-			"label": _("Feed Back Charts"),
+			"label": _("Feedback Charts"),
 			"icon": "icon-star",
 			"items": [
 				{
 					"type": "page",
 					"name": "feed_back_summary",
-					"label": _("Feed Back Summary"),
-					"description": _("Feed Back Summary Charts"),
+					"label": _("Feedback Summary"),
+					"description": _("Feedback Summary Charts"),
 				}
 			]
 		},
@@ -35,9 +35,9 @@ def get_data():
 					"type": "report",
 					"is_query_report": True,
 					"name": "Feed Back",
-					"label": _("Feed Back"),
+					"label": _("Feedback"),
 					"description": _("Record of Feed Back"),
-					"doctype": "Feed Back",
+					"doctype": "Feedback",
 				}
 			]
 		}
