@@ -34,7 +34,7 @@ def get_data():
 				{
 					"type": "report",
 					"is_query_report": True,
-					"name": "Feed Back",
+					"name": "Feedback",
 					"label": _("Feedback"),
 					"description": _("Record of Feed Back"),
 					"doctype": "Feedback",
