@@ -15,11 +15,6 @@ class CallLogs(Document):
 @frappe.whitelist()
 def get_call_log_data(customer):
 
-	# todo_details = frappe.db.sql("""select date(creation) from `tabToDo` where 
-	# 	CASE WHEN reference_type = "Contact" THEN reference_name in (select name from `tabContact` where customer = '{0}') 
-	# 	WHEN reference_type = "Customer" THEN reference_name = '{0}' ELSE 1=1 END 
-	# 	and status = "Open" and date(creation) >= '{1}' order by creation asc""".format(customer,datetime.now().date()),as_list=1)
-	
 	todo_details = frappe.db.sql("""select concat(date," - ",owner),name from `tabToDo`
 					where (reference_type in ("Contact","Customer") and reference_name = "{0}"  and date >= "{1}")
 					or (reference_type in ("Contact","Customer") and reference_name in
@@ -40,7 +35,6 @@ def get_call_log_data(customer):
 
 	call_log_communication_datails = ""
 	if call_log_datails and communication_details:
-		#date_difference = date_diff(call_log_datails[0][1],communication_details[0][1])
 		details_dict = {
 						call_log_datails[0][1]:call_log_datails[0][0]+"//"+"Call Logs"+"/"+call_log_datails[0][2],
 						communication_details[0][1]:communication_details[0][0]+"//"+"Communication"+"/"+communication_details[0][2]
