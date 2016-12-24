@@ -40,5 +40,17 @@ def get_data():
 					"doctype": "Feedback",
 				}
 			]
+		},
+		{
+			"label": _("Task Group"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "page",
+					"name": "task-group",
+					"label": _("Task Group"),
+					"description": _("Task Group"),
+				}
+			]
 		}
 	]			
