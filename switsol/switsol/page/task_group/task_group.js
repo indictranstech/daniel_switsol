@@ -41,13 +41,11 @@ task_group = Class.extend({
 	project_change:function(){
 		var me = this;
 		$(me.page).find(".project").change(function(){
-			console.log("change 11212")
 			me.get_task_details();
 		})
 	},
 	get_task_details:function(){
-		var me = this;	
-		console.log("insddess")
+		var me = this;
 		frappe.call({
 			method: "switsol.switsol.page.task_group.task_group.get_task_details",
 			args: {
@@ -55,8 +53,21 @@ task_group = Class.extend({
 			},
 			callback: function(r) {
 				if (r.message){
+					due_and_done_task = [{},{}]
+					$.each(r.message,function(i,d){
+						due_and_done_task[0][i] = 0
+						due_and_done_task[1][i] = 0
+						$.each(r.message[i],function(j,k){
+							if(k[1] == "Done"){
+								due_and_done_task[0][i] =  (flt(due_and_done_task[0][i]) + flt(1/r.message[i].length*100)).toFixed(2)
+							}
+							if(k[5] < frappe.datetime.nowdate()){
+								due_and_done_task[1][i] += 1
+							}
+						})
+					})
 					me.data = r.message;
-					var __html = frappe.render_template("task_group",{"data":r.message})
+					var __html = frappe.render_template("task_group",{"data":me.data,"due_and_done_task":due_and_done_task})
 					$(me.page).find(".task_group").empty();
 					me.page.find(".task_group").append(__html)
 					me.show_table();

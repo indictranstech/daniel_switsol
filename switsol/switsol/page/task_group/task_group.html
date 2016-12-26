@@ -2,8 +2,20 @@
 	<h4>Tasks Groups</h4>
 </div>	
 {% for(var i=0, l=Object.keys(data).length; i < l; i++) { %}
-	<div class="col-xs-12 title task_group_title" align="center" group-name = "{{ Object.keys(data)[i] }}" style="padding-bottom: 15px;border-bottom:1px solid #d1d8dd;">
-		<h4>{{ Object.keys(data)[i] }}</h4>	
+	<div class="col-xs-12 title task_group_title" align="left" group-name = "{{ Object.keys(data)[i] }}" style="padding-bottom: 15px;border-bottom:1px solid #d1d8dd;">
+		<div class="row">
+				<div class="col-xs-4"><b>{{ Object.keys(data)[i] }}</b></div>
+			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[0])[i]) { %}
+				<div class="col-xs-4" data-decimals="3"><b>{{ due_and_done_task[0][Object.keys(due_and_done_task[0])[i]] }} % Done</b></div>
+			{% } else { %}		
+				<div class="col-xs-4"></div> 
+			{% } %}
+			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[1])[i]) { %}
+				<div class="col-xs-4"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} Overdue</b></div>
+			{% } else { %}		
+				<div class="col-xs-4"></div>
+			{% } %}
+		</div>	
 	<table class="table table-bordered table-hover" group-name = "{{ Object.keys(data)[i] }}" style="display: none;">
 
 		<tr style="line-height: 1; font-size: 14px; margin-bottom:0px;">

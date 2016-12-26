@@ -24,3 +24,46 @@ make_new_call_log = function(){
 	frappe.set_route('Form', 'Call Logs', tn);
 }
 
+frappe.ui.form.on("Call Logs",{ 
+	validate:function(frm) {
+		if(cur_frm.doc.__islocal && cur_frm.doc.start_time){
+			cur_frm.set_value("end_time",frappe.datetime.now_datetime().split(" ")[1])
+			frappe.call({
+				method: "switsol.switsol.make_user.update_reference_person_after_making_call_logs",
+				args: {
+					"reference_person": cur_frm.doc.client,
+					"reference_type":cur_frm.doc.contact_type
+				},
+				callback: function(r) {
+				
+				}
+			})
+		}
+	},	
+	refresh:function(frm) {
+		if(cur_frm.doc.client && !cur_frm.doc.__islocal){
+			// Show Logs	
+			cur_frm.add_custom_button(__('Anrufe Anzeigen'), 
+			function() {
+				console.log("hihihi")
+				show_logs()                      
+			}, "icon-exclamation", "btn-default show_logs");		
+		}
+	},  	
+})
+
+
+show_logs = function(){
+	if(frappe.route_options){
+		console.log("in if cond")
+		frappe.route_options["client_info"] = cur_frm.doc.doctype+"//"+cur_frm.doc.name+"//"+cur_frm.doc.client+"//"+cur_frm.doc.phone_number
+	}
+	else{
+		console.log("in else cond")
+        console.log(cur_frm.doc.doctype+"//"+cur_frm.doc.name+"//"+cur_frm.doc.client+"//"+cur_frm.doc.phone_number,"aaaaaaaaaa") 	
+		frappe.route_options = {
+			"client_info":cur_frm.doc.doctype+"//"+cur_frm.doc.name+"//"+cur_frm.doc.client+"//"+cur_frm.doc.phone_number
+		}
+	} 
+	frappe.set_route("query-report", "Call Logs Report");
+}
