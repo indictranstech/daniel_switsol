@@ -5,7 +5,7 @@ frappe.ui.form.on("Supplier", "refresh", function(frm) {
 		function() {
 			console.log("hihihi")
 			click_on_make_log_supplier()                      
-		}, "icon-exclamation", "btn-default make_log");
+		});
 	}
 	if(!cur_frm.doc.__islocal && !frappe.route_options && cur_frm.doc.call_comming_from == "") {
 	// show log
@@ -13,7 +13,7 @@ frappe.ui.form.on("Supplier", "refresh", function(frm) {
 		function() {
 			console.log("hihihi")
 			show_logs_supplier()                      
-		}, "icon-exclamation", "show_log");	
+		});	
 	}
 })
 

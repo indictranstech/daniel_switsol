@@ -20,7 +20,7 @@ frappe.ui.form.on('Contact',{
 			function() {
 				console.log("hihihi")
 				show_logs_contact();                      
-			}, "icon-exclamation", "btn-default show_logs");		
+			});		
 		}
 	},
 	validate: function(frm) {

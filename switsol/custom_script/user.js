@@ -10,10 +10,8 @@ frappe.ui.form.on("User", "refresh", function(frm) {
 				},
 				callback: function(r) {
 					if(r.message){
-                                                console.log(r.message)
-						frappe.msgprint(
-{title:__("Salt Key"), indicator:'red',
-				message: __("<b>"+r.message[0]["salt"]+"</b>")})
+						frappe.msgprint({title:__("Salt Key"), indicator:'red',
+							message: __("<b>"+r.message[0]["salt"]+"</b>")})
 					}
 				}
 			})

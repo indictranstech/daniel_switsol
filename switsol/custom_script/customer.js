@@ -1,4 +1,3 @@
-
 cur_frm.add_fetch('infrastructure', 'description', 'description');
 frappe.ui.form.on("Customer", "refresh", function(frm) {
 	if(!cur_frm.doc.__islocal && (cur_frm.doc.call_comming_from && cur_frm.doc.call_comming_from != "" || frappe.route_options)) {
