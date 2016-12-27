@@ -5,7 +5,7 @@ frappe.ui.form.on("Sales Partner", "refresh", function(frm) {
 		function() {
 			console.log("hihihi")
 			click_on_make_log_sales_partner()                      
-		}, "icon-exclamation", "btn-default make_log");	
+		});	
 	}
 	if(!cur_frm.doc.__islocal && !frappe.route_options && cur_frm.doc.call_comming_from == "") {
 	// show log button
@@ -13,7 +13,7 @@ frappe.ui.form.on("Sales Partner", "refresh", function(frm) {
 		function() {
 			console.log("hihihi")
 			show_logs_sales_partner()                      
-		}, "icon-exclamation", "show_log");	
+		});	
 	}
 })
 
