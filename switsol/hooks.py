@@ -26,7 +26,6 @@ fixtures = ['Custom Field', 'Property Setter', "Print Format","Custom Script"]
 # web_include_js = "/assets/switsol/js/switsol.js"
 
 doctype_js = {
-    "Customer": ["custom_script/customer.js"],
     "Contact":["custom_script/contact.js"],
     "Employee":["custom_script/employee.js"],
     "Project":["custom_script/project.js"],

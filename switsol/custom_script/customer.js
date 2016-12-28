@@ -2,20 +2,20 @@ cur_frm.add_fetch('infrastructure', 'description', 'description');
 frappe.ui.form.on("Customer", "refresh", function(frm) {
 	if(!cur_frm.doc.__islocal && (cur_frm.doc.call_comming_from && cur_frm.doc.call_comming_from != "" || frappe.route_options)) {
 		// Make Log button
-		cur_frm.add_custom_button(__('Anrufe eintragen'), 
+		cur_frm.add_custom_button(__('Make Log'), 
 		function() {
 			console.log("hihihi")
 			click_on_make_log_customer()                      
-		}, "icon-exclamation", "btn-default make_log");
+		});
         
     }
 	if(!cur_frm.doc.__islocal && !frappe.route_options && cur_frm.doc.call_comming_from == "") {
 		// Show Log Button
-		cur_frm.add_custom_button(__('Anrufe anzeigen'), 
+		frm.add_custom_button(__('Show Log'), 
 			function() {
 				console.log("hihihi")
 				show_logs_customer()                      
-			}, "icon-exclamation", "show_log");	
+			});	
 	}
     
     if(!cur_frm.doc.__islocal){
