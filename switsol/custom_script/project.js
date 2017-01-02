@@ -9,5 +9,13 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
 		});
+		cur_frm.set_indicator_formatter("task_group_with_indicator",function(doc) { 
+			if(doc.start_date > frappe.datetime.nowdate()){
+				return "orange"
+			}
+			if(doc.end_date < frappe.datetime.nowdate()){
+				return "red"
+			}
+		});
 	}
 });

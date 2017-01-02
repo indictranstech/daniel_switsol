@@ -6,12 +6,12 @@
 		<div class="row">
 				<div class="col-xs-4"><b>{{ Object.keys(data)[i] }}</b></div>
 			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[0])[i]) { %}
-				<div class="col-xs-4" data-decimals="3"><b>{{ due_and_done_task[0][Object.keys(due_and_done_task[0])[i]] }} % Done</b></div>
+				<div class="col-xs-4" data-decimals="3"><b>{{ due_and_done_task[0][Object.keys(due_and_done_task[0])[i]] }} % {%= __("Done") %}</b></div>
 			{% } else { %}		
 				<div class="col-xs-4"></div> 
 			{% } %}
 			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[1])[i]) { %}
-				<div class="col-xs-4"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} Overdue</b></div>
+				<div class="col-xs-4"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} {%= __("Overdue") %}</b></div>
 			{% } else { %}		
 				<div class="col-xs-4"></div>
 			{% } %}
