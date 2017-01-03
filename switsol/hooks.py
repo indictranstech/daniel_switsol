@@ -23,12 +23,12 @@ app_include_js = "/assets/js/switsol.desk.min.js"
 fixtures = ['Custom Field', 'Property Setter', "Print Format"]
 
 doctype_js = {
-    "Contact":["custom_script/contact.js"],
-    "Customer":["custom_script/customer.js"],
-    "Sales Partner":["custom_script/sales_sartner"],
-    "Supplier":["custom_script/supplier.js"],
-    "Timesheet":["custom_script/timesheet.js"],
-    "User":["custom_script/user.js"]
+    "Contact":["custom_scripts/contact.js"],
+    "Customer":["custom_scripts/customer.js"],
+    "Sales Partner":["custom_scripts/sales_sartner"],
+    "Supplier":["custom_scripts/supplier.js"],
+    "Timesheet":["custom_scripts/timesheet.js"],
+    "User":["custom_scripts/user.js"]
 }
 
 # include js, css files in header of web template

@@ -8,6 +8,7 @@ frappe.ui.form.on('Call Logs', {
 		if(!cur_frm.doc.__islocal && cur_frm.doc.phone_number){			
 			html = "<a href='vdsip:" + cur_frm.doc.phone_number + "' onclick='make_new_call_log()' ><i class='icon-phone' aria-hidden='true'></i> <b>Call</b></a>"
 			$(cur_frm.fields_dict.outgoing_call.wrapper).html(html);
+		
 		}
 		if(sessionStorage.length && cur_frm.doc.__islocal){
 			console.log(sessionStorage['call_attendant'])
@@ -24,6 +25,7 @@ frappe.ui.form.on('Call Logs', {
 
 make_new_call_log = function(){
 	console.log("make_new_call_log")
+	sessionStorage.clear();
 	tn = frappe.model.make_new_doc_and_get_name('Call Logs');
 	locals['Call Logs'][tn].phone_number = cur_frm.doc.phone_number
 	locals['Call Logs'][tn].contact_person = cur_frm.doc.contact_person
