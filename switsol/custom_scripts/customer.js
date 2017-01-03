@@ -31,13 +31,6 @@ frappe.ui.form.on("Customer", "refresh", function(frm) {
 	}
 })
 
-add_new_todo = function(){
-	console.log("add new todo")
-	tn = frappe.model.make_new_doc_and_get_name('ToDo');
-	locals['ToDo'][tn].reference_type = "Customer"
-	locals['ToDo'][tn].reference_name = cur_frm.doc.customer_name
-	frappe.set_route('Form', 'ToDo', tn);
-}
 
 show_logs_customer = function(){
 	if(frappe.route_options){
