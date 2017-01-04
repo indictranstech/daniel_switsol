@@ -33,7 +33,9 @@ doctype_js = {
     "Sales Partner":["custom_script/sales_sartner"],
     "Supplier":["custom_script/supplier.js"],
     "Timesheet":["custom_script/timesheet.js"],
-    "User":["custom_script/user.js"]
+    "User":["custom_script/user.js"],
+    "Quotation":["custom_script/quotation.js"],
+    "Sales Order":["custom_script/sales_order.js"]
 }
 
 
