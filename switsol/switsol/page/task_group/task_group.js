@@ -1,7 +1,7 @@
 frappe.pages['task-group'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
-		title: 'Task Group',
+		title: __('Task Group'),
 		single_column: true
 	});
 	wrapper.feed_back_summary = new task_group(wrapper)
