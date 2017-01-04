@@ -31,6 +31,7 @@ $.extend(erpnext.utils, {
 
 make_new_call_log_from_contact = function(contact_person,phone_number){
 	console.log("inside make_new_call_log")
+	sessionStorage.clear();
 	tn = frappe.model.make_new_doc_and_get_name('Call Logs');
 	locals['Call Logs'][tn].phone_number = phone_number
 	locals['Call Logs'][tn].contact_person = contact_person
@@ -38,5 +39,6 @@ make_new_call_log_from_contact = function(contact_person,phone_number){
 	locals['Call Logs'][tn].start_time = frappe.datetime.now_datetime().split(" ")[1]
 	locals['Call Logs'][tn].call_attendant = user
     locals['Call Logs'][tn].contact_type = cur_frm.doc.doctype
+    locals['Call Logs'][tn].call_type = "Outgoing"
 	frappe.set_route('Form', 'Call Logs', tn);
 }
