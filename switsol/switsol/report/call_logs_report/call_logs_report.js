@@ -26,6 +26,7 @@ frappe.query_reports[("Call Logs Report")] = {
 }
 
 show_all = function(){
-		frappe.query_report.filters_by_name.client_info.set_value("");
+		//frappe.query_report.filters_by_name.client_info.set_value("");
+		frappe.query_report_filters_by_name.client_info.set_value("");
 		frappe.query_report.trigger_refresh();
 	}

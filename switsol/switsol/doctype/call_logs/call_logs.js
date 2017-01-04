@@ -56,11 +56,11 @@ frappe.ui.form.on("Call Logs",{
 	refresh:function(frm) {
 		if(cur_frm.doc.client && !cur_frm.doc.__islocal){
 			// Show Logs	
-			cur_frm.add_custom_button(__('Anrufe Anzeigen'), 
+			cur_frm.add_custom_button(__('Show Log'), 
 			function() {
 				console.log("hihihi")
 				show_logs()                      
-			}, "icon-exclamation", "btn-default show_logs");		
+			});		
 		}
 	},  	
 })

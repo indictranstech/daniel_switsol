@@ -24,7 +24,6 @@ fixtures = ['Custom Field', 'Property Setter', "Print Format"]
 
 doctype_js = {
     "Contact":["custom_scripts/contact.js"],
-    "Customer":["custom_scripts/customer.js"],
     "Sales Partner":["custom_scripts/sales_sartner"],
     "Supplier":["custom_scripts/supplier.js"],
     "Timesheet":["custom_scripts/timesheet.js"],
