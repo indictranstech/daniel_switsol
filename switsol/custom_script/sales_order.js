@@ -14,6 +14,18 @@ frappe.ui.form.on("Sales Order Item",{
 			})
 			refresh_field("sales_order_sales_person")
 		}
+	},
+	rate:function(frm,cdt,cdn){
+		var d = locals[cdt][cdn];
+		if(cur_frm.doc.sales_order_sales_person.length > 0){
+			$.each(cur_frm.doc.sales_order_sales_person,function(i,j){
+				if(j['sp_id'] == d.item_code+"-"+d.idx){
+					cur_frm.doc.sales_order_sales_person[i]['commission'] = (d.rate*d.qty)*flt(j['commission_rate'])/100
+					cur_frm.doc.sales_order_sales_person[i]['item_qty'] = d.qty
+				}
+			})
+			refresh_field("sales_order_sales_person")
+		}
 	}
 });
 
