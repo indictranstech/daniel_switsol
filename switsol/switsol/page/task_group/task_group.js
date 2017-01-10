@@ -53,6 +53,7 @@ task_group = Class.extend({
 			},
 			callback: function(r) {
 				if (r.message){
+					console.log(r.message,"r.message")
 					due_and_done_task = [{},{}]
 					$.each(r.message,function(i,d){
 						due_and_done_task[0][i] = 0

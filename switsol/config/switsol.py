@@ -38,6 +38,14 @@ def get_data():
 					"label": _("Feedback"),
 					"description": _("Record of Feed Back"),
 					"doctype": "Feedback",
+				},
+				{
+					"type": "report",
+					"is_query_report": True,
+					"name": "Sales Person",
+					"label": _("Sales Person"),
+					"description": _("Record of Sales Person"),
+					"doctype": "Sales Person",
 				}
 			]
 		},

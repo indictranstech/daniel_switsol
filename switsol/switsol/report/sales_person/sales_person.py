@@ -8,20 +8,55 @@ from frappe import _
 
 def execute(filters=None):
 	columns, data = [], []
-	columns = get_colums()
+	columns = get_colums(filters)
 	data = get_data(filters)
 	return columns, data
 
 def get_data(filters=None):
-	result = frappe.db.sql("""select sp.sales_person,so.name,sp.item_code,
-									sp.commission_rate,sp.commission,sp.commission*100/sp.commission_rate,sp.item_qty
-									from `tabSales Order Sales Person` sp,`tabSales Order` so where sp.parent = so.name """,as_list=1)	
-	
+	date_field = "transaction_date" if filters["doc_type"] == "Sales Order" else "posting_date"
+	if filters:
+		result = frappe.db.sql("""select dt.name,dt.customer,dt.{0},sp.item_code,sp.item_qty,sp.sales_person,
+									sp.commission_rate,sp.commission,sp.commission*100/sp.commission_rate
+									from `tabSales Order Sales Person` sp,`tab{1}` dt where sp.parent = dt.name and dt.docstatus = 1 {2}
+									""".format(date_field,filters.get("doc_type"),get_conditions(filters,date_field)), as_list=1,debug=1)
 	return result
 
+def get_conditions(filters,date_field):
+	conditions = ""
+	if filters.get("from_date"):
+		conditions = "and dt.{0} >= {1} ".format(date_field, filters.get("from_date"))
 
-def get_colums():
-	columns = [_("Sales Person") + ":Link/Sales Person:200"] + [_("Sales Order") + ":Link/Sales Order:180"] + [_("Item Code") + ":Link/Item:170"] + \
-			  [_("Commission Rate %") + ":Float:180"] + \
-			  [_("Commission") + ":Float:180"] + [_("Amount") + ":Float:180"] + [_("Qty") + ":Float:180"]
+	elif filters.get("to_date"):
+		conditions = "and dt.{0} <= {1} ".format(date_field, filters.get("to_date"))
+
+	if filters.get("to_date") and filters.get("from_date"):
+		conditions = "and dt.{0} BETWEEN '{1}' AND '{2}' ".format(date_field, filters.get("from_date"),filters.get("to_date"))
+
+	fields = []
+	fields.append(filters.get("customer") if filters.get("customer") else "None")
+	fields.append(filters.get("sales_person") if filters.get("sales_person") else "None")
+	fields.append(filters.get("item_code") if filters.get("item_code") else "None")
+
+	for index,field in enumerate(fields):
+		if field != "None" and index == 0:
+			conditions += " and customer = '{0}' ".format(field)
+		if field != "None" and index == 1:
+			conditions += " and sales_person = '{0}' ".format(field)
+		if field != "None" and index == 2:
+			conditions += " and item_code = '{0}' ".format(field)		
+		
+	return conditions		
+
+
+def get_colums(filters):
+	columns = [filters["doc_type"] + ":Link/" + filters["doc_type"] + ":140",
+				_("Customer") + ":Link/Customer:140",
+				_("Posting Date") + ":Date:100",
+				_("Item Code") + ":Link/Item:170",
+				_("Qty") + ":Float:180",
+				_("Sales Person") + ":Link/Sales Person:200",
+				_("Commission Rate %") + ":Float:180",
+				_("Commission") + ":Float:180",
+				_("Amount") + ":Float:180",
+				] 
 	return columns	
