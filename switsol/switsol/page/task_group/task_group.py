@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 import frappe
+import json
 from frappe import _, msgprint
 
 
@@ -16,4 +17,4 @@ def get_task_details(project):
 	for row in data:
 		d[row[4]].append(row)
 
-	return dict(d) 
+	return dict(d)
