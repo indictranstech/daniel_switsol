@@ -1,4 +1,11 @@
+frappe.ui.form.on("Task Group Task Table", "onload", function(frm) {
+	console.log($('[data-fieldname="task_group_task_table"]').find('.grid-footer'),"onload")
+	//cur_frm.fields_dict.task_group_task_table.$wrapper.find('.grid-footer').hide()
+	//$('[data-fieldname="task_group_task_table"]').find('.grid-footer').remove();
+});	
 frappe.ui.form.on("Project", "refresh", function(frm) {
+	//cur_frm.fields_dict.task_group_task_table.$wrapper.find('.grid-footer').hide()
+	//$('[data-fieldname="task_group_task_table"]').find('.grid-footer').hide();
 	if(!cur_frm.doc.__islocal){
 		frm.add_custom_button(__("Feedback Kursteilnehmer"), function() {
 			frappe.route_options = null;
@@ -17,7 +24,7 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 				return "red"
 			}
 		});*/
-		if(cur_frm.doc.tasks){
+		if(cur_frm.doc.tasks && cur_frm.doc.task_group_task_table.length == 0){
 			frappe.call({
 				method: "switsol.switsol.page.task_group.task_group.get_task_details",
 				freeze: true,
