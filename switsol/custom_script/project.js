@@ -1,11 +1,4 @@
-frappe.ui.form.on("Task Group Task Table", "onload", function(frm) {
-	console.log($('[data-fieldname="task_group_task_table"]').find('.grid-footer'),"onload")
-	//cur_frm.fields_dict.task_group_task_table.$wrapper.find('.grid-footer').hide()
-	//$('[data-fieldname="task_group_task_table"]').find('.grid-footer').remove();
-});	
 frappe.ui.form.on("Project", "refresh", function(frm) {
-	//cur_frm.fields_dict.task_group_task_table.$wrapper.find('.grid-footer').hide()
-	//$('[data-fieldname="task_group_task_table"]').find('.grid-footer').hide();
 	if(!cur_frm.doc.__islocal){
 		frm.add_custom_button(__("Feedback Kursteilnehmer"), function() {
 			frappe.route_options = null;
@@ -15,6 +8,55 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 		frm.add_custom_button(__("Freitexte Kursteilnehmer"), function() {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
+		});
+		frm.add_custom_button(__("Task Group Details"), function() {
+			frappe.route_options = {"project": cur_frm.doc.name};
+			var dialog = new frappe.ui.Dialog({ 
+				title: __("Task Group Details"),
+				fields: [
+						{
+							"label": __("Task Group Details"), 
+							"fieldname": "task_group_details",
+							"fieldtype": "HTML", 
+						}
+				]
+
+			})
+			dialog.show();
+			var me = this;
+			frappe.call({
+				method: "switsol.switsol.page.task_group.task_group.get_task_details",
+				args: {
+					"project":cur_frm.doc.name,
+				},
+				callback: function(r) {
+					if (r.message){
+						due_and_done_task = [{},{}]
+						$.each(r.message,function(i,d){
+							due_and_done_task[0][i] = 0
+							due_and_done_task[1][i] = 0
+							$.each(r.message[i],function(j,k){
+								 console.log(k)
+								if(k[1] == "Done"){
+									due_and_done_task[0][i] =  (flt(due_and_done_task[0][i]) + flt(1/r.message[i].length*100)).toFixed(2)
+								}
+								if(k[5] < frappe.datetime.nowdate()){
+									due_and_done_task[1][i] += 1
+								}
+							})
+						})
+						me.data = r.message;
+						task_group_details_field = dialog.fields_dict.task_group_details.$wrapper;
+						var __html = frappe.render_template("task_group",{"data":me.data,"due_and_done_task":due_and_done_task})
+						task_group_details_field.append(__html)
+						show_table(task_group_details_field);
+					}
+					else{
+						__html = "<h1 class='task_group' style='padding-left: 25px;'>No Result</h1>"
+						task_group_details_field.append(__html)
+					}
+				}				
+			})
 		});
 		/*cur_frm.set_indicator_formatter("task_group_with_indicator",function(doc) { 
 			if(doc.start_date > frappe.datetime.nowdate()){
@@ -34,7 +76,6 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 				},
 				callback: function(r) {
 					if (r.message){
-						console.log("r.message",r.message)
 						due_and_done_task = {}
 						$.each(r.message,function(i,d){
 							due_and_done_task[i] = []
@@ -61,6 +102,24 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 		}
 	}
 });
+
+show_table = function(task_group_details_field){
+
+						var me = this;
+						$.each($(task_group_details_field).find(".task_group_title"),function(i,d){
+							// console.log("byee",me.page)
+							$(d).click(function(){
+								if($(d).hasClass("activate")){
+									$(d).removeClass("activate")
+									$(task_group_details_field).find(".table[group-name='"+$(this).attr("group-name")+"']").css("display","none")	
+								}
+								else{
+									$(d).addClass("activate")
+									$(task_group_details_field).find(".table[group-name='"+$(this).attr("group-name")+"']").css("display","")
+								}
+							})
+						})
+			}
 
 
 frappe.ui.form.on("Task Group Task Table",{

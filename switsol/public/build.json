@@ -11,6 +11,7 @@
 		"public/js/jquery.signature.js",
 		"public/js/jquery.ui.touch-punch.min.js",
 		"public/js/make_new_call_logs_from_contact.js",
-		"public/js/common_feedback_chart.html"
+		"public/js/common_feedback_chart.html",
+		"public/js/task_group.html"
 	]
 }
