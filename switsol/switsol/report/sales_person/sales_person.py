@@ -14,12 +14,22 @@ def execute(filters=None):
 
 def get_data(filters=None):
 	date_field = "transaction_date" if filters["doc_type"] == "Sales Order" else "posting_date"
+	paid_date = ",'paid_date'" if filters["doc_type"] == "Sales Invoice" else ""
 	if filters:
-		result = frappe.db.sql("""select dt.name,dt.customer,dt.{0},sp.item_code,sp.item_qty,sp.sales_person,
+		result = frappe.db.sql("""select dt.name,dt.customer,dt.{0} {1},sp.item_code,sp.item_qty,sp.sales_person,
 									sp.commission_rate,sp.commission,sp.commission*100/sp.commission_rate
-									from `tabSales Order Sales Person` sp,`tab{1}` dt where sp.parent = dt.name and dt.docstatus = 1 {2}
-									""".format(date_field,filters.get("doc_type"),get_conditions(filters,date_field)), as_list=1,debug=1)
+									from `tabSales Order Sales Person` sp,`tab{2}` dt where sp.parent = dt.name and dt.docstatus = 1 {3}
+									""".format(date_field,paid_date,filters.get("doc_type"),get_conditions(filters,date_field)), as_list=1)
+
+		if filters.get("doc_type") == "Sales Invoice" and result:
+			for index,si in enumerate(result):
+				pe_posting_date = frappe.db.sql("""select MAX(pe.posting_date)
+																from `tabPayment Entry` pe,`tabPayment Entry Reference` per 
+																	where per.reference_doctype = "Sales Invoice" 
+																		and per.reference_name = '{0}'""".format(si[0]),as_list=1)
+				result[index][3] = pe_posting_date[0][0] if pe_posting_date else ""
 	return result
+
 
 def get_conditions(filters,date_field):
 	conditions = ""
@@ -58,5 +68,7 @@ def get_colums(filters):
 				_("Commission Rate %") + ":Float:180",
 				_("Commission") + ":Float:180",
 				_("Amount") + ":Float:180",
-				] 
+				]
+	if filters["doc_type"] == "Sales Invoice":
+		columns.insert(3,_("Paid Date") + ":Date:100")
 	return columns	
