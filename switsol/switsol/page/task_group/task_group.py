@@ -23,11 +23,15 @@ def get_task_details(project):
 
 @frappe.whitelist()	
 def all_data(id):
-	data = frappe.db.sql("""select subject,status,group_name,
-							exp_start_date,exp_end_date,responsible_user,name
+	frappe.errprint(id)
+	data = frappe.db.sql("""select subject,status,group_name,exp_start_date,exp_end_date,responsible_user,name
 							from `tabTask` 
-							where name = '%s' """%(id),as_dict=1)
+							where name = '{0}' """.format(id),as_dict=1)
 	return data
+
+# DATE_FORMAT(exp_start_date,'%d.%m.%Y') AS exp_start_date,
+# 							DATE_FORMAT(exp_end_date,'%d.%m.%Y') AS exp_end_date
+
 
 
 	
