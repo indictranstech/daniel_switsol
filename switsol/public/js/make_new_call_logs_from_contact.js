@@ -28,7 +28,6 @@ $.extend(erpnext.utils, {
 })	
 
 
-
 make_new_call_log_from_contact = function(contact_person,phone_number){
 	console.log("inside make_new_call_log")
 	sessionStorage.clear();
@@ -36,7 +35,7 @@ make_new_call_log_from_contact = function(contact_person,phone_number){
 	locals['Call Logs'][tn].phone_number = phone_number
 	locals['Call Logs'][tn].contact_person = contact_person
     locals['Call Logs'][tn].client = cur_frm.doc.name
-	locals['Call Logs'][tn].start_time = frappe.datetime.now_datetime().split(" ")[1]
+	locals['Call Logs'][tn].start_time = frappe.datetime.now_time()
 	locals['Call Logs'][tn].call_attendant = user
     locals['Call Logs'][tn].contact_type = cur_frm.doc.doctype
     locals['Call Logs'][tn].call_type = "Outgoing"

@@ -30,7 +30,7 @@ make_new_call_log = function(){
 	locals['Call Logs'][tn].phone_number = cur_frm.doc.phone_number
 	locals['Call Logs'][tn].contact_person = cur_frm.doc.contact_person
     locals['Call Logs'][tn].client = cur_frm.doc.client
-	locals['Call Logs'][tn].start_time = frappe.datetime.now_datetime().split(" ")[1]
+	locals['Call Logs'][tn].start_time = frappe.datetime.now_time()
 	locals['Call Logs'][tn].call_attendant = user
     locals['Call Logs'][tn].contact_type = cur_frm.doc.contact_type
 	locals['Call Logs'][tn].call_type = "Outgoing"
@@ -40,7 +40,8 @@ make_new_call_log = function(){
 frappe.ui.form.on("Call Logs",{ 
 	validate:function(frm) {
 		if(cur_frm.doc.__islocal && cur_frm.doc.start_time){
-			cur_frm.set_value("end_time",frappe.datetime.now_datetime().split(" ")[1])
+			cur_frm.set_value("end_time","")
+			cur_frm.set_value("end_time",frappe.datetime.now_time())
 			frappe.call({
 				method: "switsol.switsol.make_user.update_reference_person_after_making_call_logs",
 				args: {

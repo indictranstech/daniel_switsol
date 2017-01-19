@@ -82,7 +82,7 @@ click_on_make_log_customer = function(flag){
 				locals['Call Logs'][tn].contact_person = cur_frm.doc.call_comming_from.split("/")[1]
 				locals['Call Logs'][tn].phone_number = cur_frm.doc.call_comming_from.split("/")[0]
 		        locals['Call Logs'][tn].client = cur_frm.doc.name
-				locals['Call Logs'][tn].start_time = frappe.datetime.now_datetime().split(" ")[1]
+				locals['Call Logs'][tn].start_time = frappe.datetime.now_time()
 				locals['Call Logs'][tn].call_attendant = user
 		        locals['Call Logs'][tn].contact_type = cur_frm.doc.doctype
 				frappe.set_route('Form', 'Call Logs', tn);
@@ -91,7 +91,7 @@ click_on_make_log_customer = function(flag){
     	sessionStorage.setItem('contact_person',cur_frm.doc.call_comming_from.split("/")[1])
     	sessionStorage.setItem('phone_number',cur_frm.doc.call_comming_from.split("/")[0])
     	sessionStorage.setItem('client',cur_frm.doc.name)
-    	sessionStorage.setItem('start_time',frappe.datetime.now_datetime().split(" ")[1])
+    	sessionStorage.setItem('start_time',frappe.datetime.now_time())
     	sessionStorage.setItem('call_attendant',user)
     	sessionStorage.setItem('contact_type',cur_frm.doc.doctype)
 	}     
