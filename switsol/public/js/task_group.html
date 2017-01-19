@@ -43,7 +43,7 @@
 			</th>
 		</tr>
 		{% for(var j=0, k=data[Object.keys(data)[i]].length; j < k; j++) { %}
-		<tr style="line-height: 1; font-size: 14px; margin-bottom:0px;">
+		<tr class= "task_row_data" task-id ="{{ data[Object.keys(data)[i]][j][6] }}" style="line-height: 1; font-size: 14px; margin-bottom:0px;">
 			<td style="width: 20px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
 				{% if (data[Object.keys(data)[i]][j][5]< frappe.datetime.nowdate()) { %}
              	<div class="col-xs-4">
@@ -57,13 +57,13 @@
 			<td style="width: 20px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
 				{{ data[Object.keys(data)[i]][j][0] }}
 			</td>
-			<td style="width: 80px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
+			<td class="status" style="width: 80px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
 				{{ data[Object.keys(data)[i]][j][1] }} 
 			</td>
-			<td style="width: 80px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
+			<td class="start_date" style="width: 80px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
 				{{ data[Object.keys(data)[i]][j][2] }} 
 			</td>
-			<td style="width: 80px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
+			<td class="responsible_user" style="width: 80px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
 				{{ data[Object.keys(data)[i]][j][3] }} 
 			</td>
 			<td style="width: 20px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
