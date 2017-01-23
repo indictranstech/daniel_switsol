@@ -23,7 +23,7 @@ def get_data(filters=None):
 
 		if filters.get("doc_type") == "Sales Invoice" and result:
 			for index,si in enumerate(result):
-				pe_posting_date = frappe.db.sql("""select pe.posting_date
+				pe_posting_date = frappe.db.sql("""select pe.reference_date
 																from `tabPayment Entry` pe,`tabPayment Entry Reference` per 
 																	where per.reference_doctype = "Sales Invoice" 
 																		and per.reference_name = '{0}' and per.parent = pe.name """.format(si[0]),as_list=1)
