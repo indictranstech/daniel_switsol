@@ -14,10 +14,11 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 	
 });
 
+
 show_table = function(task_group_details_field){
 	var me = this;
 	$.each($(task_group_details_field).find(".task_group_title"),function(i,d){
-		$(d).click(function(e){
+		
 			if($(d).hasClass("activate")){
 				$(d).removeClass("activate")
 				$(task_group_details_field).find(".table[group-name='"+$(this).attr("group-name")+"']").css("display","none")	
@@ -26,12 +27,9 @@ show_table = function(task_group_details_field){
 				$(d).addClass("activate")
 				$(task_group_details_field).find(".table[group-name='"+$(this).attr("group-name")+"']").css("display","")
 			}
-		}).on('click','.table-hover',function(e){
-			e.stopPropagation();
-		})
+		
 	})
 }
-
 
 update_or_add_responsible_user_of_task = function(d){
 	if(cur_frm.doc.tasks.length > 0){
@@ -62,7 +60,7 @@ common_function = function(){
 								if(k[1] == "Done"){
 									due_and_done_task[0][i] =  (flt(due_and_done_task[0][i]) + flt(1/r.message[i].length*100)).toFixed(2)
 								}
-								if(k[5] < frappe.datetime.nowdate()){
+								if(k[1] != "Done" && k[5] < frappe.datetime.nowdate()){
 									due_and_done_task[1][i] += 1
 								}
 							})
@@ -282,3 +280,20 @@ common_function = function(){
 				}
 			})		
 		}*/
+/*show_table = function(task_group_details_field){
+	var me = this;
+	$.each($(task_group_details_field).find(".task_group_title"),function(i,d){
+		$(d).click(function(e){
+			if($(d).hasClass("activate")){
+				$(d).removeClass("activate")
+				$(task_group_details_field).find(".table[group-name='"+$(this).attr("group-name")+"']").css("display","none")	
+			}
+			else{
+				$(d).addClass("activate")
+				$(task_group_details_field).find(".table[group-name='"+$(this).attr("group-name")+"']").css("display","")
+			}
+		}).on('click','.table-hover',function(e){
+			e.stopPropagation();
+		})
+	})
+}*/
