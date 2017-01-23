@@ -1,27 +1,33 @@
-<div style="max-height: 340px;overflow-y: scroll; position: relative">
 <div class="col-xs-12" title align="left" style="padding-bottom: 15px;border-bottom:1px solid #d1d8dd;">
-	<h4>Tasks Groups</h4>
+	<h4>Task Groups</h4>
 </div>	
 {% for(var i=0, l=Object.keys(data).length; i < l; i++) { %}
 	<div class="col-xs-12 title task_group_title" align="left" group-name = "{{ Object.keys(data)[i] }}" style="padding-bottom: 15px;border-bottom:1px solid #d1d8dd">
 		<div class="row name">
-				<div class="col-xs-3"><b>{{ Object.keys(data)[i] }}</b></div>
+				<div class="col-xs-4"><b>{{ Object.keys(data)[i] }}</b></div>
 			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[0])[i]) { %}
-				<div class="col-xs-3" data-decimals="3"><b>{{ due_and_done_task[0][Object.keys(due_and_done_task[0])[i]] }} % {%= __("Done") %}</b></div>
+				<div class="col-xs-4" data-decimals="3"><b>{{ due_and_done_task[0][Object.keys(due_and_done_task[0])[i]] }} % {%= __("Done") %}</b></div>
 			{% } else { %}		
-				<div class="col-xs-3"></div> 
+				<div class="col-xs-4"></div> 
 			{% } %}
 			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[1])[i]) { %}
-				<div class="col-xs-3"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} {%= __("Overdue") %}</b></div>
+				<div class="col-xs-4"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} {%= __("Überfällig") %}</b></div>
 			{% } else { %}		
-				<div class="col-xs-3"></div>
+				<div class="col-xs-4"></div>
 			{% } %}
 			<!-- <div class="col-xs-3">
 			<span class="octicon octicon-triangle-down" style="color: darkgray;"></span>
 			</div> -->
 
 		</div>	
-	<table class="table table-bordered table-hover" group-name = "{{ Object.keys(data)[i] }}" style="display: none;">
+	</div>
+{% } %}
+
+
+
+<!-- <div style="max-height: 340px;overflow-y: scroll; position: relative">
+</div> -->
+<!-- 	<table class="table table-bordered table-hover" group-name = "{{ Object.keys(data)[i] }}" style="display: none;">
 
 		<tr style="line-height: 1; font-size: 14px; margin-bottom:0px;">
 			<th style="width: 20px; padding-bottom:3px;padding-left:3px;padding-right:3px; line-height: 1;">
@@ -73,8 +79,4 @@
 			</td>
 		</tr>
 		{% } %}
-	</table>
-	</div>
-{% } %}
-
-</div>
+	</table> -->
