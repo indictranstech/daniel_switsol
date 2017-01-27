@@ -7,23 +7,26 @@ cur_frm.add_fetch('instructor','instructor_name','instructor_name');
 
 frappe.ui.form.on('Certificate', {
 	validate:function(frm){
-		if(frm.doc.ms_certificate){
+		/*if(frm.doc.ms_certificate){
 			if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
+				console.log("inside if")
 				$.each(frm.attachments.get_attachments(),function(index,value){
 					if(value['file_name'] != String(frm.doc.name)+'.pdf'){
 						cur_frm.cscript.attach_ms_certificate(frm);
+						frappe.msgprint("MS Certificate Is attached")
 					}
 					else{
-						frappe.msgprint("Certificate Is already attached")
+						frappe.throw("Hi")
 					}
 				})
 			}
-			else{
-				if(frm.doc.ms_certificate){
-					cur_frm.cscript.attach_ms_certificate(frm);
-				}
+		}*/	
+		if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length == 0){
+			if(frm.doc.ms_certificate){
+				cur_frm.cscript.attach_ms_certificate(frm);
+				frappe.msgprint("MS Certificate Is attached")
 			}
-		}	
+		}
 	},
 	refresh:function(frm){
 		if(!frm.doc.__islocal){
