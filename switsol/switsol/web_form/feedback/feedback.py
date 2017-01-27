@@ -2,9 +2,21 @@ from __future__ import unicode_literals
 
 import frappe
 
-def get_context(context):
-	# do your magic here
-	pass
+# def get_context(context):
+# 	pass
+
+# def get_list_context(context):
+# 	context.get_list = get_student()
+
+
+# def get_student():
+# 	data = frappe.db.sql("""select * from `tabStudent` where name = "STUD00007" """,as_dict=True)
+# 	return data
+
+# def get_id():
+# 	return frappe.get_value("Student",{"name":student_id},"name")
+
+	
 
 
 @frappe.whitelist(allow_guest=True)

@@ -1,0 +1,22 @@
+{
+ "align_labels_left": 0, 
+ "creation": "2017-01-25 13:15:02.761120", 
+ "custom_format": 1, 
+ "disabled": 0, 
+ "doc_type": "Certificate", 
+ "docstatus": 0, 
+ "doctype": "Print Format", 
+ "font": "Default", 
+ "html": "<style>\n.print-format img, .print-format div {\nfont-family: serif;\nvertical-align: middle;\n}\n@media screen {\n.print-format {\nwidth: 8.5in;\nheight:5.5in;\npadding: 0.25in;\nmin-height: 8in;\n}\n             \n}\n</style>\n\n\n<div class=\"row\" style=\" width: 10px;\"></div><br>\n\n<div class=\"row\">\n<div class=\"col-xs-12\" style=\"font-weight: bold;font-size:14px;text-align: center;\">This certificate accredits that,</div> \n</div><br>\n\n<div class=\"row\">\n<div class=\"col-xs-12\" style=\"line-height: 1.7;font-weight: bold;font-size:18px; text-align: center;\">{{doc.student_name}}</div>\n</div><br><br><br>\n\n<div class=\"row\">\n<div class=\"col-xs-12\" style=\"font-size:14px;text-align: center;\">has successfully completed the following</div> \n</div>\n\n<div class=\"row\">\n<div class=\"col-xs-12\" style=\"font-size:14px;text-align: center;\">Microsoft Official Course</div> \n</div><br>\n\n<div class=\"row\">\n\t<div class=\"col-xs-12\" style=\"line-height: 1.7;font-size:14px;text-align: center;\">{{doc.training_center}}</div>\n</div><br><br>\n\n<div class=\"row\">\n<div class=\"col-xs-4\">\t\n<img src=\"/files/NH_Logo_RGB_300dpi_klein.jpg\" class=\"img-responsive\" style=\"width: 123px;\n    height: 60px;\">\n</div>\n<div class=\"col-xs-4\"></div>\t\n<div class=\"col-xs-4\"></div>\n\n<div class=\"row\">\n<div class=\"col-xs-4\"></div>\t\t\n<div class=\"col-xs-4\">\n<img src={{doc.instructor_signature}} class=\"img-responsive\" style=\"margin: 0 auto;padding-bottom: 39px;\">\n</div>\n<div class=\"col-xs-4\"></div>\n</div><br>\n\n<div class=\"row\">\n<div class=\"col-xs-12\">Microsoft Certified Trainer</div>\n<div class=\"col-xs-12\"style=\"line-height: 1.7;font-weight: bold;font-size:10px;text-align: center;\">Glattbrugg,{{frappe.utils.get_datetime(frappe.utils.now()).strftime(\"%d-%m-%Y\")}}</div>\n</div>\n</div>\n\n</div>\n", 
+ "idx": 0, 
+ "line_breaks": 0, 
+ "modified": "2017-01-25 15:12:22.486335", 
+ "modified_by": "Administrator", 
+ "module": "Switsol", 
+ "name": "Certificate", 
+ "owner": "Administrator", 
+ "print_format_builder": 0, 
+ "print_format_type": "Server", 
+ "show_section_headings": 0, 
+ "standard": "Yes"
+}

@@ -16,7 +16,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2017-01-20 08:00:40.927448", 
+ "modified": "2017-01-27 13:10:15.800757", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -29,6 +29,17 @@
  "success_url": "/feedback", 
  "title": "Feedback", 
  "web_form_fields": [
+  {
+   "fieldname": "student_id", 
+   "fieldtype": "Link", 
+   "hidden": 0, 
+   "label": "Student ID", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "Student", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
   {
    "fieldname": "first_name", 
    "fieldtype": "Data", 
@@ -50,6 +61,17 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "training_id", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Seminar / Course ID", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
    "fieldname": "seminar_course", 
    "fieldtype": "Link", 
    "hidden": 0, 
@@ -61,8 +83,10 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "", 
    "fieldtype": "Column Break", 
    "hidden": 0, 
+   "label": "", 
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
