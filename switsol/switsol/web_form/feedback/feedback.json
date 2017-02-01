@@ -16,7 +16,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2017-01-27 13:10:15.800757", 
+ "modified": "2017-01-30 08:35:14.042765", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -31,12 +31,12 @@
  "web_form_fields": [
   {
    "fieldname": "student_id", 
-   "fieldtype": "Link", 
+   "fieldtype": "Data", 
    "hidden": 0, 
    "label": "Student ID", 
    "max_length": 0, 
    "max_value": 0, 
-   "options": "Student", 
+   "options": "", 
    "read_only": 0, 
    "reqd": 0
   }, 
