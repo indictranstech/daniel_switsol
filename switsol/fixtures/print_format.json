@@ -1,6 +1,26 @@
 [
  {
   "align_labels_left": 0, 
+  "css": "div.vertical\n{\n\tmargin-left: -85px;\n\tposition: absolute;\n\twidth: 215px;\n\ttransform: rotate(-90deg);\n\t-webkit-transform: rotate(-90deg);\n\t-moz-transform: rotate(-90deg);\n\t-o-transform: rotate(-90deg);\n\t-ms-transform: rotate(-90deg);\n}\nth.vertical\n{\n\theight: 120px;\n\tline-height: 14px;\n\tpadding-bottom: 20px;\n\ttext-align: left;\n}", 
+  "custom_format": 1, 
+  "disabled": 0, 
+  "doc_type": "Student Attendance", 
+  "docstatus": 0, 
+  "doctype": "Print Format", 
+  "font": null, 
+  "format_data": null, 
+  "html": "{{ frappe.render_template(\"switsol_ag/new_horizons_parameter/print_format/student_attendance_print_participants/student_attendance_print_participants.html\", {\"doc\": doc}) }}", 
+  "line_breaks": 0, 
+  "modified": "2017-01-04 15:06:00.668141", 
+  "module": null, 
+  "name": "Student Attendance Print Participants", 
+  "print_format_builder": 0, 
+  "print_format_type": "Server", 
+  "show_section_headings": 0, 
+  "standard": "Yes"
+ }, 
+ {
+  "align_labels_left": 0, 
   "css": ".rotate { \n        background-color: red;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
