@@ -6,27 +6,27 @@ cur_frm.add_fetch('item','item_name','item_name');
 cur_frm.add_fetch('instructor','instructor_name','instructor_name'); 
 
 frappe.ui.form.on('Certificate', {
-	validate:function(frm){
-		/*if(frm.doc.ms_certificate){
-			if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
-				console.log("inside if")
-				$.each(frm.attachments.get_attachments(),function(index,value){
-					if(value['file_name'] != String(frm.doc.name)+'.pdf'){
-						cur_frm.cscript.attach_ms_certificate(frm);
-						frappe.msgprint("MS Certificate Is attached")
-					}
-					else{
-						frappe.throw("Hi")
-					}
-				})
-			}
-		}*/	
-		if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length == 0){
+	ms_certificate:function(frm){
+		if(frm.doc.ms_certificate && frm.doc.instructor_signature && frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
+			//if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
+				var attachments = []
+				$.each(frm.attachments.get_attachments(),function(index,row){
+		        	attachments.push(row['file_name'])      
+		        })
+		        if(attachments.indexOf(String(frm.doc.name)+'.pdf') == -1){
+	                cur_frm.cscript.attach_ms_certificate(frm);		        
+		        }
+		}
+		if(frm.doc.ms_certificate && !frm.doc.instructor_signature){
+			cur_frm.set_value("ms_certificate",0)
+			msgprint("please attach signature")
+		}	
+		/*if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length == 0){
 			if(frm.doc.ms_certificate){
 				cur_frm.cscript.attach_ms_certificate(frm);
 				frappe.msgprint("MS Certificate Is attached")
 			}
-		}
+		}*/
 	},
 	refresh:function(frm){
 		if(!frm.doc.__islocal){
@@ -37,14 +37,17 @@ frappe.ui.form.on('Certificate', {
 
 
 cur_frm.cscript.attach_ms_certificate = function(frm) {
+	var url = frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+frm.doc.name+"&format=Certificate&no_letterhead=0"
 	frappe.call({
 		method: "switsol.switsol.doctype.certificate.certificate.add_attachments",
 		args: {
-			"reference_name":frm.doc.name
+			"certificate":frm.doc.name,
+			"url":url
 		},
 		callback: function(r) {
 			if (r.message){
-				cur_frm.reload_doc()
+				cur_frm.save()
+				frappe.msgprint("MS Certificate Is attached")
 			}
 		}
 	})

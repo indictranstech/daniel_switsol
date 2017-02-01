@@ -2,8 +2,8 @@ from __future__ import unicode_literals
 
 import frappe
 
-# def get_context(context):
-# 	pass
+def get_context(context):
+	pass
 
 # def get_list_context(context):
 # 	context.get_list = get_student()

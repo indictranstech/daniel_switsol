@@ -13,6 +13,11 @@ def get_data():
 					"name": "Feedback",
 					"description": _("Feed Back"),
 				},
+				{
+			       "type": "doctype",
+			       "name": "Certificate",
+			       "description": _("Certificate"),
+                }   
 			]
 		},
 		{
