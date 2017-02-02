@@ -22,5 +22,27 @@ frappe.ui.form.on('Feedback', {
 				}
 			});
 		}
+	},
+	student_id : function(frm){
+		// if (cur_frm.doc.__islocal) {
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Student",
+					fieldname: ["first_name","last_name"],
+					filters: {student_id:frm.doc.student_id}
+				},
+				callback: function(r) {
+					if(r.message) {
+						console.log(r.message)
+						frm.set_value("first_name", "");
+						frm.set_value("last_name", "");
+						frm.set_value("first_name", r.message.first_name);
+						frm.set_value("last_name", r.message.last_name);
+						// frm.save();
+					}
+				}
+			});
+		// }
 	}
 });

@@ -1,6 +1,7 @@
 frappe.ready(function() {
 	var form = $('#page-feedback')
 	var seminar_course = $('form[data-web-form="feedback"]').find('select[name="seminar_course"]')
+	var student_id = $('form[data-web-form="feedback"]').find('input[name="student_id"]')
 	bind_field = new Fieldevent(form,seminar_course)
 	window.location.href.split("=")[1] ? 
 	filter_options_of_seminar([["training_id","=",String(window.location.href.split("=")[1])]],seminar_course)
@@ -14,6 +15,7 @@ Fieldevent = Class.extend({
 		this.form = form;
 		this.seminar_course = seminar_course;
 		me.change_events()
+
 	},
 	change_events:function(){
 		var me = this;
@@ -26,6 +28,13 @@ Fieldevent = Class.extend({
 				$(me.seminar_course).empty().append('"'+options+'"')
 			}	
 		})
+
+		$(me.form).find('input[name="student_id"]').change(function(){
+			if($(this).val()){
+				name_of_student([["student_id","=",String($(this).val())]])			
+			}
+		})
+		
 	}
 })
 
@@ -44,6 +53,7 @@ filter_options_of_seminar = function(filter_list,seminar_course){
 				if(r.message.length > 1){
 					var options= "<option value='' selected='selected'></option>"
 					$.each(r.message,function(i,d){
+						console.log(d)
 						options += "<option value='"+d['name']+"'"+">"+d['name']+"</option>"
 					})
 					$(seminar_course).empty().append('"'+options+'"')
@@ -56,6 +66,25 @@ filter_options_of_seminar = function(filter_list,seminar_course){
 			else{
 				var options= "<option value='' selected='selected'></option>"
 				$(seminar_course).empty().append('"'+options+'"')
+			}
+		}
+	});
+}
+
+
+name_of_student = function(filter_list){
+	frappe.call({
+		method:"switsol.switsol.web_form.feedback.feedback.get_list",
+		args:{
+			doctype:"Student",
+			filters: filter_list,
+			fields: ["first_name","last_name"]
+		},
+		callback: function(r) {
+			if(r.message) {
+				console.log(r.message)
+				$('form[data-web-form="feedback"]').find('input[name="first_name"]').val(r.message[0]['first_name'])
+				$('form[data-web-form="feedback"]').find('input[name="last_name"]').val(r.message[0]['last_name'])
 			}
 		}
 	});
