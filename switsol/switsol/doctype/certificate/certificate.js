@@ -4,29 +4,31 @@
 cur_frm.add_fetch('student','title','student_name'); 
 cur_frm.add_fetch('item','item_name','item_name'); 
 cur_frm.add_fetch('instructor','instructor_name','instructor_name'); 
+cur_frm.add_fetch('instructor','employee','employee');
 
 frappe.ui.form.on('Certificate', {
 	ms_certificate:function(frm){
-		if(frm.doc.ms_certificate && frm.doc.instructor_signature && frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
+		if(frm.doc.ms_certificate && frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
 			//if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
-				var attachments = []
-				$.each(frm.attachments.get_attachments(),function(index,row){
-		        	attachments.push(row['file_name'])      
-		        })
-		        if(attachments.indexOf(String(frm.doc.name)+'.pdf') == -1){
-	                cur_frm.cscript.attach_ms_certificate(frm);		        
-		        }
+			console.log("inside   my function")
+			var attachments = []
+			$.each(frm.attachments.get_attachments(),function(index,row){
+	        	attachments.push(row['file_name'])      
+	        })
+	        if(attachments.indexOf(String(frm.doc.name)+'.pdf') == -1){
+                cur_frm.cscript.attach_ms_certificate(frm);		        
+	        }
 		}
-		if(frm.doc.ms_certificate && !frm.doc.instructor_signature){
+		/*if(frm.doc.ms_certificate && !frm.doc.instructor_signature){
 			cur_frm.set_value("ms_certificate",0)
 			msgprint("please attach signature")
-		}	
-		/*if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length == 0){
+		}*/	
+		if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length == 0){
 			if(frm.doc.ms_certificate){
 				cur_frm.cscript.attach_ms_certificate(frm);
 				frappe.msgprint("MS Certificate Is attached")
 			}
-		}*/
+		}
 	},
 	refresh:function(frm){
 		if(!frm.doc.__islocal){
