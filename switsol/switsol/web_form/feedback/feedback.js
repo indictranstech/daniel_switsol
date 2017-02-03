@@ -4,7 +4,7 @@ frappe.ready(function() {
 	var student_id = $('form[data-web-form="feedback"]').find('input[name="student_id"]')
 	bind_field = new Fieldevent(form,seminar_course)
 	window.location.href.split("=")[1] ? 
-	filter_options_of_seminar([["training_id","=",String(window.location.href.split("=")[1])]],seminar_course)
+	filter_options_of_seminar([["training_id","=",String(window.location.href.split("=")[1])]],seminar_course,String(window.location.href.split("=")[1]))
 	:filter_options_of_seminar([["status","=","1"]],seminar_course);
 });
 
@@ -21,7 +21,7 @@ Fieldevent = Class.extend({
 		var me = this;
 		$(me.form).find('input[name="training_id"]').change(function(){
 			if($(this).val()){
-				filter_options_of_seminar([["name","=",String($(this).val())]],me.seminar_course)			
+				filter_options_of_seminar([["training_id","=",String($(this).val())]],me.seminar_course,String($(this).val()))
 			}
 			else{
 				var options= "<option value='' selected='selected'></option>"
@@ -39,7 +39,7 @@ Fieldevent = Class.extend({
 })
 
 
-filter_options_of_seminar = function(filter_list,seminar_course){
+filter_options_of_seminar = function(filter_list,seminar_course,training_id){
 	frappe.call({
 		method:"switsol.switsol.web_form.feedback.feedback.get_list",
 		args:{
@@ -60,7 +60,10 @@ filter_options_of_seminar = function(filter_list,seminar_course){
 				}
 				else if(r.message.length == 1){
 					var options= "<option value='"+r.message[0]['name']+"'"+"selected='selected' >"+r.message[0]['name']+"</option>"
-					$(seminar_course).empty().append('"'+options+'"')	
+					$(seminar_course).empty().append('"'+options+'"')
+					$(seminar_course).prop("disabled", true );
+					$('form[data-web-form="feedback"]').find('input[name="training_id"]').val(training_id)	
+					$('form[data-web-form="feedback"]').find('input[name="training_id"]').prop("disabled", true );
 				}
 			}
 			else{

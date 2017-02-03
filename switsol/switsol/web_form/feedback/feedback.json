@@ -7,7 +7,7 @@
  "allow_multiple": 0, 
  "allow_print": 0, 
  "amount": 0.0, 
- "creation": "2017-01-03 08:59:50.581961", 
+ "creation": "2017-02-03 08:48:29.799301", 
  "doc_type": "Feedback", 
  "docstatus": 0, 
  "doctype": "Web Form", 
@@ -16,7 +16,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2017-01-30 08:35:14.042765", 
+ "modified": "2017-02-03 11:27:02.312576", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -48,7 +48,7 @@
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
-   "reqd": 1
+   "reqd": 0
   }, 
   {
    "fieldname": "company", 
@@ -100,7 +100,7 @@
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
-   "reqd": 1
+   "reqd": 0
   }, 
   {
    "fieldname": "date", 
