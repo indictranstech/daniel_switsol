@@ -43,6 +43,7 @@ add_sales_team = function(d){
 		},
 		callback: function(r) {
 			if (r.message) {
+				console.log(r.message)
 				$.each(r.message, function(i, j) {
 					var row = frappe.model.add_child(cur_frm.doc,'Sales Order Sales Person', 'quotation_sales_person');
 					row.item_code = d.item_code

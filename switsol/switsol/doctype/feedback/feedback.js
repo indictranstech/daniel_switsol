@@ -1,8 +1,9 @@
 // Copyright (c) 2016, Switsol and contributors
 // For license information, please see license.txt
 
-cur_frm.add_fetch('student','first_name','first_name');
-cur_frm.add_fetch('student','last_name','last_name');
+/*cur_frm.add_fetch('student','first_name','first_name');
+cur_frm.add_fetch('student','last_name','last_name');*/
+cur_frm.add_fetch('student','student_email_id','student_email_id');
 
 frappe.ui.form.on('Feedback', {
 	refresh: function(frm) {
@@ -24,6 +25,24 @@ frappe.ui.form.on('Feedback', {
 		}
 	},
 	student_id : function(frm){
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Student",
+					fieldname: ["student_email_id","name"],
+					filters: {student_id:frm.doc.student_id}
+				},
+				callback: function(r) {
+					if(r.message) {
+						frm.set_value("student_email_id", "");
+						frm.set_value("student", "");
+						frm.set_value("student_email_id", r.message.student_email_id);
+						frm.set_value("student", r.message.name);
+					}
+				}
+			});
+	}
+	/*student_id : function(frm){
 		// if (cur_frm.doc.__islocal) {
 			frappe.call({
 				method: "frappe.client.get_value",
@@ -44,5 +63,5 @@ frappe.ui.form.on('Feedback', {
 				}
 			});
 		// }
-	}
+	}*/
 });
