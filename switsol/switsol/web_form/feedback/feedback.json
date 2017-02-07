@@ -7,7 +7,7 @@
  "allow_multiple": 0, 
  "allow_print": 0, 
  "amount": 0.0, 
- "creation": "2017-02-04 14:23:23.484473", 
+ "creation": "2017-02-07 06:47:38.493170", 
  "doc_type": "Feedback", 
  "docstatus": 0, 
  "doctype": "Web Form", 
@@ -16,7 +16,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2017-02-06 07:01:51.046171", 
+ "modified": "2017-02-07 07:43:09.062095", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -41,20 +41,10 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "first_name", 
+   "fieldname": "student_email_id", 
    "fieldtype": "Data", 
    "hidden": 0, 
-   "label": "First Name", 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
-  }, 
-  {
-   "fieldname": "company", 
-   "fieldtype": "Data", 
-   "hidden": 0, 
-   "label": "Company", 
+   "label": "Student Email ID", 
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 
@@ -93,16 +83,6 @@
    "reqd": 0
   }, 
   {
-   "fieldname": "last_name", 
-   "fieldtype": "Data", 
-   "hidden": 0, 
-   "label": "Last Name", 
-   "max_length": 0, 
-   "max_value": 0, 
-   "read_only": 0, 
-   "reqd": 0
-  }, 
-  {
    "fieldname": "date", 
    "fieldtype": "Date", 
    "hidden": 0, 
@@ -117,6 +97,16 @@
    "fieldtype": "Data", 
    "hidden": 0, 
    "label": "Trainer", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "company", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Company", 
    "max_length": 0, 
    "max_value": 0, 
    "read_only": 0, 

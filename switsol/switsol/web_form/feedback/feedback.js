@@ -28,13 +28,17 @@ Fieldevent = Class.extend({
 				$(me.seminar_course).empty().append('"'+options+'"')
 			}	
 		})
-
 		$(me.form).find('input[name="student_id"]').change(function(){
+			if($(this).val()){
+				email_id_of_student([["student_id","=",String($(this).val())]])			
+			}
+		})
+
+		/*$(me.form).find('input[name="student_id"]').change(function(){
 			if($(this).val()){
 				name_of_student([["student_id","=",String($(this).val())]])			
 			}
-		})
-		
+		})*/
 	}
 })
 
@@ -74,8 +78,24 @@ filter_options_of_seminar = function(filter_list,seminar_course,training_id){
 	});
 }
 
+email_id_of_student = function(filter_list){
+	frappe.call({
+		method:"switsol.switsol.web_form.feedback.feedback.get_list",
+		args:{
+			doctype:"Student",
+			filters: filter_list,
+			fields: ["student_email_id"]
+		},
+		callback: function(r) {
+			if(r.message) {
+				console.log(r.message)
+				$('form[data-web-form="feedback"]').find('input[name="student_email_id"]').val(r.message[0]['student_email_id'])
+			}
+		}
+	});
+}
 
-name_of_student = function(filter_list){
+/*name_of_student = function(filter_list){
 	frappe.call({
 		method:"switsol.switsol.web_form.feedback.feedback.get_list",
 		args:{
@@ -91,4 +111,4 @@ name_of_student = function(filter_list){
 			}
 		}
 	});
-}
+}*/
