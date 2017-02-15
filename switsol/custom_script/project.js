@@ -9,9 +9,8 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
 		});
-		common_function();
+		common_function();	
 	}
-	
 });
 
 
@@ -158,6 +157,107 @@ common_function = function(){
 				}				
 			})	
 }
+
+
+cur_frm.cscript.kursbestatigung_generieren = function() {
+	dialog_for_SC_MS_certificate("New Horizons Certificate")
+}
+cur_frm.cscript.ms_zertifikat_generieren = function() {
+	dialog_for_SC_MS_certificate("Microsoft Certificate")
+}
+
+dialog_for_SC_MS_certificate = function(print_format){
+	var student_data = {}
+	$.each(cur_frm.doc.project_participant_details, function(idx, val){
+		if(val.__checked == 1){
+			student_data[val.student] = [val.student_email_id,val.student_name]
+		}
+	})
+	if(Object.keys(student_data).length > 0){
+		var instructor_name 
+		var is_checked_pdf_send_by_mail 
+		var dialog = new frappe.ui.Dialog({ 
+			title: __("Details"),
+			fields: [
+					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",
+					change: function() {
+						instructor_name = dialog.get_values().instructor;	
+						validate_signature(instructor_name,dialog)
+						}
+					},
+					{fieldtype: "Check", fieldname: "certificate", label: __("Certificate to be sent by Email?")
+					}
+			]
+		})
+		dialog.show();
+		dialog.set_primary_action(__("ADD"), function(frm) {
+			is_checked_pdf_send_by_mail = dialog.get_values().certificate
+			 dialog.get_values().instructor ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail,print_format,dialog):
+			frappe.throw("Please Add Instructor")	
+			// attach_new_horizon_certificate(frm); 
+		});
+	}
+	else{
+		frappe.throw("Select Student First")
+	}
+}
+
+make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,print_format,dialog){	
+	frappe.call({
+		method: "switsol.custom_script.project.certificate_creation",
+		args: {
+			"student_data":student_data,
+			"project_name":cur_frm.doc.name,
+			"instructor": instructor,
+			"item": cur_frm.doc.item,
+			"item_name":cur_frm.doc.item_name,
+			"training_center":cur_frm.doc.project_training_details[0]['training_center'],
+			"is_checked_pdf_send_by_mail" : is_checked_pdf_send_by_mail,
+			"print_format" : print_format
+		},
+		callback: function(r) {
+			/*if (r.message){
+				attach_new_horizon_certificate(r.message,print_format)
+			}*/
+			dialog.hide()		
+		}
+	})
+}
+
+validate_signature = function(instructor_name,dialog){
+	frappe.call({
+		method:"switsol.custom_script.project.check_employee_signature",
+		args:{
+			"instructor_name": instructor_name
+		},
+		callback: function(r){
+			if (r.message && r.message != "true"){
+				dialog.fields_dict.instructor.$input.val("")
+				frappe.throw(__(r.message))
+			}
+		}
+	})
+}
+
+/*attach_new_horizon_certificate = function(certificate,print_format) {
+	console.log("inside frappe",print_format)
+	var url = frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate+"&format="+print_format+"&no_letterhead=0"
+	frappe.call({
+		method: "switsol.switsol.doctype.certificate.certificate.add_attachments",
+		args: {
+			"certificate":certificate,
+			"url":url,
+			"print_format":print_format
+		},
+		callback: function(r) {
+			if (r.message){
+				cur_frm.save()
+				frappe.msgprint("Standard Certificate Is attached")
+			}
+		}
+	})
+}
+*/
 
 /*frappe.ui.form.on("Task Group Task Table",{
 	responsible_user:function(frm,cdt,cdn){

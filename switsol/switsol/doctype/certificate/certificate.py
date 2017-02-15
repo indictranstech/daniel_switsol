@@ -6,23 +6,36 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 import urllib
+from frappe.desk.form.load import get_attachments
 # from frappe.utils.file_manager import save_file
 # from frappe.utils.pdf import get_pdf
 
 class Certificate(Document):
-	pass
+	def validate(self):
+		self.ms_certificate = 1
+
+	def after_insert(self):
+		# frappe.errprint("inside aftrer insert")
+		# frappe.errprint(self.doctype)
+		if self.ms_certificate:
+			if get_attachments(self.doctype,self.name):
+				for item in get_attachments(self.doctype,self.name):
+					frappe.errprint(item)	
+			else:
+				url = "http://localhost:8000/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+self.name+\
+												"&format=New Horizons Certificate&no_letterhead=0"
+				add_attachments(self.name,url,"New Horizons Certificate.pdf")	
 
 
 @frappe.whitelist()
-def add_attachments(certificate,url):
-	frappe.errprint(certificate)
+def add_attachments(certificate,url,print_format):
+	# frappe.errprint(["inside add_aatachments",print_format,url,certificate])
 	doc = frappe.get_doc("Certificate",certificate)
 	file_url = urllib.unquote(url)
-	frappe.errprint(file_url)
 	f = frappe.get_doc({
 		"doctype": "File",
 		"file_url": url,
-		"file_name": certificate+'.pdf',
+		"file_name": print_format,
 		"attached_to_doctype": doc.doctype,
 		"attached_to_name": doc.name,
 		"folder": "Home/Attachments"
