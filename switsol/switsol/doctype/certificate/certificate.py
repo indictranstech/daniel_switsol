@@ -12,17 +12,16 @@ from frappe.desk.form.load import get_attachments
 
 class Certificate(Document):
 	def validate(self):
-		self.ms_certificate = 1
+		if self.make_certificate_from == "From Itself":
+			self.ms_certificate = 1
 
 	def after_insert(self):
-		# frappe.errprint("inside aftrer insert")
-		# frappe.errprint(self.doctype)
 		if self.ms_certificate:
 			if get_attachments(self.doctype,self.name):
 				for item in get_attachments(self.doctype,self.name):
 					frappe.errprint(item)	
 			else:
-				url = "http://localhost:8000/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+self.name+\
+				url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+self.name+\
 												"&format=New Horizons Certificate&no_letterhead=0"
 				add_attachments(self.name,url,"New Horizons Certificate.pdf")	
 
