@@ -158,15 +158,15 @@ common_function = function(){
 			})	
 }
 
-
+var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
 cur_frm.cscript.kursbestatigung_generieren = function() {
-	dialog_for_SC_MS_certificate("New Horizons Certificate")
+	dialog_for_SC_MS_certificate("New Horizons Certificate",name_of_instructor)
 }
 cur_frm.cscript.ms_zertifikat_generieren = function() {
-	dialog_for_SC_MS_certificate("Microsoft Certificate")
+	dialog_for_SC_MS_certificate("Microsoft Certificate",name_of_instructor)
 }
 
-dialog_for_SC_MS_certificate = function(print_format){
+dialog_for_SC_MS_certificate = function(print_format,name_of_instructor){
 	var student_data = {}
 	$.each(cur_frm.doc.project_participant_details, function(idx, val){
 		if(val.__checked == 1){
@@ -174,12 +174,10 @@ dialog_for_SC_MS_certificate = function(print_format){
 		}
 	})
 	if(Object.keys(student_data).length > 0){
-		var instructor_name 
-		var is_checked_pdf_send_by_mail 
 		var dialog = new frappe.ui.Dialog({ 
 			title: __("Details"),
 			fields: [
-					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",
+					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default: name_of_instructor,
 					change: function() {
 						instructor_name = dialog.get_values().instructor;	
 						validate_signature(instructor_name,dialog)
@@ -190,9 +188,11 @@ dialog_for_SC_MS_certificate = function(print_format){
 			]
 		})
 		dialog.show();
+		validate_signature(name_of_instructor,dialog);
 		dialog.set_primary_action(__("ADD"), function(frm) {
-			is_checked_pdf_send_by_mail = dialog.get_values().certificate
-			 dialog.get_values().instructor ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail,print_format,dialog):
+			var is_checked_pdf_send_by_mail = dialog.fields_dict.certificate.get_value();
+			var instructor_name = dialog.fields_dict.instructor.get_value();
+			dialog.fields_dict.instructor.get_value() ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail,print_format,dialog):
 			frappe.throw("Please Add Instructor")	
 			// attach_new_horizon_certificate(frm); 
 		});
@@ -225,18 +225,20 @@ make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,
 }
 
 validate_signature = function(instructor_name,dialog){
-	frappe.call({
-		method:"switsol.custom_script.project.check_employee_signature",
-		args:{
-			"instructor_name": instructor_name
-		},
-		callback: function(r){
-			if (r.message && r.message != "true"){
-				dialog.fields_dict.instructor.$input.val("")
-				frappe.throw(__(r.message))
+	if(instructor_name){
+		frappe.call({
+			method:"switsol.custom_script.project.check_employee_signature",
+			args:{
+				"instructor_name": instructor_name
+			},
+			callback: function(r){
+				if (r.message && r.message != "true"){
+					dialog.fields_dict.instructor.$input.val("")
+					frappe.throw(__(r.message))
+				}
 			}
-		}
-	})
+		})
+	}
 }
 
 /*attach_new_horizon_certificate = function(certificate,print_format) {

@@ -90,6 +90,7 @@ email_id_of_student = function(filter_list){
 			if(r.message) {
 				console.log(r.message)
 				$('form[data-web-form="feedback"]').find('input[name="student_email_id"]').val(r.message[0]['student_email_id'])
+				$('form[data-web-form="feedback"]').find('input[name="student_email_id"]').prop("disabled", true );
 			}
 		}
 	});

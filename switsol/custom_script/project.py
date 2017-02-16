@@ -15,18 +15,20 @@ def certificate_creation(**kwargs):
 	for student_name in student_data.keys():
 		name = check_student_for_certificate(kwargs['project_name'],student_name,kwargs['instructor'])
 		if name:
-			certificate_doc = frappe.get_doc("Certificate",check_student_for_certificate(kwargs['project_name'],student_name,kwargs['instructor']))
-			if kwargs['print_format'] == "Microsoft Certificate":
-				if get_attachments("Certificate",name):
-					for item in get_attachments("Certificate",name):
-						if item['file_name'] == "Microsoft Certificate":
-							pass
-						else:
-							attach_pdf_as_certificate(name,"Microsoft Certificate")
+			certificate_doc = frappe.get_doc("Certificate",name)
+			attachments_list = []
+			if get_attachments("Certificate",name):
+				for item in get_attachments("Certificate",name):
+					attachments_list.append(item['file_name'])		
+
+			if kwargs['print_format'] not in attachments_list:
+				attach_pdf_as_certificate(name,kwargs['print_format'])
+
 			if kwargs['is_checked_pdf_send_by_mail'] == "1" and certificate_doc:
-				send_certificate_pdf_to_student(certificate_doc.name,student_data[student_name][0],kwargs['print_format'])	
+				check_student_email_id_and_send_mail(student_data[student_name][0],student_data[student_name][1],kwargs['print_format'],name)
 		else:
 			student_not_have_certficate.append(student_name)
+
 	if student_not_have_certficate:
 		for student in student_not_have_certficate:
 		 	certificate = frappe.new_doc("Certificate")
@@ -40,42 +42,59 @@ def certificate_creation(**kwargs):
 			certificate.instructor = kwargs['instructor']
 			certificate.employee = instructor_employee_name[0]['employee']
 			certificate.instructor_name = instructor_employee_name[0]['instructor_name']
+			certificate.make_certificate_from = "From Project"
 			certificate.save(ignore_permissions=True)
+			attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
 
-			if kwargs['print_format'] == "Microsoft Certificate": 
-				attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
+			# if kwargs['print_format'] == "Microsoft Certificate": 
+			# 	attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
 
 			if kwargs['is_checked_pdf_send_by_mail'] == "1":
-				if kwargs['print_format'] == "New Horizons Certificate":
-					check_student_email_id(student_data[student][0],student_data[student][1],kwargs['print_format'])
-					send_certificate_pdf_to_student(certificate.name,certificate.student_email_id,kwargs['print_format'])
-				elif kwargs['print_format'] == "Microsoft Certificate":
-					print_format = "Microsoft Certificate"	
-					check_student_email_id(student_data[student][0],student_data[student][1],print_format)			
-					send_certificate_pdf_to_student(certificate.name,certificate.student_email_id,print_format)
+				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
+				# if kwargs['print_format'] == "New Horizons Certificate":
+				# elif kwargs['print_format'] == "Microsoft Certificate":
+				# 	check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
 
-def check_student_email_id(mail_id,name_of_student,print_format):
-	if mail_id == "":
-		frappe.sendmail(recipients=[frappe.session.user],sender=None, subject=print_format,
-			message=_("Please Send Mail manually to Student <b>{0}</b>".format(name_of_student)))
+def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name):
+	cc = []
+	if student_mail_id:
+		recipients  = [student_mail_id]
+		cc = [frappe.session.user]
+		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format)]
+		subject = print_format
+		message = _("Please See your Certificate")
+	else:
+		recipients  = [frappe.session.user]
+		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format)]
+		subject = print_format
+		message = _("Please Send Certificate to <b>{0}</b>".format(name_of_student))
 
-
+	frappe.sendmail(
+		recipients=(recipients or []),
+		cc=cc,
+		expose_recipients="header",
+		sender=None,
+		reply_to=None,
+		subject=subject,
+		content=None,
+		reference_doctype=None,
+		reference_name=None,
+		attachments=attachments,
+		message = message,
+		message_id=None,
+		unsubscribe_message=None,
+		delayed=True,
+		communication=None
+	)	
 
 def check_student_for_certificate(project_name,student_name,instructor_name):
 	return frappe.db.get_value("Certificate",{"project":project_name,"student":student_name,"instructor":instructor_name},"name")
 
-def send_certificate_pdf_to_student(name,student_email_id,print_format):
-	frappe.sendmail(recipients=student_email_id, cc=[frappe.session.user],sender=None, subject=print_format,
-			message="Please See your Certificate", attachments=[frappe.attach_print("Certificate",
-			name, file_name=print_format, print_format=print_format)])
-
 def attach_pdf_as_certificate(certificate_name,print_format_name):
-	url = "http://localhost:8000/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
+	url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
 												"&format=Microsoft Certificate&no_letterhead=0"
 	add_attachments(certificate_name,url,print_format_name)
 	
-
-
 @frappe.whitelist()
 def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
