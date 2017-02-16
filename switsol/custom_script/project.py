@@ -50,10 +50,10 @@ def certificate_creation(**kwargs):
 			# 	attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
 
 			if kwargs['is_checked_pdf_send_by_mail'] == "1":
-				if kwargs['print_format'] == "New Horizons Certificate":
-					check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
-				elif kwargs['print_format'] == "Microsoft Certificate":
-					check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
+				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
+				# if kwargs['print_format'] == "New Horizons Certificate":
+				# elif kwargs['print_format'] == "Microsoft Certificate":
+				# 	check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
 
 def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name):
 	cc = []
