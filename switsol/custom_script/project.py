@@ -92,7 +92,7 @@ def check_student_for_certificate(project_name,student_name,instructor_name):
 
 def attach_pdf_as_certificate(certificate_name,print_format_name):
 	url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
-												"&format=Microsoft Certificate&no_letterhead=0"
+												"&format="+print_format_name+"&no_letterhead=0"
 	add_attachments(certificate_name,url,print_format_name)
 	
 @frappe.whitelist()
