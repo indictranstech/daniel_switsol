@@ -1,3 +1,5 @@
+
+
 frappe.ui.form.on("Project", "refresh", function(frm) {
 	if(!cur_frm.doc.__islocal){
 		frm.add_custom_button(__("Feedback Kursteilnehmer"), function() {
@@ -30,7 +32,7 @@ show_table = function(task_group_details_field){
 	})
 }
 
-update_or_add_responsible_user_of_task = function(d){
+/*update_or_add_responsible_user_of_task = function(d){
 	if(cur_frm.doc.tasks.length > 0){
 		$.each(cur_frm.doc.tasks,function(i,row){
 			if(row['group_name'] == d.task_group){
@@ -39,7 +41,7 @@ update_or_add_responsible_user_of_task = function(d){
 			}
 		})
 	}
-}	
+}	*/
 
 
 common_function = function(){
@@ -158,12 +160,13 @@ common_function = function(){
 			})	
 }
 
-var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
 cur_frm.cscript.kursbestatigung_generieren = function() {
-	dialog_for_SC_MS_certificate("New Horizons Certificate",name_of_instructor)
+	var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
+	dialog_for_SC_MS_certificate("New Horizons Certificate",name_of_instructor);
 }
 cur_frm.cscript.ms_zertifikat_generieren = function() {
-	dialog_for_SC_MS_certificate("Microsoft Certificate",name_of_instructor)
+	var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
+	dialog_for_SC_MS_certificate("Microsoft Certificate",name_of_instructor);
 }
 
 dialog_for_SC_MS_certificate = function(print_format,name_of_instructor){
@@ -179,23 +182,22 @@ dialog_for_SC_MS_certificate = function(print_format,name_of_instructor){
 			fields: [
 					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default: name_of_instructor,
 					change: function() {
-						instructor_name = dialog.get_values().instructor;	
-						validate_signature(instructor_name,dialog)
+						validate_signature($(this).val(),dialog);
 						}
 					},
 					{fieldtype: "Check", fieldname: "certificate", label: __("Certificate to be sent by Email?")
 					}
 			]
 		})
-		dialog.show();
-		validate_signature(name_of_instructor,dialog);
 		dialog.set_primary_action(__("ADD"), function(frm) {
 			var is_checked_pdf_send_by_mail = dialog.fields_dict.certificate.get_value();
 			var instructor_name = dialog.fields_dict.instructor.get_value();
 			dialog.fields_dict.instructor.get_value() ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail,print_format,dialog):
-			frappe.throw("Please Add Instructor")	
-			// attach_new_horizon_certificate(frm); 
+			frappe.throw("Please Add Instructor")
 		});
+		dialog.show();
+		console.log(name_of_instructor,"name_of_instructor")
+		validate_signature(name_of_instructor,dialog);
 	}
 	else{
 		frappe.throw("Select Student First")
@@ -226,6 +228,7 @@ make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,
 
 validate_signature = function(instructor_name,dialog){
 	if(instructor_name){
+		console.log("inside validate_signature",instructor_name)
 		frappe.call({
 			method:"switsol.custom_script.project.check_employee_signature",
 			args:{
