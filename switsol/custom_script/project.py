@@ -8,6 +8,9 @@ from frappe.desk.form.load import get_attachments
 
 @frappe.whitelist()
 def certificate_creation(**kwargs):
+	data = json.loads(kwargs.get('args'))
+	predefined_text_content = data.get('predefined_text').encode('utf-8')
+	predefined_text_value =  frappe.db.get_value("Predefined Text Container",predefined_text_content,"predefined_text_container".encode('utf-8'))
 	student_data = json.loads(kwargs['student_data'])
 	student_not_have_certficate = []
 	instructor_employee_name = frappe.db.get_values("Instructor",{"name":kwargs['instructor']},["instructor_name","employee"],as_dict=True)
@@ -25,7 +28,9 @@ def certificate_creation(**kwargs):
 				attach_pdf_as_certificate(name,kwargs['print_format'])
 
 			if kwargs['is_checked_pdf_send_by_mail'] == "1" and certificate_doc:
-				check_student_email_id_and_send_mail(student_data[student_name][0],student_data[student_name][1],kwargs['print_format'],name)
+				check_student_email_id_and_send_mail(student_data[student_name][0],student_data[student_name][1],kwargs['print_format'],name,predefined_text_content,predefined_text_value)
+				frappe.db.set_value("Certificate", certificate_doc.name, "send_by_mail",1)
+
 		else:
 			student_not_have_certficate.append(student_name)
 
@@ -42,6 +47,8 @@ def certificate_creation(**kwargs):
 			certificate.instructor = kwargs['instructor']
 			certificate.employee = instructor_employee_name[0]['employee']
 			certificate.instructor_name = instructor_employee_name[0]['instructor_name']
+			certificate.predefined_text_container = predefined_text_content
+			certificate.predefined_text_container_value = predefined_text_value
 			certificate.make_certificate_from = "From Project"
 			certificate.save(ignore_permissions=True)
 			attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
@@ -50,26 +57,30 @@ def certificate_creation(**kwargs):
 			# 	attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
 
 			if kwargs['is_checked_pdf_send_by_mail'] == "1":
-				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
+				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name,predefined_text_content,predefined_text_value)
+				frappe.db.set_value("Certificate", certificate.name, "send_by_mail",1)
 				# if kwargs['print_format'] == "New Horizons Certificate":
 				# elif kwargs['print_format'] == "Microsoft Certificate":
 				# 	check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
 
-def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name):
+def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name,predefined_text_content,predefined_text_value):
 	cc = []
+	orientation = "Landscape" if print_format == 'Microsoft Certificate' else "Portrait"
+
 	if student_mail_id:
 		recipients  = [student_mail_id]
 		cc = [frappe.session.user]
-		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format)]
+		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format, orientation=orientation)]
 		subject = print_format
-		message = _("Please See your Certificate")
+		message = _("Please See your Certificate <br>") + predefined_text_value
 	else:
 		recipients  = [frappe.session.user]
-		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format)]
+		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format, orientation=orientation)]
 		subject = print_format
-		message = _("Please Send Certificate to <b>{0}</b>".format(name_of_student))
+		message = _("Please Send Certificate to <b>{0}</b> <br>".format(name_of_student)) + predefined_text_value
 
-	frappe.sendmail(
+	try:
+		frappe.sendmail(
 		recipients=(recipients or []),
 		cc=cc,
 		expose_recipients="header",
@@ -83,28 +94,37 @@ def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_f
 		message = message,
 		message_id=None,
 		unsubscribe_message=None,
-		delayed=True,
+		delayed=None,
 		communication=None
-	)	
+	)
+	except Exception,e:
+		frappe.throw(_("Mail has not been Sent. Kindly Contact to Administrator"))
 
 def check_student_for_certificate(project_name,student_name,instructor_name):
 	return frappe.db.get_value("Certificate",{"project":project_name,"student":student_name,"instructor":instructor_name},"name")
 
 def attach_pdf_as_certificate(certificate_name,print_format_name):
-	url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
-												"&format="+print_format_name+"&no_letterhead=0"
-	add_attachments(certificate_name,url,print_format_name)
-	
+	if print_format_name == "Microsoft Certificate" or print_format_name == "Microsoft Zertifikat":
+		attatch_file_name = print_format_name
+		print_format_name = "Microsoft Certificate"
+		url = "http://"+frappe.request.host+"/print?doctype=Certificate&name="+certificate_name+"&format="+print_format_name+"&no_letterhead=0"
+		add_attachments(certificate_name,url,attatch_file_name)
+	else:
+		attatch_file_name = print_format_name
+		print_format_name = "New Horizons Certificate" if print_format_name == "New Horizons Zertifikat" else "New Horizons Certificate"
+		url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
+													"&format="+print_format_name+"&no_letterhead=0"
+		add_attachments(certificate_name,url,attatch_file_name)
+		
 @frappe.whitelist()
 def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
 	employee = frappe.get_doc("Employee",instructor.employee) if instructor and instructor.employee else ""
+	
 	if employee and employee.signature:
-		return "true"	
-	elif employee and not employee.signature:
-		return "Add signature For Employee <b>{0}</b> that is link in <b>{1}</b> Instructor".format(employee.name,instructor_name)	
-	elif not employee:
-		return "Please Add employee In Instructor For <b>{0}</b>".format(instructor_name)				
+		return "true"
+	if employee and not employee.signature and not instructor.image:
+		return _("Add signature to either Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) + _("or Employee") + " <b>{0}</b> ".format(employee.name)
 
 
 
@@ -112,4 +132,3 @@ def check_employee_signature(instructor_name):
 
 	
 		
-	
