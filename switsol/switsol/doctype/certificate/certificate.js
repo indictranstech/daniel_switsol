@@ -6,6 +6,9 @@ cur_frm.add_fetch('item','item_name','item_name');
 cur_frm.add_fetch('instructor','instructor_name','instructor_name'); 
 cur_frm.add_fetch('instructor','employee','employee');
 cur_frm.add_fetch('student','student_email_id','student_email_id');
+cur_frm.add_fetch('predefined_text_container','predefined_text_container','predefined_text_container_value');
+
+
 
 frappe.ui.form.on('Certificate', {
 	/*validate : function(frm){
