@@ -149,12 +149,33 @@ common_function = function(){
 			})	
 }
 
+language_of_user = function(){
+	var lang
+	frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "User",
+				fieldname: "language",
+				filters: {name:frappe.session.user}
+			},
+			async: false,
+			callback: function(r) {
+				if(r.message) {
+				lang = r.message['language']
+				}
+			}
+		});
+
+return lang
+}
 
 cur_frm.cscript.kursbestatigung_generieren = function() {
-	if(user_defaults.language == "de"){
+
+	var lang = language_of_user()
+	if(lang == "de"){
 		var print_format = "New Horizons Zertifikat"
 	}
-	if(user_defaults.language == "en"){
+	else if(lang == "en" || lang == "en-US"){
 		var print_format = "New Horizons Certificate"
 	}
 	var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
@@ -162,17 +183,18 @@ cur_frm.cscript.kursbestatigung_generieren = function() {
 }
 
 cur_frm.cscript.ms_zertifikat_generieren = function() {
-	if(user_defaults.language == "de"){
-		var print_format = "Microsoft Zertifikat"
+	var lang = language_of_user()
+	if(lang == "de"){
+		var print_format = "Microsoft Zertifikat"	
 	}
-	if(user_defaults.language == "en"){
-		var print_format = "Microsoft Certificate"
+	else if(lang == "en" || lang == "en-US"){
+		var print_format = "Microsoft Certificate"		
 	}
 	var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
-	dialog_for_SC_MS_certificate(print_format,name_of_instructor)
+	dialog_for_SC_MS_certificate(print_format, name_of_instructor)
 }
 
-dialog_for_SC_MS_certificate = function(print_format,name_of_instructor){
+dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 	var student_data = {}
 	$.each(cur_frm.doc.project_participant_details, function(idx, val){
 		if(val.__checked == 1){
@@ -189,18 +211,24 @@ dialog_for_SC_MS_certificate = function(print_format,name_of_instructor){
 						validate_signature($(this).val(),dialog)
 						}
 					},
-					{fieldtype: "Link", fieldname: "predefined_text", label: __("Predefined Text Container"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training"
+					{fieldtype: "Link", fieldname: "predefined_text", label: __("Predefined Text Container"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
+					 change: function(){
+					 	content_of_predefined_text(dialog)
+					 }
 					},
+					{fieldtype: "Text Editor", fieldname: "predefined_text_value", label: __("Predefined Text Container")},
 					{fieldtype: "Check", fieldname: "certificate", label: __("Send certificate by mail")
 					}
 			]
 		})
 		dialog.show();
+		content_of_predefined_text(dialog)
 		validate_signature(name_of_instructor,dialog);
+
 		dialog.set_primary_action(__("ADD"), function(frm) {
 			var is_checked_pdf_send_by_mail = dialog.fields_dict.certificate.get_value();
 			var instructor_name = dialog.fields_dict.instructor.get_value(); 
-			dialog.fields_dict.instructor.get_value() ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail,print_format,dialog):
+			dialog.fields_dict.instructor.get_value() ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail, print_format, dialog):
 			frappe.throw(__("Please Add Instructor"))
 		});
 	}
@@ -208,7 +236,6 @@ dialog_for_SC_MS_certificate = function(print_format,name_of_instructor){
 		frappe.throw(__("Select Student First"))
 	}
 }
-
 make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,print_format,dialog){
 	dialog.hide();
 	frappe.call({
@@ -230,6 +257,24 @@ make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,
 			
 		}
 	})
+}
+
+content_of_predefined_text = function(dialog){
+	predefined_content = dialog.fields_dict.predefined_text.get_value(); 
+	frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Predefined Text Container",
+				fieldname: "predefined_text_container",
+				filters: {name:predefined_content}
+			},
+			callback: function(r) {
+				if(r.message) {
+					dialog.set_value("predefined_text_value",r.message.predefined_text_container)
+				}
+			}
+		});
+
 }
 
 validate_signature = function(instructor_name,dialog){

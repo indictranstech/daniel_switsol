@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 import urllib
+from frappe import _
 from frappe.desk.form.load import get_attachments
 # from frappe.utils.file_manager import save_file
 # from frappe.utils.pdf import get_pdf
@@ -23,7 +24,7 @@ class Certificate(Document):
 			else:
 				url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+self.name+\
 												"&format=New Horizons Certificate&no_letterhead=0"
-				add_attachments(self.name,url,"New Horizons Certificate.pdf")	
+				add_attachments(self.name,url,_("New Horizons Certificate"))	
 
 
 @frappe.whitelist()

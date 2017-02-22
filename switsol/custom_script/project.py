@@ -53,26 +53,25 @@ def certificate_creation(**kwargs):
 			certificate.save(ignore_permissions=True)
 			attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
 
-			# if kwargs['print_format'] == "Microsoft Certificate": 
-			# 	attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
-
 			if kwargs['is_checked_pdf_send_by_mail'] == "1":
 				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name,predefined_text_content,predefined_text_value)
 				frappe.db.set_value("Certificate", certificate.name, "send_by_mail",1)
-				# if kwargs['print_format'] == "New Horizons Certificate":
-				# elif kwargs['print_format'] == "Microsoft Certificate":
-				# 	check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name)
 
 def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name,predefined_text_content,predefined_text_value):
 	cc = []
-	orientation = "Landscape" if print_format == 'Microsoft Certificate' else "Portrait"
+	orientation = "Landscape" if print_format == 'Microsoft Certificate' or print_format == "Microsoft Zertifikat" else "Portrait"
+	
+	if print_format in ["Microsoft Certificate", "Microsoft Zertifikat"]:
+		print_format ="Microsoft Certificate" 
+	elif print_format in ["New Horizons Certificate", "New Horizons Zertifikat"]:
+		print_format ="New Horizons Certificate" 
 
 	if student_mail_id:
 		recipients  = [student_mail_id]
 		cc = [frappe.session.user]
 		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format, orientation=orientation)]
 		subject = print_format
-		message = _("Please See your Certificate <br>") + predefined_text_value
+		message = predefined_text_value
 	else:
 		recipients  = [frappe.session.user]
 		attachments = [frappe.attach_print("Certificate",name, file_name=print_format, print_format=print_format, orientation=orientation)]
@@ -86,7 +85,7 @@ def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_f
 		expose_recipients="header",
 		sender=None,
 		reply_to=None,
-		subject=subject,
+		subject=_(subject),
 		content=None,
 		reference_doctype=None,
 		reference_name=None,
@@ -105,16 +104,13 @@ def check_student_for_certificate(project_name,student_name,instructor_name):
 
 def attach_pdf_as_certificate(certificate_name,print_format_name):
 	if print_format_name == "Microsoft Certificate" or print_format_name == "Microsoft Zertifikat":
-		attatch_file_name = print_format_name
-		print_format_name = "Microsoft Certificate"
-		url = "http://"+frappe.request.host+"/print?doctype=Certificate&name="+certificate_name+"&format="+print_format_name+"&no_letterhead=0"
-		add_attachments(certificate_name,url,attatch_file_name)
+		url = "http://"+frappe.request.host+"/print?doctype=Certificate&name="+certificate_name+"&format=Microsoft Certificate&no_letterhead=0"
+		add_attachments(certificate_name,url,print_format_name)
 	else:
-		attatch_file_name = print_format_name
-		print_format_name = "New Horizons Certificate" if print_format_name == "New Horizons Zertifikat" else "New Horizons Certificate"
-		url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
-													"&format="+print_format_name+"&no_letterhead=0"
-		add_attachments(certificate_name,url,attatch_file_name)
+		if print_format_name == "New Horizons Certificate" or print_format_name == "New Horizons Zertifikat": 
+			url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
+														"&format=New Horizons Certificate&no_letterhead=0"
+			add_attachments(certificate_name,url,print_format_name)
 		
 @frappe.whitelist()
 def check_employee_signature(instructor_name):
@@ -123,6 +119,8 @@ def check_employee_signature(instructor_name):
 	
 	if employee and employee.signature:
 		return "true"
+	if not employee and not instructor.image:
+		return _("Add signature to Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) 
 	if employee and not employee.signature and not instructor.image:
 		return _("Add signature to either Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) + _("or Employee") + " <b>{0}</b> ".format(employee.name)
 
