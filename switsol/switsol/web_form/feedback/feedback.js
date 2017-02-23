@@ -8,7 +8,7 @@ frappe.ready(function() {
 	:filter_options_of_seminar([["status","=","1"]],seminar_course);
 	if (frappe.session.user == 'Guest') {
 		$('body').find('.sidebar-block').remove();
-		$('body').find('.introduction').hide();
+		$('body').find('.navbar-header').hide();
 	}
 });
 
