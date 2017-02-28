@@ -33,6 +33,7 @@ show_table = function(task_group_details_field){
 }
 
 
+
 common_function = function(){
 	var me = this;
 			frappe.call({
@@ -207,37 +208,59 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 			fields: [
 					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default: name_of_instructor,
 					change: function() {
-						//instructor_name = dialog.get_values().instructor;	
 						validate_signature($(this).val(),dialog)
 						}
 					},
-					{fieldtype: "Link", fieldname: "predefined_text", label: __("Predefined Text Container"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
+					{fieldtype: "Check", fieldname: "certificate", label: __("Send certificate by mail")},
+					{fieldtype: "Data", fieldname: "cc", label: __("CC"),default:"operations@newhorizons.ch"},
+					{fieldtype: "Link", fieldname: "predefined_text", label: __("Email Content"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
+					 depends_on: 'eval:doc.certificate == "1"',
 					 change: function(){
 					 	content_of_predefined_text(dialog)
 					 }
 					},
-					{fieldtype: "Text Editor", fieldname: "predefined_text_value", label: __("Predefined Text Container")},
-					{fieldtype: "Check", fieldname: "certificate", label: __("Send certificate by mail")
-					}
+					{fieldtype: "Text Editor", fieldname: "predefined_text_value",depends_on: 'eval:doc.certificate == "1"'}
+					
 			]
 		})
+		dialog.fields_dict.certificate.$input.click(function() {
+			content_of_predefined_text(dialog)
+		});
+		if(print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
+			dialog.fields_dict.certificate.$wrapper.hide()
+			dialog.fields_dict.cc.$wrapper.hide()
+		}
 		dialog.show();
-		content_of_predefined_text(dialog)
 		validate_signature(name_of_instructor,dialog);
 
 		dialog.set_primary_action(__("ADD"), function(frm) {
 			var is_checked_pdf_send_by_mail = dialog.fields_dict.certificate.get_value();
 			var instructor_name = dialog.fields_dict.instructor.get_value(); 
-			dialog.fields_dict.instructor.get_value() ? make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail, print_format, dialog):
-			frappe.throw(__("Please Add Instructor"))
+			var certificate = make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail, print_format, dialog)
+			dialog.fields_dict.instructor.get_value() ? certificate : frappe.throw(__("Please Add Instructor"))
+			if(print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat")
+				{
+					for(var i in certificate) 
+					{
+						window.open(frappe.urllib.get_base_url() + "/print?doctype=Certificate&name="+certificate[i]+"&format=Microsoft%20Certificate&no_letterhead=0");
+					}
+				}
 		});
 	}
-	else{
+	else{ 
 		frappe.throw(__("Select Student First"))
 	}
 }
+
 make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,print_format,dialog){
 	dialog.hide();
+	if (print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
+		async_val = false
+	}
+	else {
+		async_val = true
+	}
+	var name_of_certificate
 	frappe.call({
 		method: "switsol.custom_script.project.certificate_creation",
 		freeze: true,
@@ -253,10 +276,15 @@ make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,
 			"print_format" : print_format,
 			"args" : dialog.get_values()
 		},
+		async : async_val,
 		callback: function(r) {
+			if(r.message){
+				name_of_certificate = r.message
+			}
 			
 		}
 	})
+	return name_of_certificate
 }
 
 content_of_predefined_text = function(dialog){
