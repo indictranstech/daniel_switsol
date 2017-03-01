@@ -33,7 +33,6 @@ show_table = function(task_group_details_field){
 }
 
 
-
 common_function = function(){
 	var me = this;
 			frappe.call({
@@ -206,38 +205,40 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 		var dialog = new frappe.ui.Dialog({ 
 			title: __("Details"),
 			fields: [
-					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default: name_of_instructor,
+					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"INS/00002",
 					change: function() {
 						validate_signature($(this).val(),dialog)
+						instructor_name(dialog);
 						}
 					},
-					{fieldtype: "Check", fieldname: "certificate", label: __("Send certificate by mail")},
-					{fieldtype: "Data", fieldname: "cc", label: __("CC"),default:"operations@newhorizons.ch"},
+					{fieldtype: "Data", fieldname: "instructor_name", label: __("Instructor Name"),read_only: 1},
+					{fieldtype: "Check", fieldname: "send_by_mail", label: __("Send certificate by mail")},
+					{fieldtype: "Data", fieldname: "cc", label: __("CC"),default:"operations@newhorizons.ch",depends_on: 'eval:doc.send_by_mail == "1"'},
 					{fieldtype: "Link", fieldname: "predefined_text", label: __("Email Content"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
-					 depends_on: 'eval:doc.certificate == "1"',
+					 depends_on: 'eval:doc.send_by_mail == "1"',
 					 change: function(){
 					 	content_of_predefined_text(dialog)
 					 }
 					},
-					{fieldtype: "Text Editor", fieldname: "predefined_text_value",depends_on: 'eval:doc.certificate == "1"'}
+					{fieldtype: "Text Editor", fieldname: "predefined_text_value",depends_on: 'eval:doc.send_by_mail == "1"'}
 					
 			]
 		})
-		dialog.fields_dict.certificate.$input.click(function() {
+		dialog.fields_dict.send_by_mail.$input.click(function() {
 			content_of_predefined_text(dialog)
 		});
 		if(print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
-			dialog.fields_dict.certificate.$wrapper.hide()
+			dialog.fields_dict.send_by_mail.$wrapper.hide()
 			dialog.fields_dict.cc.$wrapper.hide()
 		}
 		dialog.show();
 		validate_signature(name_of_instructor,dialog);
+		instructor_name(dialog);
 
 		dialog.set_primary_action(__("ADD"), function(frm) {
-			var is_checked_pdf_send_by_mail = dialog.fields_dict.certificate.get_value();
 			var instructor_name = dialog.fields_dict.instructor.get_value(); 
-			var certificate = make_certificate(student_data,instructor_name,is_checked_pdf_send_by_mail, print_format, dialog)
-			dialog.fields_dict.instructor.get_value() ? certificate : frappe.throw(__("Please Add Instructor"))
+			var certificate = make_certificate(student_data,print_format,dialog)
+			instructor_name ? certificate : frappe.throw(__("Please Add Instructor"))
 			if(print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat")
 				{
 					for(var i in certificate) 
@@ -251,8 +252,7 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 		frappe.throw(__("Select Student First"))
 	}
 }
-
-make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,print_format,dialog){
+make_certificate = function(student_data,print_format,dialog){
 	dialog.hide();
 	if (print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
 		async_val = false
@@ -268,11 +268,9 @@ make_certificate = function(student_data,instructor,is_checked_pdf_send_by_mail,
 		args: {
 			"student_data":student_data,
 			"project_name":cur_frm.doc.name,
-			"instructor": instructor,
 			"item": cur_frm.doc.item,
 			"item_name":cur_frm.doc.item_name,
 			"training_center":cur_frm.doc.project_training_details[0]['training_center'],
-			"is_checked_pdf_send_by_mail" : is_checked_pdf_send_by_mail,
 			"print_format" : print_format,
 			"args" : dialog.get_values()
 		},
@@ -305,6 +303,23 @@ content_of_predefined_text = function(dialog){
 
 }
 
+instructor_name = function(dialog){
+	instructor = dialog.fields_dict.instructor.get_value()
+    frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Instructor",
+				fieldname: "instructor_name",
+				filters: {name:instructor}
+			},
+			callback: function(r) {
+				if(r.message) {
+					dialog.set_value("instructor_name",r.message.instructor_name)
+				}
+			}
+		});
+}
+
 validate_signature = function(instructor_name,dialog){
 	if(instructor_name){
 		frappe.call({
@@ -322,3 +337,4 @@ validate_signature = function(instructor_name,dialog){
 		})
 	}
 }
+
