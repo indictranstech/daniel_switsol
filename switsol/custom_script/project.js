@@ -1,3 +1,5 @@
+
+
 frappe.ui.form.on("Project", "refresh", function(frm) {
 	if(!cur_frm.doc.__islocal){
 		frm.add_custom_button(__("Feedback Kursteilnehmer"), function() {
@@ -9,9 +11,8 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
 		});
-		common_function();
+		common_function();	
 	}
-	
 });
 
 
@@ -30,17 +31,6 @@ show_table = function(task_group_details_field){
 		
 	})
 }
-
-update_or_add_responsible_user_of_task = function(d){
-	if(cur_frm.doc.tasks.length > 0){
-		$.each(cur_frm.doc.tasks,function(i,row){
-			if(row['group_name'] == d.task_group){
-				frappe.model.set_value(row.doctype, row.name, 
-					"responsible_user", d.responsible_user);
-			}
-		})
-	}
-}	
 
 
 common_function = function(){
@@ -157,6 +147,195 @@ common_function = function(){
 				}
 				}				
 			})	
+}
+
+language_of_user = function(){
+	var lang
+	frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "User",
+				fieldname: "language",
+				filters: {name:frappe.session.user}
+			},
+			async: false,
+			callback: function(r) {
+				if(r.message) {
+				lang = r.message['language']
+				}
+			}
+		});
+
+return lang
+}
+
+cur_frm.cscript.kursbestatigung_generieren = function() {
+
+	var lang = language_of_user()
+	if(lang == "de"){
+		var print_format = "New Horizons Zertifikat"
+	}
+	else if(lang == "en" || lang == "en-US"){
+		var print_format = "New Horizons Certificate"
+	}
+	//var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
+	dialog_for_SC_MS_certificate(print_format)
+}
+
+cur_frm.cscript.ms_zertifikat_generieren = function() {
+	var lang = language_of_user()
+	if(lang == "de"){
+		var print_format = "Microsoft Zertifikat"	
+	}
+	else if(lang == "en" || lang == "en-US"){
+		var print_format = "Microsoft Certificate"		
+	}
+	//var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
+	dialog_for_SC_MS_certificate(print_format)
+}
+
+dialog_for_SC_MS_certificate = function(print_format){
+	var student_data = {}
+	$.each(cur_frm.doc.project_participant_details, function(idx, val){
+		if(val.__checked == 1){
+			student_data[val.student] = [val.student_email_id,val.student_name]
+		}
+	})
+	if(Object.keys(student_data).length > 0){
+		var dialog = new frappe.ui.Dialog({ 
+			title: __("Details"),
+			fields: [
+					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"INS/00002",
+					change: function() {
+						validate_signature($(this).val(),dialog)
+						}
+					},
+					{fieldtype: "Data", fieldname: "instructor_name", label: __("Instructor Name"),read_only: 1},
+					{fieldtype: "Check", fieldname: "send_by_mail", label: __("Send certificate by mail")},
+					{fieldtype: "Data", fieldname: "cc", label: __("CC"),default:"operations@newhorizons.ch",depends_on: 'eval:doc.send_by_mail == "1"'},
+					{fieldtype: "Link", fieldname: "predefined_text", label: __("Email Content"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
+					 depends_on: 'eval:doc.send_by_mail == "1"',
+					 change: function(){
+					 	content_of_predefined_text(dialog)
+					 }
+					},
+					{fieldtype: "Text Editor", fieldname: "predefined_text_value",depends_on: 'eval:doc.send_by_mail == "1"'}
+					
+			]
+		})
+		dialog.fields_dict.send_by_mail.$input.click(function() {
+			content_of_predefined_text(dialog)
+		});
+		if(print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
+			dialog.fields_dict.send_by_mail.$wrapper.hide()
+			dialog.fields_dict.cc.$wrapper.hide()
+		}
+		dialog.show();
+		validate_signature(dialog.fields_dict.instructor.get_value(),dialog);
+
+		dialog.set_primary_action(__("ADD"), function(frm) {
+			var instructor_name = dialog.fields_dict.instructor.get_value(); 
+			var certificate = make_certificate(student_data,print_format,dialog)
+			instructor_name ? certificate : frappe.throw(__("Please Add Instructor"))
+			if(print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat")
+				{
+					for(var i in certificate) 
+					{
+						window.open(frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate[i]+"&format=Microsoft Certificate&print_format="+print_format+"&no_letterhead=0");
+					}
+				}
+		});
+	}
+	else{ 
+		frappe.throw(__("Select Student First"))
+	}
+}
+make_certificate = function(student_data,print_format,dialog){
+	dialog.hide();
+	var async_val = true;
+	if (print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
+		async_val = false
+	}
+	
+	var name_of_certificate
+	frappe.call({
+		method: "switsol.custom_script.project.certificate_creation",
+		freeze: true,
+		freeze_message: __("Sending Mails"),
+		args: {
+			"student_data":student_data,
+			"project_name":cur_frm.doc.name,
+			"item": cur_frm.doc.item,
+			"item_name":cur_frm.doc.item_name,
+			"training_center":cur_frm.doc.project_training_details[0]['training_center'],
+			"print_format" : print_format,
+			"args" : dialog.get_values()
+		},
+		async : async_val,
+		callback: function(r) {
+			if(r.message){
+				name_of_certificate = r.message
+			}
+			
+		}
+	})
+	return name_of_certificate
+}
+
+content_of_predefined_text = function(dialog){
+	predefined_content = dialog.fields_dict.predefined_text.get_value(); 
+	frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Predefined Text Container",
+				fieldname: "predefined_text_container",
+				filters: {name:predefined_content}
+			},
+			callback: function(r) {
+				if(r.message) {
+					dialog.set_value("predefined_text_value",r.message.predefined_text_container)
+				}
+			}
+		});
+
+}
+
+_instructor_name = function(dialog){
+	instructor = dialog.fields_dict.instructor.get_value()
+    frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Instructor",
+				fieldname: "instructor_name",
+				filters: {name:instructor}
+			},
+			callback: function(r) {
+				if(r.message) {
+					dialog.set_value("instructor_name",r.message.instructor_name)
+				}
+			}
+		});
+}
+
+validate_signature = function(instructor_name,dialog){
+	if(instructor_name){
+		frappe.call({
+			method:"switsol.custom_script.project.check_employee_signature",
+			args:{
+				"instructor_name": instructor_name
+			},
+			callback: function(r){
+				if (r.message){
+					dialog.fields_dict.instructor.$input.val("")
+					dialog.fields_dict.instructor_name.set_value("")
+					frappe.msgprint(__(r.message))
+				}
+				else{
+					_instructor_name(dialog);
+				}
+			}
+		})
+	}
 }
 
 /*frappe.ui.form.on("Task Group Task Table",{

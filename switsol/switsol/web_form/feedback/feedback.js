@@ -6,6 +6,10 @@ frappe.ready(function() {
 	window.location.href.split("=")[1] ? 
 	filter_options_of_seminar([["training_id","=",String(window.location.href.split("=")[1])]],seminar_course,String(window.location.href.split("=")[1]))
 	:filter_options_of_seminar([["status","=","1"]],seminar_course);
+	if (frappe.session.user == 'Guest') {
+		$('body').find('.sidebar-block').remove();
+		$('body').find('.navbar-header').hide();
+	}
 });
 
 
