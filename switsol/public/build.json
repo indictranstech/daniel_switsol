@@ -11,6 +11,8 @@
 		"public/js/jquery.signature.js",
 		"public/js/jquery.ui.touch-punch.min.js",
 		"public/js/common_feedback_chart.html",
-		"public/js/task_group.html"
+		"public/js/task_group.html",
+		"public/js/calendar.js",
+		"public/js/project_calendar.js"
 	]
 }
