@@ -128,4 +128,6 @@ doctype_js = {
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "switsol.event.get_events"
 # }
-
+override_whitelisted_methods = {
+    "frappe.utils.print_format.download_pdf":"switsol.custom_script.project.download_pdf"
+}

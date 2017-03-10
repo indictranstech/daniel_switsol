@@ -178,8 +178,8 @@ cur_frm.cscript.kursbestatigung_generieren = function() {
 	else if(lang == "en" || lang == "en-US"){
 		var print_format = "New Horizons Certificate"
 	}
-	var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
-	dialog_for_SC_MS_certificate(print_format,name_of_instructor)
+	//var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
+	dialog_for_SC_MS_certificate(print_format)
 }
 
 cur_frm.cscript.ms_zertifikat_generieren = function() {
@@ -190,11 +190,11 @@ cur_frm.cscript.ms_zertifikat_generieren = function() {
 	else if(lang == "en" || lang == "en-US"){
 		var print_format = "Microsoft Certificate"		
 	}
-	var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
-	dialog_for_SC_MS_certificate(print_format, name_of_instructor)
+	//var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
+	dialog_for_SC_MS_certificate(print_format)
 }
 
-dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
+dialog_for_SC_MS_certificate = function(print_format){
 	var student_data = {}
 	$.each(cur_frm.doc.project_participant_details, function(idx, val){
 		if(val.__checked == 1){
@@ -208,7 +208,6 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"INS/00002",
 					change: function() {
 						validate_signature($(this).val(),dialog)
-						instructor_name(dialog);
 						}
 					},
 					{fieldtype: "Data", fieldname: "instructor_name", label: __("Instructor Name"),read_only: 1},
@@ -232,8 +231,7 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 			dialog.fields_dict.cc.$wrapper.hide()
 		}
 		dialog.show();
-		validate_signature(name_of_instructor,dialog);
-		instructor_name(dialog);
+		validate_signature(dialog.fields_dict.instructor.get_value(),dialog);
 
 		dialog.set_primary_action(__("ADD"), function(frm) {
 			var instructor_name = dialog.fields_dict.instructor.get_value(); 
@@ -243,7 +241,7 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 				{
 					for(var i in certificate) 
 					{
-						window.open(frappe.urllib.get_base_url() + "/print?doctype=Certificate&name="+certificate[i]+"&format=Microsoft%20Certificate&no_letterhead=0");
+						window.open(frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate[i]+"&format=Microsoft Certificate&print_format="+print_format+"&no_letterhead=0");
 					}
 				}
 		});
@@ -254,12 +252,11 @@ dialog_for_SC_MS_certificate = function(print_format, name_of_instructor){
 }
 make_certificate = function(student_data,print_format,dialog){
 	dialog.hide();
+	var async_val = true;
 	if (print_format == "Microsoft Certificate" || print_format == "Microsoft Zertifikat"){
 		async_val = false
 	}
-	else {
-		async_val = true
-	}
+	
 	var name_of_certificate
 	frappe.call({
 		method: "switsol.custom_script.project.certificate_creation",
@@ -303,7 +300,7 @@ content_of_predefined_text = function(dialog){
 
 }
 
-instructor_name = function(dialog){
+_instructor_name = function(dialog){
 	instructor = dialog.fields_dict.instructor.get_value()
     frappe.call({
 			method: "frappe.client.get_value",
@@ -328,13 +325,15 @@ validate_signature = function(instructor_name,dialog){
 				"instructor_name": instructor_name
 			},
 			callback: function(r){
-				if (r.message && r.message != "true"){
-
+				if (r.message){
 					dialog.fields_dict.instructor.$input.val("")
-					frappe.throw(__(r.message))
+					dialog.fields_dict.instructor_name.set_value("")
+					frappe.msgprint(__(r.message))
+				}
+				else{
+					_instructor_name(dialog);
 				}
 			}
 		})
 	}
 }
-
