@@ -29,7 +29,6 @@ doctype_js = {
     "Customer":["custom_script/customer.js"],
     "Contact":["custom_script/contact.js"],
     "Employee":["custom_script/employee.js"],
-    "Project":["custom_script/project.js"],
     "Sales Partner":["custom_script/sales_sartner"],
     "Supplier":["custom_script/supplier.js"],
     "Timesheet":["custom_script/timesheet.js"],
@@ -37,6 +36,7 @@ doctype_js = {
     "Quotation":["custom_script/quotation.js"],
     "Sales Order":["custom_script/sales_order.js"]
 }
+#"Project":["custom_script/project.js"],
 
 
 
@@ -124,8 +124,10 @@ doctype_js = {
 
 # Overriding Whitelisted Methods
 # ------------------------------
-
+#
+# override_whitelisted_methods = {
+# 	"frappe.desk.doctype.event.event.get_events": "switsol.event.get_events"
+# }
 override_whitelisted_methods = {
     "frappe.utils.print_format.download_pdf":"switsol.custom_script.project.download_pdf"
 }
-

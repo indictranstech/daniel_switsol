@@ -133,13 +133,16 @@ def attach_pdf_as_certificate(certificate_name,print_format_name):
 def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
 	employee = frappe.get_doc("Employee",instructor.employee) if instructor and instructor.employee else ""
-	
-	if employee and employee.signature:
-		return "true"
+	error = ""
+	# if employee and employee.signature:
+	# 	error = "true"
+		
 	if not employee and not instructor.image:
-		return _("Add signature to Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) 
+		error = _("Add signature to Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) 
+
 	if employee and not employee.signature and not instructor.image:
-		return _("Add signature to either Instructor") + " <b>{0}</b> ".format(instructor.instructor_name) + _("or Employee") + " <b>{0}</b> ".format(employee.name)
+		error = _("Add signature to either Instructor") + " <b>{0}</b> ".format(instructor.instructor_name) + _("or Employee") + " <b>{0}</b> ".format(employee.name)
+	return error	
 
 @frappe.whitelist()
 def download_pdf(doctype, name, format=None, doc=None,print_format=None):
@@ -206,7 +209,6 @@ def get_room(room=None):
 	return {'room_data':room_data,'room_event_data':sorted_room_data}
  	
 def make_event_data(data,row,event_index):
-	#print len(data),data,"\n\n\n\n\n\n"
 	room_list = []
 	for event_id,j in enumerate(data):
 		room_list.append({"project":row['name'],

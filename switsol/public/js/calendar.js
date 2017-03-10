@@ -162,7 +162,6 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 		var res_list=[];
 		var res_dict={};
 		view_room = viewRender()
-		console.log("Rommmie",view_room)
 		
         this.cal_options = {
 
@@ -530,14 +529,12 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 })
 
  viewRender = function(){
-			console.log("my function") 
    			var res = {}
 			frappe.call({
 				method: "switsol.custom_script.project.get_room",
 				type: "GET",
 				async:false,
 				callback: function(r) {
-					console.log("room details",r.message)
 					 res=r.message;
 				}
 		})
