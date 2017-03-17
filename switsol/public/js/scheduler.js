@@ -1,27 +1,35 @@
 
 /*!
-FullCalendar Scheduler v1.1.0
-Docs & License: http://fullcalendar.io/scheduler/
-(c) 2015 Adam Shaw
+FullCalendar Scheduler v1.5.1
+Docs & License: https://fullcalendar.io/scheduler/
+(c) 2017 Adam Shaw
  */
 (function(factory) {
   if (typeof define === 'function' && define.amd) {
-    define([ 'jquery', 'moment' ], factory);
+    define([ 'jquery', 'moment', 'fullcalendar' ], factory);
+  }
+  else if (typeof exports === 'object') { // Node/CommonJS
+    module.exports = factory(
+      require('jquery'),
+      require('moment'),
+      require('fullcalendar')
+    );
   }
   else {
     factory(jQuery, moment);
   }
 })(function($, moment) {;
-var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, CoordCache, DEFAULT_GRID_DURATION, DragListener, Emitter, EventRow, FC, Grid, HRowGroup, LICENSE_INFO_URL, MAX_AUTO_CELLS, MAX_AUTO_SLOTS_PER_LABEL, MAX_CELLS, MIN_AUTO_LABELS, PRESET_LICENSE_KEYS, RELEASE_DATE, ResourceAgendaView, ResourceBasicView, ResourceDayGrid, ResourceDayTableMixin, ResourceGrid, ResourceManager, ResourceMonthView, ResourceRow, ResourceTimeGrid, ResourceTimelineGrid, ResourceTimelineView, ResourceView, RowGroup, RowParent, STOCK_SUB_DURATIONS, ScrollFollower, ScrollFollowerSprite, ScrollJoiner, Scroller, Spreadsheet, TimelineGrid, TimelineView, UPGRADE_WINDOW, VRowGroup, View, applyAll, capitaliseFirstLetter, compareByFieldSpecs, computeIntervalUnit, computeOffsetForSeg, computeOffsetForSegs, copyRect, cssToStr, debounce, detectRtlScrollSystem, divideDurationByDuration, divideRangeByDuration, durationHasTime, flexibleCompare, getFirstOwnRow, getRectHeight, getRectWidth, getScrollFromLeft, getScrollbarWidths, hContainRect, hasAnyScrollbars, htmlEscape, intersectRanges, intersectRects, isImmuneUrl, isInt, isValidKey, joinRects, multiplyDuration, normalizedHScroll, parseFieldSpecs, processLicenseKey, proxy, renderingWarningInContainer, rtlScrollSystem, superDisplayEvents, testRectContains, testRectHContains, testRectVContains, timeRowSegsCollide, vContainRect,
-  slice = [].slice,
+var COL_MIN_WIDTH, Calendar, CalendarExtension, Class, ClippedScroller, CoordCache, DEFAULT_GRID_DURATION, DragListener, EmitterMixin, EnhancedScroller, EventRow, FC, Grid, HRowGroup, LICENSE_INFO_URL, ListenerMixin, MAX_AUTO_CELLS, MAX_AUTO_SLOTS_PER_LABEL, MAX_CELLS, MIN_AUTO_LABELS, PRESET_LICENSE_KEYS, Promise, RELEASE_DATE, ResourceAgendaView, ResourceBasicView, ResourceDayGrid, ResourceDayTableMixin, ResourceGridMixin, ResourceManager, ResourceMonthView, ResourceRow, ResourceTimeGrid, ResourceTimelineGrid, ResourceTimelineView, ResourceViewMixin, RowGroup, RowParent, STOCK_SUB_DURATIONS, ScrollFollower, ScrollFollowerSprite, ScrollJoiner, ScrollerCanvas, Spreadsheet, TaskQueue, TimelineGrid, TimelineView, UPGRADE_WINDOW, VRowGroup, VertResourceViewMixin, View, _filterResourcesWithEvents, applyAll, capitaliseFirstLetter, compareByFieldSpecs, computeIntervalUnit, computeOffsetForSeg, computeOffsetForSegs, copyRect, createObject, cssToStr, debounce, detectWarningInContainer, divideDurationByDuration, divideRangeByDuration, durationHasTime, flexibleCompare, getContentRect, getOuterRect, getOwnCells, getRectHeight, getRectWidth, getScrollbarWidths, hContainRect, htmlEscape, intersectRanges, intersectRects, isImmuneUrl, isInt, isValidKey, joinRects, multiplyDuration, origExecuteEventsRender, origGetSegCustomClasses, origGetSegDefaultBackgroundColor, origGetSegDefaultBorderColor, origGetSegDefaultTextColor, origHandleDate, origOnDateRender, origRemoveElement, origSetElement, parseFieldSpecs, processLicenseKey, proxy, renderingWarningInContainer, testRectContains, testRectHContains, testRectVContains, timeRowSegsCollide, vContainRect,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
+  hasProp = {}.hasOwnProperty,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+  slice = [].slice;
 
 FC = $.fullCalendar;
 
-FC.schedulerVersion = "1.1.0";
+FC.schedulerVersion = "1.5.1";
 
-if (FC.internalApiVersion !== 1) {
+if (FC.internalApiVersion !== 8) {
   FC.warn('v' + FC.schedulerVersion + ' of FullCalendar Scheduler ' + 'is incompatible with v' + FC.version + ' of the core.\n' + 'Please see http://fullcalendar.io/support/ for more information.');
   return;
 }
@@ -54,7 +62,9 @@ capitaliseFirstLetter = FC.capitaliseFirstLetter;
 
 applyAll = FC.applyAll;
 
-Emitter = FC.Emitter;
+EmitterMixin = FC.EmitterMixin;
+
+ListenerMixin = FC.ListenerMixin;
 
 durationHasTime = FC.durationHasTime;
 
@@ -74,45 +84,170 @@ intersectRects = FC.intersectRects;
 
 CoordCache = FC.CoordCache;
 
+getContentRect = FC.getContentRect;
+
+getOuterRect = FC.getOuterRect;
+
+createObject = FC.createObject;
+
+Promise = FC.Promise;
+
+TaskQueue = FC.TaskQueue;
+
 
 /*
-Gets the first cell that doesn't have a multi-row rowspan.
-Accepts a jQuery object of one or more TRs and returns the first TD for each.
+Given a jQuery <tr> set, returns the <td>'s that do not have multi-line rowspans.
 Would use the [rowspan] selector, but never not defined in IE8.
  */
 
-getFirstOwnRow = function(trs) {
-  return trs.map(function(i, trNode) {
-    var j, len, ref, tdNode;
-    ref = $(trNode).find('> td');
-    for (j = 0, len = ref.length; j < len; j++) {
-      tdNode = ref[j];
-      if (tdNode.rowSpan <= 1) {
-        return tdNode;
-      }
-    }
+getOwnCells = function(trs) {
+  return trs.find('> td').filter(function(i, tdNode) {
+    return tdNode.rowSpan <= 1;
   });
 };
 
-rtlScrollSystem = null;
 
-normalizedHScroll = function(el, val) {
-  var direction, node;
-  direction = el.css('direction');
-  node = el[0];
-  if (val != null) {
-    if (direction === 'rtl') {
-      switch (rtlScrollSystem) {
-        case 'positive':
-          val = val - node.clientWidth + node.scrollWidth;
-          break;
-        case 'reverse':
-          val = -val;
+/*
+A Scroller with additional functionality:
+- optional ScrollerCanvas for content
+- fired events for scroll start/end
+- cross-browser normalization of horizontal scroll for RTL
+ */
+
+EnhancedScroller = (function(superClass) {
+  var detectRtlScrollSystem, rtlScrollSystem;
+
+  extend(EnhancedScroller, superClass);
+
+  EnhancedScroller.mixin(EmitterMixin);
+
+  EnhancedScroller.mixin(ListenerMixin);
+
+  EnhancedScroller.prototype.canvas = null;
+
+  EnhancedScroller.prototype.isScrolling = false;
+
+  EnhancedScroller.prototype.isTouching = false;
+
+  EnhancedScroller.prototype.isMoving = false;
+
+  EnhancedScroller.prototype.isTouchScrollEnabled = true;
+
+  EnhancedScroller.prototype.preventTouchScrollHandler = null;
+
+  function EnhancedScroller() {
+    EnhancedScroller.__super__.constructor.apply(this, arguments);
+    this.requestMovingEnd = debounce(this.reportMovingEnd, 500);
+  }
+
+  EnhancedScroller.prototype.render = function() {
+    EnhancedScroller.__super__.render.apply(this, arguments);
+    if (this.canvas) {
+      this.canvas.render();
+      this.canvas.el.appendTo(this.scrollEl);
+    }
+    return this.bindHandlers();
+  };
+
+  EnhancedScroller.prototype.destroy = function() {
+    EnhancedScroller.__super__.destroy.apply(this, arguments);
+    return this.unbindHandlers();
+  };
+
+  EnhancedScroller.prototype.disableTouchScroll = function() {
+    this.isTouchScrollEnabled = false;
+    return this.bindPreventTouchScroll();
+  };
+
+  EnhancedScroller.prototype.enableTouchScroll = function() {
+    this.isTouchScrollEnabled = true;
+    if (!this.isTouching) {
+      return this.unbindPreventTouchScroll();
+    }
+  };
+
+  EnhancedScroller.prototype.bindPreventTouchScroll = function() {
+    if (!this.preventTouchScrollHandler) {
+      return this.scrollEl.on('touchmove', this.preventTouchScrollHandler = FC.preventDefault);
+    }
+  };
+
+  EnhancedScroller.prototype.unbindPreventTouchScroll = function() {
+    if (this.preventTouchScrollHandler) {
+      this.scrollEl.off('touchmove', this.preventTouchScrollHandler);
+      return this.preventTouchScrollHandler = null;
+    }
+  };
+
+  EnhancedScroller.prototype.bindHandlers = function() {
+    return this.listenTo(this.scrollEl, {
+      scroll: this.reportScroll,
+      touchstart: this.reportTouchStart,
+      touchend: this.reportTouchEnd
+    });
+  };
+
+  EnhancedScroller.prototype.unbindHandlers = function() {
+    return this.stopListeningTo(this.scrollEl);
+  };
+
+  EnhancedScroller.prototype.reportScroll = function() {
+    if (!this.isScrolling) {
+      this.reportScrollStart();
+    }
+    this.trigger('scroll');
+    this.isMoving = true;
+    return this.requestMovingEnd();
+  };
+
+  EnhancedScroller.prototype.reportScrollStart = function() {
+    if (!this.isScrolling) {
+      this.isScrolling = true;
+      return this.trigger('scrollStart', this.isTouching);
+    }
+  };
+
+  EnhancedScroller.prototype.requestMovingEnd = null;
+
+  EnhancedScroller.prototype.reportMovingEnd = function() {
+    this.isMoving = false;
+    if (!this.isTouching) {
+      return this.reportScrollEnd();
+    }
+  };
+
+  EnhancedScroller.prototype.reportScrollEnd = function() {
+    if (this.isScrolling) {
+      this.trigger('scrollEnd');
+      return this.isScrolling = false;
+    }
+  };
+
+  EnhancedScroller.prototype.reportTouchStart = function() {
+    return this.isTouching = true;
+  };
+
+  EnhancedScroller.prototype.reportTouchEnd = function() {
+    if (this.isTouching) {
+      this.isTouching = false;
+      if (this.isTouchScrollEnabled) {
+        this.unbindPreventTouchScroll();
+      }
+      if (!this.isMoving) {
+        return this.reportScrollEnd();
       }
     }
-    node.scrollLeft = val;
-    return el;
-  } else {
+  };
+
+
+  /*
+    If RTL, and scrolled to the left, returns NEGATIVE value (like Firefox)
+   */
+
+  EnhancedScroller.prototype.getScrollLeft = function() {
+    var direction, node, val;
+    direction = this.scrollEl.css('direction');
+    node = this.scrollEl[0];
     val = node.scrollLeft;
     if (direction === 'rtl') {
       switch (rtlScrollSystem) {
@@ -124,187 +259,232 @@ normalizedHScroll = function(el, val) {
       }
     }
     return val;
-  }
-};
+  };
 
-getScrollFromLeft = function(el) {
-  var direction, node, val;
-  direction = el.css('direction');
-  node = el[0];
-  val = node.scrollLeft;
-  if (direction === 'rtl') {
-    switch (rtlScrollSystem) {
-      case 'negative':
-        val = val - node.clientWidth + node.scrollWidth;
-        break;
-      case 'reverse':
-        val = -val - node.clientWidth + node.scrollWidth;
+
+  /*
+    Accepts a NEGATIVE value for when scrolled in RTL
+   */
+
+  EnhancedScroller.prototype.setScrollLeft = function(val) {
+    var direction, node;
+    direction = this.scrollEl.css('direction');
+    node = this.scrollEl[0];
+    if (direction === 'rtl') {
+      switch (rtlScrollSystem) {
+        case 'positive':
+          val = val - node.clientWidth + node.scrollWidth;
+          break;
+        case 'reverse':
+          val = -val;
+      }
+    }
+    return node.scrollLeft = val;
+  };
+
+
+  /*
+    Always returns the number of pixels scrolled from the leftmost position (even if RTL).
+    Always positive.
+   */
+
+  EnhancedScroller.prototype.getScrollFromLeft = function() {
+    var direction, node, val;
+    direction = this.scrollEl.css('direction');
+    node = this.scrollEl[0];
+    val = node.scrollLeft;
+    if (direction === 'rtl') {
+      switch (rtlScrollSystem) {
+        case 'negative':
+          val = val - node.clientWidth + node.scrollWidth;
+          break;
+        case 'reverse':
+          val = -val - node.clientWidth + node.scrollWidth;
+      }
+    }
+    return val;
+  };
+
+  EnhancedScroller.prototype.getNativeScrollLeft = function() {
+    return this.scrollEl[0].scrollLeft;
+  };
+
+  EnhancedScroller.prototype.setNativeScrollLeft = function(val) {
+    return this.scrollEl[0].scrollLeft = val;
+  };
+
+  rtlScrollSystem = null;
+
+  detectRtlScrollSystem = function() {
+    var el, node, system;
+    el = $('<div style=" position: absolute top: -1000px; width: 1px; height: 1px; overflow: scroll; direction: rtl; font-size: 14px; ">A</div>').appendTo('body');
+    node = el[0];
+    system = node.scrollLeft > 0 ? 'positive' : (node.scrollLeft = 1, el.scrollLeft > 0 ? 'reverse' : 'negative');
+    el.remove();
+    return system;
+  };
+
+  $(function() {
+    return rtlScrollSystem = detectRtlScrollSystem();
+  });
+
+  return EnhancedScroller;
+
+})(FC.Scroller);
+
+
+/*
+A Scroller, but with a wrapping div that allows "clipping" away of native scrollbars,
+giving the appearance that there are no scrollbars.
+ */
+
+ClippedScroller = (function(superClass) {
+  extend(ClippedScroller, superClass);
+
+  ClippedScroller.prototype.isHScrollbarsClipped = false;
+
+  ClippedScroller.prototype.isVScrollbarsClipped = false;
+
+
+  /*
+    Received overflows can be set to 'clipped', meaning scrollbars shouldn't be visible
+    to the user, but the area should still scroll.
+   */
+
+  function ClippedScroller() {
+    ClippedScroller.__super__.constructor.apply(this, arguments);
+    if (this.overflowX === 'clipped-scroll') {
+      this.overflowX = 'scroll';
+      this.isHScrollbarsClipped = true;
+    }
+    if (this.overflowY === 'clipped-scroll') {
+      this.overflowY = 'scroll';
+      this.isVScrollbarsClipped = true;
     }
   }
-  return val;
-};
 
-detectRtlScrollSystem = function() {
-  var el, node, system;
-  el = $('<div style=" position: absolute top: -1000px; width: 1px; height: 1px; overflow: scroll; direction: rtl; font-size: 14px; ">A</div>').appendTo('body');
-  node = el[0];
-  system = node.scrollLeft > 0 ? 'positive' : (node.scrollLeft = 1, el.scrollLeft > 0 ? 'reverse' : 'negative');
-  el.remove();
-  return system;
-};
+  ClippedScroller.prototype.renderEl = function() {
+    var scrollEl;
+    scrollEl = ClippedScroller.__super__.renderEl.apply(this, arguments);
+    return $('<div class="fc-scroller-clip" />').append(scrollEl);
+  };
 
-$(function() {
-  return rtlScrollSystem = detectRtlScrollSystem();
-});
-
-Scroller = (function() {
-  Scroller.prototype.el = null;
-
-  Scroller.prototype.innerEl = null;
-
-  Scroller.prototype.contentEl = null;
-
-  Scroller.prototype.bgEl = null;
-
-  Scroller.prototype.overflowX = null;
-
-  Scroller.prototype.overflowY = null;
-
-  Scroller.prototype.isScrolling = false;
-
-  Scroller.prototype.handlers = null;
-
-  Scroller.prototype.height = null;
-
-  Scroller.prototype.contentWidth = null;
-
-  Scroller.prototype.contentMinWidth = null;
-
-  Scroller.prototype.gutters = null;
-
-
-  /*
-    Potential overflowX / overflowY values:
-      'hidden', 'scroll', 'invisible-scroll', 'auto'
-   */
-
-  function Scroller(overflowX1, overflowY1) {
-    this.overflowX = overflowX1 != null ? overflowX1 : 'auto';
-    this.overflowY = overflowY1 != null ? overflowY1 : 'auto';
-    this.el = $('<div class="fc-scrollpane"> <div> <div class="fc-scrollpane-inner"> <div class="fc-content"/> <div class="fc-bg"/> </div> </div> </div>');
-    this.scrollEl = this.el.children();
-    this.innerEl = this.scrollEl.children();
-    this.contentEl = this.innerEl.find('.fc-content');
-    this.bgEl = this.innerEl.find('.fc-bg');
-    this.scrollEl.on('scroll', proxy(this, 'handleScroll')).on('scroll', debounce(proxy(this, 'handleScrollStop'), 100));
-    this.handlers = {};
-    this.gutters = {};
-  }
-
-
-  /*
-    TODO: automatically call this on window resize? (potential scrollbar width change)
-   */
-
-  Scroller.prototype.update = function() {
-    var cssProps, isInvisibleScrollX, isInvisibleScrollY, overflowX, overflowY, scrollEl, scrollbarWidths;
+  ClippedScroller.prototype.updateSize = function() {
+    var cssProps, scrollEl, scrollbarWidths;
     scrollEl = this.scrollEl;
-    overflowX = this.overflowX;
-    overflowY = this.overflowY;
-    isInvisibleScrollX = overflowX === 'invisible-scroll';
-    isInvisibleScrollY = overflowY === 'invisible-scroll';
-    scrollEl.toggleClass('fc-no-scrollbars', (isInvisibleScrollX || overflowX === 'hidden') && (isInvisibleScrollY || overflowY === 'hidden') && !hasAnyScrollbars(scrollEl));
-    scrollEl.css({
-      overflowX: isInvisibleScrollX ? 'scroll' : overflowX,
-      overflowY: isInvisibleScrollY ? 'scroll' : overflowY
-    });
+    scrollbarWidths = getScrollbarWidths(scrollEl);
     cssProps = {
       marginLeft: 0,
       marginRight: 0,
       marginTop: 0,
       marginBottom: 0
     };
-    if (isInvisibleScrollX || isInvisibleScrollY) {
-      scrollbarWidths = getScrollbarWidths(scrollEl);
-      if (isInvisibleScrollX) {
-        cssProps.marginTop = -scrollbarWidths.top;
-        cssProps.marginBottom = -scrollbarWidths.bottom;
-      }
-      if (isInvisibleScrollY) {
-        cssProps.marginLeft = -scrollbarWidths.left;
-        cssProps.marginRight = -scrollbarWidths.right;
-      }
+    if (this.isHScrollbarsClipped) {
+      cssProps.marginTop = -scrollbarWidths.top;
+      cssProps.marginBottom = -scrollbarWidths.bottom;
     }
-    return scrollEl.css(cssProps);
-  };
-
-  Scroller.prototype.getScrollbarWidths = function() {
-    var scrollbarWidths;
-    scrollbarWidths = getScrollbarWidths(this.scrollEl);
-    if (this.overflowX === 'invisible-scroll') {
-      scrollbarWidths.top = 0;
-      scrollbarWidths.bottom = 0;
+    if (this.isVScrollbarsClipped) {
+      cssProps.marginLeft = -scrollbarWidths.left;
+      cssProps.marginRight = -scrollbarWidths.right;
     }
-    if (this.overflowY === 'invisible-scroll') {
-      scrollbarWidths.left = 0;
-      scrollbarWidths.right = 0;
+    scrollEl.css(cssProps);
+    return scrollEl.toggleClass('fc-no-scrollbars', (this.isHScrollbarsClipped || this.overflowX === 'hidden') && (this.isVScrollbarsClipped || this.overflowY === 'hidden') && !(scrollbarWidths.top || scrollbarWidths.bottom || scrollbarWidths.left || scrollbarWidths.right));
+  };
+
+
+  /*
+    Accounts for 'clipped' scrollbars
+   */
+
+  ClippedScroller.prototype.getScrollbarWidths = function() {
+    var widths;
+    widths = getScrollbarWidths(this.scrollEl);
+    if (this.isHScrollbarsClipped) {
+      widths.top = 0;
+      widths.bottom = 0;
     }
-    return scrollbarWidths;
-  };
-
-  Scroller.prototype.handleScroll = function() {
-    if (!this.isScrolling) {
-      this.isScrolling = true;
-      this.trigger('scrollStart');
+    if (this.isVScrollbarsClipped) {
+      widths.left = 0;
+      widths.right = 0;
     }
-    return this.trigger('scroll', this.scrollEl.scrollTop(), this.scrollEl.scrollLeft());
+    return widths;
   };
 
-  Scroller.prototype.handleScrollStop = function() {
-    this.isScrolling = false;
-    return this.trigger('scrollStop');
+  return ClippedScroller;
+
+})(EnhancedScroller);
+
+
+/*
+A rectangular area of content that lives within a Scroller.
+Can have "gutters", areas of dead spacing around the perimeter.
+Also very useful for forcing a width, which a Scroller cannot do alone.
+Has a content area that lives above a background area.
+ */
+
+ScrollerCanvas = (function() {
+  ScrollerCanvas.prototype.el = null;
+
+  ScrollerCanvas.prototype.contentEl = null;
+
+  ScrollerCanvas.prototype.bgEl = null;
+
+  ScrollerCanvas.prototype.gutters = null;
+
+  ScrollerCanvas.prototype.width = null;
+
+  ScrollerCanvas.prototype.minWidth = null;
+
+  function ScrollerCanvas() {
+    this.gutters = {};
+  }
+
+  ScrollerCanvas.prototype.render = function() {
+    this.el = $('<div class="fc-scroller-canvas"> <div class="fc-content"></div> <div class="fc-bg"></div> </div>');
+    this.contentEl = this.el.find('.fc-content');
+    return this.bgEl = this.el.find('.fc-bg');
   };
 
-  Scroller.prototype.setHeight = function(height1) {
-    this.height = height1;
-    return this.updateCss();
-  };
 
-  Scroller.prototype.getHeight = function() {
-    var ref;
-    return (ref = this.height) != null ? ref : this.scrollEl.height();
-  };
+  /*
+    If falsy, resets all the gutters to 0
+   */
 
-  Scroller.prototype.setContentWidth = function(contentWidth) {
-    this.contentWidth = contentWidth;
-    return this.updateCss();
-  };
-
-  Scroller.prototype.setContentMinWidth = function(contentMinWidth) {
-    this.contentMinWidth = contentMinWidth;
-    return this.updateCss();
-  };
-
-  Scroller.prototype.setGutters = function(gutters) {
+  ScrollerCanvas.prototype.setGutters = function(gutters) {
     if (!gutters) {
       this.gutters = {};
     } else {
       $.extend(this.gutters, gutters);
     }
-    return this.updateCss();
+    return this.updateSize();
   };
 
-  Scroller.prototype.updateCss = function() {
+  ScrollerCanvas.prototype.setWidth = function(width1) {
+    this.width = width1;
+    return this.updateSize();
+  };
+
+  ScrollerCanvas.prototype.setMinWidth = function(minWidth1) {
+    this.minWidth = minWidth1;
+    return this.updateSize();
+  };
+
+  ScrollerCanvas.prototype.clearWidth = function() {
+    this.width = null;
+    this.minWidth = null;
+    return this.updateSize();
+  };
+
+  ScrollerCanvas.prototype.updateSize = function() {
     var gutters;
-    this.scrollEl.height(this.height);
     gutters = this.gutters;
-    this.innerEl.css({
-      width: this.contentWidth ? this.contentWidth + (gutters.left || 0) + (gutters.right || 0) : '',
-      minWidth: this.contentMinWidth ? this.contentMinWidth + (gutters.left || 0) + (gutters.right || 0) : void 0,
+    this.el.toggleClass('fc-gutter-left', Boolean(gutters.left)).toggleClass('fc-gutter-right', Boolean(gutters.right)).toggleClass('fc-gutter-top', Boolean(gutters.top)).toggleClass('fc-gutter-bottom', Boolean(gutters.bottom)).css({
       paddingLeft: gutters.left || '',
       paddingRight: gutters.right || '',
       paddingTop: gutters.top || '',
-      paddingBottom: gutters.bottom || ''
+      paddingBottom: gutters.bottom || '',
+      width: this.width != null ? this.width + (gutters.left || 0) + (gutters.right || 0) : '',
+      minWidth: this.minWidth != null ? this.minWidth + (gutters.left || 0) + (gutters.right || 0) : ''
     });
     return this.bgEl.css({
       left: gutters.left || '',
@@ -314,43 +494,9 @@ Scroller = (function() {
     });
   };
 
-  Scroller.prototype.append = function(content) {
-    return this.contentEl.append(content);
-  };
-
-  Scroller.prototype.scrollTop = function(top) {
-    return this.scrollEl.scrollTop(top);
-  };
-
-  Scroller.prototype.scrollLeft = function(left) {
-    return this.scrollEl.scrollLeft(left);
-  };
-
-  Scroller.prototype.on = function(handlerName, handler) {
-    var base;
-    ((base = this.handlers)[handlerName] || (base[handlerName] = [])).push(handler);
-    return this;
-  };
-
-  Scroller.prototype.trigger = function() {
-    var args, handler, handlerName, j, len, ref;
-    handlerName = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    ref = this.handlers[handlerName] || [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      handler = ref[j];
-      handler.apply(this, args);
-    }
-  };
-
-  return Scroller;
+  return ScrollerCanvas;
 
 })();
-
-hasAnyScrollbars = function(el) {
-  var scrollbarWidths;
-  scrollbarWidths = getScrollbarWidths(el);
-  return scrollbarWidths.left || scrollbarWidths.right || scrollbarWidths.top || scrollbarWidths.bottom;
-};
 
 ScrollJoiner = (function() {
   ScrollJoiner.prototype.axis = null;
@@ -358,8 +504,6 @@ ScrollJoiner = (function() {
   ScrollJoiner.prototype.scrollers = null;
 
   ScrollJoiner.prototype.masterScroller = null;
-
-  ScrollJoiner.prototype.enabled = true;
 
   function ScrollJoiner(axis, scrollers) {
     var j, len, ref, scroller;
@@ -370,49 +514,79 @@ ScrollJoiner = (function() {
       scroller = ref[j];
       this.initScroller(scroller);
     }
+    return;
   }
 
-  ScrollJoiner.prototype.enable = function() {
-    return this.enabled = true;
-  };
-
-  ScrollJoiner.prototype.disable = function() {
-    return this.enabled = false;
-  };
-
   ScrollJoiner.prototype.initScroller = function(scroller) {
+    scroller.scrollEl.on('wheel mousewheel DomMouseScroll MozMousePixelScroll', (function(_this) {
+      return function() {
+        _this.assignMasterScroller(scroller);
+      };
+    })(this));
     return scroller.on('scrollStart', (function(_this) {
       return function() {
         if (!_this.masterScroller) {
-          _this.masterScroller = scroller;
+          return _this.assignMasterScroller(scroller);
         }
       };
     })(this)).on('scroll', (function(_this) {
-      return function(scrollTop, scrollLeft) {
-        var j, len, otherScroller, ref;
+      return function() {
+        var j, len, otherScroller, ref, results;
         if (scroller === _this.masterScroller) {
           ref = _this.scrollers;
+          results = [];
           for (j = 0, len = ref.length; j < len; j++) {
             otherScroller = ref[j];
-            if (otherScroller !== _this.masterScroller) {
+            if (otherScroller !== scroller) {
               switch (_this.axis) {
                 case 'horizontal':
-                  otherScroller.scrollLeft(scrollLeft);
+                  results.push(otherScroller.setNativeScrollLeft(scroller.getNativeScrollLeft()));
                   break;
                 case 'vertical':
-                  otherScroller.scrollTop(scrollTop);
+                  results.push(otherScroller.setScrollTop(scroller.getScrollTop()));
+                  break;
+                default:
+                  results.push(void 0);
               }
+            } else {
+              results.push(void 0);
             }
           }
+          return results;
         }
       };
-    })(this)).on('scrollStop', (function(_this) {
+    })(this)).on('scrollEnd', (function(_this) {
       return function() {
         if (scroller === _this.masterScroller) {
-          _this.masterScroller = null;
+          return _this.unassignMasterScroller();
         }
       };
     })(this));
+  };
+
+  ScrollJoiner.prototype.assignMasterScroller = function(scroller) {
+    var j, len, otherScroller, ref;
+    this.unassignMasterScroller();
+    this.masterScroller = scroller;
+    ref = this.scrollers;
+    for (j = 0, len = ref.length; j < len; j++) {
+      otherScroller = ref[j];
+      if (otherScroller !== scroller) {
+        otherScroller.disableTouchScroll();
+      }
+    }
+  };
+
+  ScrollJoiner.prototype.unassignMasterScroller = function() {
+    var j, len, otherScroller, ref;
+    if (this.masterScroller) {
+      ref = this.scrollers;
+      for (j = 0, len = ref.length; j < len; j++) {
+        otherScroller = ref[j];
+        otherScroller.enableTouchScroll();
+      }
+      this.masterScroller = null;
+    }
   };
 
   ScrollJoiner.prototype.update = function() {
@@ -439,7 +613,7 @@ ScrollJoiner = (function() {
     for (i = k = 0, len1 = ref.length; k < len1; i = ++k) {
       scroller = ref[i];
       widths = allWidths[i];
-      scroller.setGutters(this.axis === 'horizontal' ? {
+      scroller.canvas.setGutters(this.axis === 'horizontal' ? {
         left: maxLeft - widths.left,
         right: maxRight - widths.right
       } : {
@@ -468,41 +642,37 @@ ScrollFollower = (function() {
 
   ScrollFollower.prototype.isVFollowing = false;
 
+  ScrollFollower.prototype.allowPointerEvents = false;
+
   ScrollFollower.prototype.containOnNaturalLeft = false;
 
   ScrollFollower.prototype.containOnNaturalRight = false;
 
-  ScrollFollower.prototype.shouldRequeryDimensions = false;
-
   ScrollFollower.prototype.minTravel = 0;
 
-  ScrollFollower.prototype.isForcedAbsolute = false;
+  ScrollFollower.prototype.isTouch = false;
 
   ScrollFollower.prototype.isForcedRelative = false;
 
-  function ScrollFollower(scroller1) {
-    this.scroller = scroller1;
+  function ScrollFollower(scroller, allowPointerEvents) {
+    this.allowPointerEvents = allowPointerEvents != null ? allowPointerEvents : false;
+    this.scroller = scroller;
     this.sprites = [];
-    this.scroller.on('scrollStart', (function(_this) {
+    scroller.on('scroll', (function(_this) {
       return function() {
-        if (_this.shouldRequeryDimensions) {
-          return _this.cacheDimensions();
+        if (scroller.isTouching) {
+          _this.isTouch = true;
+          return _this.isForcedRelative = true;
+        } else {
+          _this.isTouch = false;
+          _this.isForcedRelative = false;
+          return _this.handleScroll();
         }
       };
     })(this));
-    this.scroller.on('scroll', (function(_this) {
-      return function(scrollTop, scrollLeft) {
-        var left, scrollEl, top;
-        scrollEl = _this.scroller.scrollEl;
-        left = getScrollFromLeft(scrollEl);
-        top = scrollEl.scrollTop();
-        _this.viewportRect = {
-          left: left,
-          right: left + scrollEl[0].clientWidth,
-          top: top,
-          bottom: top + scrollEl[0].clientHeight
-        };
-        return _this.updatePositions();
+    scroller.on('scrollEnd', (function(_this) {
+      return function() {
+        return _this.handleScroll();
       };
     })(this));
   }
@@ -539,19 +709,16 @@ ScrollFollower = (function() {
     return this.sprites = [];
   };
 
+  ScrollFollower.prototype.handleScroll = function() {
+    this.updateViewport();
+    return this.updatePositions();
+  };
+
   ScrollFollower.prototype.cacheDimensions = function() {
-    var j, left, len, ref, scrollEl, sprite, top;
-    scrollEl = this.scroller.scrollEl;
-    left = getScrollFromLeft(scrollEl);
-    top = scrollEl.scrollTop();
-    this.viewportRect = {
-      left: left,
-      right: left + scrollEl[0].clientWidth,
-      top: top,
-      bottom: top + scrollEl[0].clientHeight
-    };
+    var j, len, ref, sprite;
+    this.updateViewport();
     this.scrollbarWidths = this.scroller.getScrollbarWidths();
-    this.contentOffset = this.scroller.innerEl.offset();
+    this.contentOffset = this.scroller.canvas.el.offset();
     ref = this.sprites;
     for (j = 0, len = ref.length; j < len; j++) {
       sprite = ref[j];
@@ -559,49 +726,49 @@ ScrollFollower = (function() {
     }
   };
 
-  ScrollFollower.prototype.forceAbsolute = function() {
-    var j, len, ref, results, sprite;
-    this.isForcedAbsolute = true;
-    ref = this.sprites;
-    results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      sprite = ref[j];
-      if (!sprite.doAbsolute) {
-        results.push(sprite.assignPosition());
-      } else {
-        results.push(void 0);
-      }
-    }
-    return results;
+  ScrollFollower.prototype.updateViewport = function() {
+    var left, scroller, top;
+    scroller = this.scroller;
+    left = scroller.getScrollFromLeft();
+    top = scroller.getScrollTop();
+    return this.viewportRect = {
+      left: left,
+      right: left + scroller.getClientWidth(),
+      top: top,
+      bottom: top + scroller.getClientHeight()
+    };
   };
 
   ScrollFollower.prototype.forceRelative = function() {
     var j, len, ref, results, sprite;
-    this.isForcedRelative = true;
-    ref = this.sprites;
-    results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      sprite = ref[j];
-      if (sprite.doAbsolute) {
-        results.push(sprite.assignPosition());
-      } else {
-        results.push(void 0);
+    if (!this.isForcedRelative) {
+      this.isForcedRelative = true;
+      ref = this.sprites;
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        sprite = ref[j];
+        if (sprite.doAbsolute) {
+          results.push(sprite.assignPosition());
+        } else {
+          results.push(void 0);
+        }
       }
+      return results;
     }
-    return results;
   };
 
   ScrollFollower.prototype.clearForce = function() {
     var j, len, ref, results, sprite;
-    this.isForcedRelative = false;
-    this.isForcedAbsolute = false;
-    ref = this.sprites;
-    results = [];
-    for (j = 0, len = ref.length; j < len; j++) {
-      sprite = ref[j];
-      results.push(sprite.assignPosition());
+    if (this.isForcedRelative && !this.isTouch) {
+      this.isForcedRelative = false;
+      ref = this.sprites;
+      results = [];
+      for (j = 0, len = ref.length; j < len; j++) {
+        sprite = ref[j];
+        results.push(sprite.assignPosition());
+      }
+      return results;
     }
-    return results;
   };
 
   ScrollFollower.prototype.update = function() {
@@ -619,29 +786,11 @@ ScrollFollower = (function() {
   };
 
   ScrollFollower.prototype.getContentRect = function(el) {
-    var left, res, top;
-    res = el.offset();
-    left = res.left + parseFloat(el.css('border-left-width')) + parseFloat(el.css('padding-left')) - this.contentOffset.left;
-    top = res.top + parseFloat(el.css('border-left-width')) + parseFloat(el.css('padding-left')) - this.contentOffset.top;
-    return {
-      left: left,
-      right: left + el.width(),
-      top: top,
-      bottom: top + el.height()
-    };
+    return getContentRect(el, this.contentOffset);
   };
 
   ScrollFollower.prototype.getBoundingRect = function(el) {
-    var left, res, top;
-    res = el.offset();
-    left = res.left - this.contentOffset.left;
-    top = res.top - this.contentOffset.top;
-    return {
-      left: left,
-      right: left + el.outerWidth(),
-      top: top,
-      bottom: top + el.outerHeight()
-    };
+    return getOuterRect(el, this.contentOffset);
   };
 
   return ScrollFollower;
@@ -803,7 +952,7 @@ ScrollFollowerSprite = (function() {
     if (this.isEnabled) {
       if (!this.rect) {
         return this.unabsolutize();
-      } else if ((this.doAbsolute || this.follower.isForcedAbsolute) && !this.follower.isForcedRelative) {
+      } else if (this.doAbsolute && !this.follower.isForcedRelative) {
         this.absolutize();
         return this.absoluteEl.css({
           top: this.rect.top - this.follower.viewportRect.top + this.follower.scrollbarWidths.top,
@@ -842,19 +991,25 @@ ScrollFollowerSprite = (function() {
   };
 
   ScrollFollowerSprite.prototype.buildAbsoluteEl = function() {
-    return this.el.clone().addClass('fc-following').css({
+    var el;
+    el = this.el.clone().addClass('fc-following');
+    el.css({
       'position': 'absolute',
       'z-index': 1000,
       'font-weight': this.el.css('font-weight'),
       'font-size': this.el.css('font-size'),
       'font-family': this.el.css('font-family'),
+      'text-decoration': this.el.css('text-decoration'),
       'color': this.el.css('color'),
       'padding-top': this.el.css('padding-top'),
       'padding-bottom': this.el.css('padding-bottom'),
       'padding-left': this.el.css('padding-left'),
-      'padding-right': this.el.css('padding-right'),
-      'pointer-events': 'none'
+      'padding-right': this.el.css('padding-right')
     });
+    if (!this.follower.allowPointerEvents) {
+      el.css('pointer-events', 'none');
+    }
+    return el;
   };
 
   return ScrollFollowerSprite;
@@ -955,7 +1110,7 @@ CalendarExtension = (function(superClass) {
   };
 
   CalendarExtension.prototype.getResources = function() {
-    return this.resourceManager.topLevelResources;
+    return Array.prototype.slice.call(this.resourceManager.topLevelResources);
   };
 
   CalendarExtension.prototype.addResource = function(resourceInput, scroll) {
@@ -965,7 +1120,7 @@ CalendarExtension = (function(superClass) {
     }
     promise = this.resourceManager.addResource(resourceInput);
     if (scroll && this.view.scrollToResource) {
-      promise.done((function(_this) {
+      promise.then((function(_this) {
         return function(resource) {
           return _this.view.scrollToResource(resource);
         };
@@ -982,29 +1137,101 @@ CalendarExtension = (function(superClass) {
   };
 
   CalendarExtension.prototype.rerenderResources = function() {
-    var base;
-    if (typeof (base = this.view).redisplayResources === "function") {
-      base.redisplayResources();
-    }
+    this.resourceManager.resetCurrentResources();
   };
 
-  CalendarExtension.prototype.getEventResourceId = function(event) {
-    return this.resourceManager.getEventResourceId(event);
+  CalendarExtension.prototype.isSpanAllowed = function(span, constraint) {
+    var constrainToResourceIds, ref;
+    if (typeof constraint === 'object') {
+      constrainToResourceIds = this.getEventResourceIds(constraint);
+      if (constrainToResourceIds.length && (!span.resourceId || !(ref = span.resourceId, indexOf.call(constrainToResourceIds, ref) >= 0))) {
+        return false;
+      }
+    }
+    return CalendarExtension.__super__.isSpanAllowed.apply(this, arguments);
+  };
+
+  CalendarExtension.prototype.mutateSeg = function(span, newProps, largeUnit) {
+    var mutatedResourceIds, newResourceId, oldResourceId, ref;
+    if (newProps.resourceId) {
+      oldResourceId = ((ref = span.resource) != null ? ref.id : void 0) || span.resourceId;
+      newResourceId = newProps.resourceId;
+      mutatedResourceIds = this.getEventResourceIds(span.event);
+      if (oldResourceId !== newResourceId) {
+        mutatedResourceIds = mutatedResourceIds.filter(function(resourceId) {
+          return resourceId !== oldResourceId && resourceId !== newResourceId;
+        });
+        mutatedResourceIds.push(newResourceId);
+      }
+      newProps = $.extend({}, newProps);
+      this.setEventResourceIds(newProps, mutatedResourceIds);
+    }
+    return this.mutateEvent(span.event, newProps, largeUnit);
   };
 
   CalendarExtension.prototype.getPeerEvents = function(span, event) {
-    var filteredPeerEvents, j, len, newResourceId, peerEvent, peerEvents, peerResourceId;
+    var filteredPeerEvents, isPeer, j, k, l, len, len1, len2, newResourceId, newResourceIds, peerEvent, peerEvents, peerResourceId, peerResourceIds;
     peerEvents = CalendarExtension.__super__.getPeerEvents.apply(this, arguments);
-    newResourceId = span.resourceId || (event && this.getEventResourceId(event)) || '';
+    newResourceIds = span.resourceId ? [span.resourceId] : event ? this.getEventResourceIds(event) : [];
     filteredPeerEvents = [];
     for (j = 0, len = peerEvents.length; j < len; j++) {
       peerEvent = peerEvents[j];
-      peerResourceId = this.getEventResourceId(peerEvent) || '';
-      if (!peerResourceId || peerResourceId === newResourceId) {
+      isPeer = false;
+      peerResourceIds = this.getEventResourceIds(peerEvent);
+      if (!peerResourceIds.length || !newResourceIds.length) {
+        isPeer = true;
+      } else {
+        for (k = 0, len1 = peerResourceIds.length; k < len1; k++) {
+          peerResourceId = peerResourceIds[k];
+          for (l = 0, len2 = newResourceIds.length; l < len2; l++) {
+            newResourceId = newResourceIds[l];
+            if (newResourceId === peerResourceId) {
+              isPeer = true;
+              break;
+            }
+          }
+        }
+      }
+      if (isPeer) {
         filteredPeerEvents.push(peerEvent);
       }
     }
     return filteredPeerEvents;
+  };
+
+  CalendarExtension.prototype.spanContainsSpan = function(outerSpan, innerSpan) {
+    if (outerSpan.resourceId && outerSpan.resourceId !== innerSpan.resourceId) {
+      return false;
+    } else {
+      return CalendarExtension.__super__.spanContainsSpan.apply(this, arguments);
+    }
+  };
+
+  CalendarExtension.prototype.getCurrentBusinessHourEvents = function(wholeDay) {
+    var allEvents, anyCustomBusinessHours, event, events, flatResources, j, k, l, len, len1, len2, resource;
+    flatResources = this.resourceManager.getFlatResources();
+    anyCustomBusinessHours = false;
+    for (j = 0, len = flatResources.length; j < len; j++) {
+      resource = flatResources[j];
+      if (resource.businessHours) {
+        anyCustomBusinessHours = true;
+      }
+    }
+    if (anyCustomBusinessHours) {
+      allEvents = [];
+      for (k = 0, len1 = flatResources.length; k < len1; k++) {
+        resource = flatResources[k];
+        events = this.computeBusinessHourEvents(wholeDay, resource.businessHours || this.options.businessHours);
+        for (l = 0, len2 = events.length; l < len2; l++) {
+          event = events[l];
+          event.resourceId = resource.id;
+          allEvents.push(event);
+        }
+      }
+      return allEvents;
+    } else {
+      return CalendarExtension.__super__.getCurrentBusinessHourEvents.apply(this, arguments);
+    }
   };
 
   CalendarExtension.prototype.buildSelectSpan = function(startInput, endInput, resourceId) {
@@ -1020,27 +1247,85 @@ CalendarExtension = (function(superClass) {
     return this.resourceManager.getResourceById(id);
   };
 
+  CalendarExtension.prototype.normalizeEvent = function(event) {
+    CalendarExtension.__super__.normalizeEvent.apply(this, arguments);
+    if (event.resourceId == null) {
+      event.resourceId = null;
+    }
+    return event.resourceIds != null ? event.resourceIds : event.resourceIds = null;
+  };
+
+  CalendarExtension.prototype.getEventResourceId = function(event) {
+    return this.getEventResourceIds(event)[0];
+  };
+
+  CalendarExtension.prototype.getEventResourceIds = function(event) {
+    var j, len, normalResourceId, normalResourceIds, ref, ref1, ref2, resourceId;
+    resourceId = String((ref = (ref1 = event[this.getEventResourceField()]) != null ? ref1 : event.resourceId) != null ? ref : '');
+    if (resourceId) {
+      return [resourceId];
+    } else if (event.resourceIds) {
+      normalResourceIds = [];
+      ref2 = event.resourceIds;
+      for (j = 0, len = ref2.length; j < len; j++) {
+        resourceId = ref2[j];
+        normalResourceId = String(resourceId != null ? resourceId : '');
+        if (normalResourceId) {
+          normalResourceIds.push(normalResourceId);
+        }
+      }
+      return normalResourceIds;
+    } else {
+      return [];
+    }
+  };
+
+  CalendarExtension.prototype.setEventResourceId = function(event, resourceId) {
+    return this.setEventResourceIds(event, resourceId ? [resourceId] : []);
+  };
+
+  CalendarExtension.prototype.setEventResourceIds = function(event, resourceIds) {
+    event[this.getEventResourceField()] = resourceIds.length === 1 ? resourceIds[0] : null;
+    return event.resourceIds = resourceIds.length > 1 ? resourceIds : null;
+  };
+
+  CalendarExtension.prototype.getEventResourceField = function() {
+    return this.options['eventResourceField'] || 'resourceId';
+  };
+
   CalendarExtension.prototype.getResourceEvents = function(idOrResource) {
-    var eventResourceField, resource;
+    var resource;
     resource = typeof idOrResource === 'object' ? idOrResource : this.getResourceById(idOrResource);
     if (resource) {
-      eventResourceField = this.resourceManager.getEventResourceField();
-      return this.clientEvents(function(event) {
-        return event[eventResourceField] === resource.id;
-      });
+      return this.clientEvents((function(_this) {
+        return function(event) {
+          return $.inArray(resource.id, _this.getEventResourceIds(event)) !== -1;
+        };
+      })(this));
     } else {
       return [];
     }
   };
 
   CalendarExtension.prototype.getEventResource = function(idOrEvent) {
-    var event, resourceId;
+    return this.getEventResources(idOrEvent)[0];
+  };
+
+  CalendarExtension.prototype.getEventResources = function(idOrEvent) {
+    var event, j, len, ref, resource, resourceId, resources;
     event = typeof idOrEvent === 'object' ? idOrEvent : this.clientEvents(idOrEvent)[0];
+    resources = [];
     if (event) {
-      resourceId = this.resourceManager.getEventResourceId(event);
-      return this.getResourceById(resourceId);
+      ref = this.getEventResourceIds(event);
+      for (j = 0, len = ref.length; j < len; j++) {
+        resourceId = ref[j];
+        resource = this.getResourceById(resourceId);
+        if (resource) {
+          resources.push(resource);
+        }
+      }
     }
-    return null;
+    return resources;
   };
 
   return CalendarExtension;
@@ -1049,88 +1334,284 @@ CalendarExtension = (function(superClass) {
 
 Calendar.prototype = CalendarExtension.prototype;
 
-superDisplayEvents = View.prototype.displayEvents;
+origSetElement = View.prototype.setElement;
 
-View.prototype.displayEvents = function(events) {
-  this.listenToResources();
-  processLicenseKey(this.calendar.options.schedulerLicenseKey, this.el);
-  return this.calendar.resourceManager.getResources().then((function(_this) {
+origRemoveElement = View.prototype.removeElement;
+
+origHandleDate = View.prototype.handleDate;
+
+origOnDateRender = View.prototype.onDateRender;
+
+origExecuteEventsRender = View.prototype.executeEventsRender;
+
+View.prototype.isResourcesBound = false;
+
+View.prototype.isResourcesSet = false;
+
+Calendar.defaults.refetchResourcesOnNavigate = false;
+
+View.prototype.setElement = function() {
+  var promise;
+  promise = origSetElement.apply(this, arguments);
+  if (!this.opt('refetchResourcesOnNavigate')) {
+    this.bindResources();
+  }
+  return promise;
+};
+
+View.prototype.removeElement = function() {
+  this.unbindResources({
+    skipRerender: true
+  });
+  return origRemoveElement.apply(this, arguments);
+};
+
+
+/*
+Replace the supermethod's logic. Important to unbind/bind *events* (TODO: make more DRY)
+ */
+
+View.prototype.handleDate = function(date, isReset) {
+  var resourcesNeedDate;
+  resourcesNeedDate = this.opt('refetchResourcesOnNavigate');
+  this.unbindEvents();
+  if (resourcesNeedDate) {
+    this.unbindResources({
+      skipUnrender: true
+    });
+  }
+  return this.requestDateRender(date).then((function(_this) {
     return function() {
-      return superDisplayEvents.call(_this, events);
+      _this.bindEvents();
+      if (resourcesNeedDate) {
+        return _this.bindResources(true);
+      }
     };
   })(this));
 };
 
-View.prototype.isListeningToResources = false;
+View.prototype.onDateRender = function() {
+  processLicenseKey(this.calendar.options.schedulerLicenseKey, this.el);
+  return origOnDateRender.apply(this, arguments);
+};
 
-View.prototype.listenToResources = function() {
-  if (!this.isListeningToResources) {
-    this.calendar.resourceManager.on('add', proxy(this, 'addResource')).on('remove', proxy(this, 'removeResource')).on('reset', proxy(this, 'resetResources'));
-    return this.isListeningToResources = true;
+View.prototype.executeEventsRender = function(events) {
+  return this.whenResourcesSet().then((function(_this) {
+    return function() {
+      return origExecuteEventsRender.call(_this, events);
+    };
+  })(this));
+};
+
+View.prototype.bindResources = function(forceInitialFetch) {
+  var promise;
+  if (!this.isResourcesBound) {
+    this.isResourcesBound = true;
+    this.trigger('resourcesBind');
+    promise = forceInitialFetch ? this.fetchResources() : this.requestResources();
+    return this.rejectOn('resourcesUnbind', promise).then((function(_this) {
+      return function(resources) {
+        _this.listenTo(_this.calendar.resourceManager, {
+          set: _this.setResources,
+          reset: _this.setResources,
+          unset: _this.unsetResources,
+          add: _this.addResource,
+          remove: _this.removeResource
+        });
+        return _this.setResources(resources);
+      };
+    })(this));
+  }
+};
+
+View.prototype.unbindResources = function(teardownOptions) {
+  if (this.isResourcesBound) {
+    this.isResourcesBound = false;
+    this.stopListeningTo(this.calendar.resourceManager);
+    this.unsetResources(teardownOptions);
+    return this.trigger('resourcesUnbind');
+  }
+};
+
+View.prototype.setResources = function(resources) {
+  var isReset;
+  isReset = this.isResourcesSet;
+  this.isResourcesSet = true;
+  this.handleResources(resources, isReset);
+  return this.trigger(isReset ? 'resourcesReset' : 'resourcesSet', resources);
+};
+
+View.prototype.unsetResources = function(teardownOptions) {
+  if (this.isResourcesSet) {
+    this.isResourcesSet = false;
+    this.handleResourcesUnset(teardownOptions);
+    return this.trigger('resourcesUnset');
+  }
+};
+
+View.prototype.whenResourcesSet = function() {
+  if (this.isResourcesSet) {
+    return Promise.resolve();
+  } else {
+    return new Promise((function(_this) {
+      return function(resolve) {
+        return _this.one('resourcesSet', resolve);
+      };
+    })(this));
   }
 };
 
 View.prototype.addResource = function(resource) {
-  return this.calendar.rerenderEvents();
+  if (this.isResourcesSet) {
+    this.handleResourceAdd(resource);
+    return this.trigger('resourceAdd', resource);
+  }
 };
 
 View.prototype.removeResource = function(resource) {
-  return this.calendar.rerenderEvents();
+  if (this.isResourcesSet) {
+    this.handleResourceRemove(resource);
+    return this.trigger('resourceRemove', resource);
+  }
 };
 
-View.prototype.resetResources = function(resources) {
-  return this.calendar.rerenderEvents();
+View.prototype.handleResources = function(resources) {
+  if (this.isEventsRendered) {
+    return this.requestCurrentEventsRender();
+  }
 };
 
-Grid.prototype.getEventSkinCss = function(event) {
-  var eventColor, getResourceBackgroundColor, getResourceBorderColor, getResourceTextColor, optionColor, resource, source, sourceColor, view;
-  view = this.view;
-  source = event.source || {};
-  eventColor = event.color;
-  sourceColor = source.color;
-  optionColor = view.opt('eventColor');
-  resource = view.calendar.getEventResource(event);
-  getResourceBackgroundColor = function() {
-    var currentResource, val;
-    val = null;
-    currentResource = resource;
-    while (currentResource && !val) {
+View.prototype.handleResourcesUnset = function(teardownOptions) {
+  if (teardownOptions == null) {
+    teardownOptions = {};
+  }
+  return this.requestEventsUnrender();
+};
+
+View.prototype.handleResourceAdd = function(resource) {
+  if (this.isEventsRendered) {
+    return this.requestCurrentEventsRender();
+  }
+};
+
+View.prototype.handleResourceRemove = function(resource) {
+  if (this.isEventsRendered) {
+    return this.requestCurrentEventsRender();
+  }
+};
+
+
+/*
+Like fetchResources, but won't refetch if already fetched (regardless of start/end).
+If refetchResourcesOnNavigate is enabled,
+this function expects the view's start/end to be already populated.
+ */
+
+View.prototype.requestResources = function() {
+  if (this.opt('refetchResourcesOnNavigate')) {
+    return this.calendar.resourceManager.getResources(this.start, this.end);
+  } else {
+    return this.calendar.resourceManager.getResources();
+  }
+};
+
+
+/*
+If refetchResourcesOnNavigate is enabled,
+this function expects the view's start/end to be already populated.
+ */
+
+View.prototype.fetchResources = function() {
+  if (this.opt('refetchResourcesOnNavigate')) {
+    return this.calendar.resourceManager.fetchResources(this.start, this.end);
+  } else {
+    return this.calendar.resourceManager.fetchResources();
+  }
+};
+
+View.prototype.getCurrentResources = function() {
+  return this.calendar.resourceManager.topLevelResources;
+};
+
+origGetSegCustomClasses = Grid.prototype.getSegCustomClasses;
+
+origGetSegDefaultBackgroundColor = Grid.prototype.getSegDefaultBackgroundColor;
+
+origGetSegDefaultBorderColor = Grid.prototype.getSegDefaultBorderColor;
+
+origGetSegDefaultTextColor = Grid.prototype.getSegDefaultTextColor;
+
+Grid.prototype.getSegCustomClasses = function(seg) {
+  var classes, j, len, ref, resource;
+  classes = origGetSegCustomClasses.apply(this, arguments);
+  ref = this.getSegResources(seg);
+  for (j = 0, len = ref.length; j < len; j++) {
+    resource = ref[j];
+    classes = classes.concat(resource.eventClassName || []);
+  }
+  return classes;
+};
+
+Grid.prototype.getSegDefaultBackgroundColor = function(seg) {
+  var currentResource, j, len, resources, val;
+  resources = this.getSegResources(seg);
+  for (j = 0, len = resources.length; j < len; j++) {
+    currentResource = resources[j];
+    while (currentResource) {
       val = currentResource.eventBackgroundColor || currentResource.eventColor;
+      if (val) {
+        return val;
+      }
       currentResource = currentResource._parent;
     }
-    return val;
-  };
-  getResourceBorderColor = function() {
-    var currentResource, val;
-    val = null;
-    currentResource = resource;
-    while (currentResource && !val) {
+  }
+  return origGetSegDefaultBackgroundColor.apply(this, arguments);
+};
+
+Grid.prototype.getSegDefaultBorderColor = function(seg) {
+  var currentResource, j, len, resources, val;
+  resources = this.getSegResources(seg);
+  for (j = 0, len = resources.length; j < len; j++) {
+    currentResource = resources[j];
+    while (currentResource) {
       val = currentResource.eventBorderColor || currentResource.eventColor;
+      if (val) {
+        return val;
+      }
       currentResource = currentResource._parent;
     }
-    return val;
-  };
-  getResourceTextColor = function() {
-    var currentResource, val;
-    val = null;
-    currentResource = resource;
-    while (currentResource && !val) {
+  }
+  return origGetSegDefaultBorderColor.apply(this, arguments);
+};
+
+Grid.prototype.getSegDefaultTextColor = function(seg) {
+  var currentResource, j, len, resources, val;
+  resources = this.getSegResources(seg);
+  for (j = 0, len = resources.length; j < len; j++) {
+    currentResource = resources[j];
+    while (currentResource) {
       val = currentResource.eventTextColor;
+      if (val) {
+        return val;
+      }
       currentResource = currentResource._parent;
     }
-    return val;
-  };
-  return {
-    'background-color': event.backgroundColor || eventColor || getResourceBackgroundColor() || source.backgroundColor || sourceColor || view.opt('eventBackgroundColor') || optionColor,
-    'border-color': event.borderColor || eventColor || getResourceBorderColor() || source.borderColor || sourceColor || view.opt('eventBorderColor') || optionColor,
-    'color': event.textColor || getResourceTextColor() || source.textColor || view.opt('eventTextColor')
-  };
+  }
+  return origGetSegDefaultTextColor.apply(this, arguments);
+};
+
+Grid.prototype.getSegResources = function(seg) {
+  if (seg.resource) {
+    return [seg.resource];
+  } else {
+    return this.view.calendar.getEventResources(seg.event);
+  }
 };
 
 ResourceManager = (function(superClass) {
   extend(ResourceManager, superClass);
 
-  ResourceManager.mixin(Emitter);
+  ResourceManager.mixin(EmitterMixin);
 
   ResourceManager.resourceGuid = 1;
 
@@ -1141,6 +1622,8 @@ ResourceManager = (function(superClass) {
 
   ResourceManager.prototype.calendar = null;
 
+  ResourceManager.prototype.fetchId = 0;
+
   ResourceManager.prototype.topLevelResources = null;
 
   ResourceManager.prototype.resourcesById = null;
@@ -1149,44 +1632,53 @@ ResourceManager = (function(superClass) {
 
   function ResourceManager(calendar1) {
     this.calendar = calendar1;
-    this.unsetResources();
+    this.initializeCache();
   }
 
-  ResourceManager.prototype.getResources = function() {
-    var getting;
-    if (!this.fetching) {
-      getting = $.Deferred();
-      this.fetchResources().done(function(resources) {
-        return getting.resolve(resources);
-      }).fail(function() {
-        return getting.resolve([]);
-      });
-      return getting;
-    } else {
-      return $.Deferred().resolve(this.topLevelResources).promise();
-    }
+
+  /*
+    Like fetchResources, but won't refetch if already fetched (regardless of start/end).
+   */
+
+  ResourceManager.prototype.getResources = function(start, end) {
+    return this.fetching || this.fetchResources(start, end);
   };
 
-  ResourceManager.prototype.fetchResources = function() {
-    var prevFetching;
-    prevFetching = this.fetching;
-    return $.when(prevFetching).then((function(_this) {
-      return function() {
-        return _this.fetching = _this.fetchResourceInputs().then(function(resourceInputs) {
-          _this.setResources(resourceInputs);
-          if (prevFetching) {
-            _this.trigger('reset', _this.topLevelResources);
+
+  /*
+    Will always fetch, even if done previously.
+    Accepts optional chrono-related params to pass on to the raw resource sources.
+    Returns a promise.
+   */
+
+  ResourceManager.prototype.fetchResources = function(start, end) {
+    var currentFetchId;
+    currentFetchId = (this.fetchId += 1);
+    return this.fetching = new Promise((function(_this) {
+      return function(resolve, reject) {
+        return _this.fetchResourceInputs(function(resourceInputs) {
+          if (currentFetchId === _this.fetchId) {
+            _this.setResources(resourceInputs);
+            return resolve(_this.topLevelResources);
+          } else {
+            return reject();
           }
-          return _this.topLevelResources;
-        });
+        }, start, end);
       };
     })(this));
   };
 
-  ResourceManager.prototype.fetchResourceInputs = function() {
-    var deferred, promise, source;
-    deferred = $.Deferred();
-    source = this.calendar.options['resources'];
+
+  /*
+    Accepts optional chrono-related params to pass on to the raw resource sources.
+    Calls callback when done.
+   */
+
+  ResourceManager.prototype.fetchResourceInputs = function(callback, start, end) {
+    var calendar, options, requestParams, source;
+    calendar = this.calendar;
+    options = calendar.options;
+    source = options.resources;
     if ($.type(source) === 'string') {
       source = {
         url: source
@@ -1194,43 +1686,60 @@ ResourceManager = (function(superClass) {
     }
     switch ($.type(source)) {
       case 'function':
-        source((function(_this) {
+        this.calendar.pushLoading();
+        return source((function(_this) {
           return function(resourceInputs) {
-            return deferred.resolve(resourceInputs);
+            _this.calendar.popLoading();
+            return callback(resourceInputs);
+          };
+        })(this), start, end, options.timezone);
+      case 'object':
+        calendar.pushLoading();
+        requestParams = {};
+        if (start && end) {
+          requestParams[options.startParam] = start.format();
+          requestParams[options.endParam] = end.format();
+          if (options.timezone && options.timezone !== 'local') {
+            requestParams[options.timezoneParam] = options.timezone;
+          }
+        }
+        return $.ajax($.extend({
+          data: requestParams
+        }, ResourceManager.ajaxDefaults, source)).then((function(_this) {
+          return function(resourceInputs) {
+            calendar.popLoading();
+            return callback(resourceInputs);
           };
         })(this));
-        break;
-      case 'object':
-        promise = $.ajax($.extend({}, ResourceManager.ajaxDefaults, source));
-        break;
       case 'array':
-        deferred.resolve(source);
-        break;
+        return callback(source);
       default:
-        deferred.resolve([]);
+        return callback([]);
     }
-    promise || (promise = deferred.promise());
-    if (!promise.state() === 'pending') {
-      this.calendar.pushLoading();
-      promise.always(function() {
-        return this.calendar.popLoading();
-      });
-    }
-    return promise;
   };
 
   ResourceManager.prototype.getResourceById = function(id) {
     return this.resourcesById[id];
   };
 
-  ResourceManager.prototype.unsetResources = function() {
+  ResourceManager.prototype.getFlatResources = function() {
+    var id, results;
+    results = [];
+    for (id in this.resourcesById) {
+      results.push(this.resourcesById[id]);
+    }
+    return results;
+  };
+
+  ResourceManager.prototype.initializeCache = function() {
     this.topLevelResources = [];
     return this.resourcesById = {};
   };
 
   ResourceManager.prototype.setResources = function(resourceInputs) {
-    var j, len, resource, resourceInput, resources, validResources;
-    this.unsetResources();
+    var j, len, resource, resourceInput, resources, validResources, wasSet;
+    wasSet = Boolean(this.topLevelResources);
+    this.initializeCache();
     resources = (function() {
       var j, len, results;
       results = [];
@@ -1255,11 +1764,22 @@ ResourceManager = (function(superClass) {
       resource = validResources[j];
       this.addResourceToTree(resource);
     }
-    return this.calendar.trigger('resourcesSet', null, this.topLevelResources);
+    if (wasSet) {
+      this.trigger('reset', this.topLevelResources);
+    } else {
+      this.trigger('set', this.topLevelResources);
+    }
+    return this.calendar.publiclyTrigger('resourcesSet', null, this.topLevelResources);
+  };
+
+  ResourceManager.prototype.resetCurrentResources = function() {
+    if (this.topLevelResources) {
+      return this.trigger('reset', this.topLevelResources);
+    }
   };
 
   ResourceManager.prototype.addResource = function(resourceInput) {
-    return $.when(this.fetching).then((function(_this) {
+    return this.getResources().then((function(_this) {
       return function() {
         var resource;
         resource = _this.buildResource(resourceInput);
@@ -1290,9 +1810,9 @@ ResourceManager = (function(superClass) {
   };
 
   ResourceManager.prototype.addResourceToTree = function(resource) {
-    var parent, parentId, siblings;
+    var parent, parentId, ref, siblings;
     if (!resource.parent) {
-      parentId = String(resource[this.getResourceParentField()] || '');
+      parentId = String((ref = resource['parentId']) != null ? ref : '');
       if (parentId) {
         parent = this.resourcesById[parentId];
         if (parent) {
@@ -1312,7 +1832,7 @@ ResourceManager = (function(superClass) {
   ResourceManager.prototype.removeResource = function(idOrResource) {
     var id;
     id = typeof idOrResource === 'object' ? idOrResource.id : idOrResource;
-    return $.when(this.fetching).then((function(_this) {
+    return this.getResources().then((function(_this) {
       return function() {
         var resource;
         resource = _this.removeResourceFromIndex(id);
@@ -1363,7 +1883,7 @@ ResourceManager = (function(superClass) {
   ResourceManager.prototype.buildResource = function(resourceInput) {
     var child, childInput, rawClassName, ref, resource;
     resource = $.extend({}, resourceInput);
-    resource.id = String(((ref = resourceInput.id) != null ? ref : '_fc' + (ResourceManager.resourceGuid++)) || '');
+    resource.id = String((ref = resourceInput.id) != null ? ref : '_fc' + ResourceManager.resourceGuid++);
     rawClassName = resourceInput.eventClassName;
     resource.eventClassName = (function() {
       switch ($.type(rawClassName)) {
@@ -1390,173 +1910,214 @@ ResourceManager = (function(superClass) {
     return resource;
   };
 
-  ResourceManager.prototype.getResourceParentField = function() {
-    return this.calendar.options['resourceParentField'] || 'parentId';
-  };
-
-  ResourceManager.prototype.getEventResourceId = function(event) {
-    return String(event[this.getEventResourceField()] || '');
-  };
-
-  ResourceManager.prototype.setEventResourceId = function(event, resourceId) {
-    return event[this.getEventResourceField()] = String(resourceId || '');
-  };
-
-  ResourceManager.prototype.getEventResourceField = function() {
-    return this.calendar.options['eventResourceField'] || 'resourceId';
-  };
-
   return ResourceManager;
 
 })(Class);
 
-ResourceView = (function(superClass) {
-  extend(ResourceView, superClass);
+Calendar.defaults.filterResourcesWithEvents = false;
 
-  function ResourceView() {
-    return ResourceView.__super__.constructor.apply(this, arguments);
-  }
 
-  ResourceView.prototype.displayingResources = null;
+/*
+A view that structurally distinguishes events by resource
+ */
 
-  ResourceView.prototype.assigningResources = null;
-
-  ResourceView.prototype.resourceTextFunc = null;
-
-  ResourceView.prototype.displayView = function() {
-    return $.when(ResourceView.__super__.displayView.apply(this, arguments)).then((function(_this) {
+ResourceViewMixin = {
+  isResourcesRendered: false,
+  isResourcesDirty: false,
+  resourceRenderQueue: null,
+  resourceTextFunc: null,
+  canRenderSpecificResources: false,
+  setElement: function() {
+    this.resourceRenderQueue = new TaskQueue();
+    return View.prototype.setElement.apply(this, arguments);
+  },
+  onDateRender: function() {
+    return this.rejectOn('dateUnrender', this.whenResourcesRendered()).then((function(_this) {
       return function() {
-        return _this.displayResources();
+        return View.prototype.onDateRender.apply(_this, arguments);
       };
     })(this));
-  };
-
-  ResourceView.prototype.displayEvents = function(events) {
-    return $.when(this.displayResources()).then((function(_this) {
+  },
+  handleEvents: function(events) {
+    var filteredResources, resources;
+    if (this.opt('filterResourcesWithEvents')) {
+      if (this.isResourcesSet) {
+        resources = this.getCurrentResources();
+        filteredResources = this.filterResourcesWithEvents(resources, events);
+        return this.requestResourcesRender(filteredResources);
+      }
+    } else {
+      if (this.isResourcesRendered && !this.isResourcesDirty) {
+        return this.requestEventsRender(events);
+      }
+    }
+  },
+  handleResources: function(resources) {
+    var events, filteredResources;
+    if (this.opt('filterResourcesWithEvents')) {
+      if (this.isEventsSet) {
+        events = this.getCurrentEvents();
+        filteredResources = this.filterResourcesWithEvents(resources, events);
+        return this.requestResourcesRender(filteredResources);
+      }
+    } else {
+      return this.requestResourcesRender(resources);
+    }
+  },
+  handleResourcesUnset: function(teardownOptions) {
+    if (teardownOptions == null) {
+      teardownOptions = {};
+    }
+    if (teardownOptions.skipUnrender) {
+      return this.isResourcesDirty = this.isResourcesRendered;
+    } else {
+      return this.requestResourcesUnrender(teardownOptions);
+    }
+  },
+  handleResourceAdd: function(resource) {
+    var a, events;
+    if (this.canRenderSpecificResources) {
+      if (this.opt('filterResourcesWithEvents')) {
+        if (this.isEventsSet) {
+          events = this.getCurrentEvents();
+          a = this.filterResourcesWithEvents([resource], events);
+          if (a.length) {
+            return this.requestResourceRender(a[0]);
+          }
+        }
+      } else {
+        return this.requestResourceRender(resource);
+      }
+    } else {
+      return this.handleResources(this.getCurrentResources());
+    }
+  },
+  handleResourceRemove: function(resource) {
+    if (this.canRenderSpecificResources) {
+      return this.requestResourceUnrender(resource);
+    } else {
+      return this.handleResources(this.getCurrentResources());
+    }
+  },
+  requestResourcesRender: function(resources) {
+    return this.resourceRenderQueue.add((function(_this) {
       return function() {
-        return ResourceView.__super__.displayEvents.call(_this, events);
+        return _this.executeResourcesRender(resources);
       };
     })(this));
-  };
-
-  ResourceView.prototype.unrenderSkeleton = function() {
-    return this.clearResources();
-  };
-
-  ResourceView.prototype.displayResources = function() {
-    this.listenToResources();
-    return $.when(this.displayingResources).then((function(_this) {
-      return function() {
-        return _this.displayingResources || (_this.displayingResources = _this.assignResources().then(function() {
-          return _this.renderStoredResources();
-        }));
-      };
-    })(this));
-  };
-
-  ResourceView.prototype.clearResources = function() {
-    var displaying;
-    displaying = this.displayingResources;
-    if (displaying) {
-      return displaying.then((function(_this) {
+  },
+  requestResourcesUnrender: function(teardownOptions) {
+    if (this.isResourcesRendered) {
+      return this.resourceRenderQueue.add((function(_this) {
         return function() {
-          _this.clearEvents();
-          _this.unrenderStoredResources();
-          return _this.displayingResources = null;
+          return _this.executeResourcesUnrender(teardownOptions);
         };
       })(this));
     } else {
-      return $.when();
+      return Promise.resolve();
     }
-  };
-
-  ResourceView.prototype.redisplayResources = function() {
-    var scrollState;
-    scrollState = this.queryScroll();
-    return this.clearResources().then((function(_this) {
+  },
+  requestResourceRender: function(resource) {
+    return this.resourceRenderQueue.add((function(_this) {
       return function() {
-        return _this.displayResources();
-      };
-    })(this)).then((function(_this) {
-      return function() {
-        _this.setScroll(scrollState);
-        return _this.calendar.rerenderEvents();
+        return _this.executeResourceRender(resource);
       };
     })(this));
-  };
-
-  ResourceView.prototype.resetResources = function(resources) {
-    var scrollState;
-    if (!this.displayingResources) {
-      return this.unassignResources().then((function(_this) {
-        return function() {
-          return _this.assignResources(resources);
-        };
-      })(this));
-    } else {
-      scrollState = this.queryScroll();
-      return this.clearResources().then((function(_this) {
-        return function() {
-          return _this.unassignResources();
-        };
-      })(this)).then((function(_this) {
-        return function() {
-          return _this.assignResources(resources);
-        };
-      })(this)).then((function(_this) {
-        return function() {
-          return _this.displayResources();
-        };
-      })(this)).then((function(_this) {
-        return function() {
-          _this.setScroll(scrollState);
-          return _this.calendar.rerenderEvents();
-        };
-      })(this));
-    }
-  };
-
-
-  /*
-    resources param is optional. if not given, gets them from resourceManager
-   */
-
-  ResourceView.prototype.assignResources = function(resources) {
-    return this.assigningResources || (this.assigningResources = $.when(resources || this.calendar.resourceManager.getResources()).then((function(_this) {
-      return function(resources) {
-        return _this.setResources(resources);
+  },
+  requestResourceUnrender: function(resource) {
+    return this.resourceRenderQueue.add((function(_this) {
+      return function() {
+        return _this.executeResourceUnrender(resource);
       };
-    })(this)));
-  };
-
-  ResourceView.prototype.unassignResources = function() {
-    var assigning;
-    assigning = this.assigningResources;
-    if (assigning) {
-      return assigning.then((function(_this) {
+    })(this));
+  },
+  executeResourcesRender: function(resources) {
+    this.captureScroll();
+    this.freezeHeight();
+    return this.executeResourcesUnrender().then((function(_this) {
+      return function() {
+        _this.renderResources(resources);
+        _this.thawHeight();
+        _this.releaseScroll();
+        return _this.reportResourcesRender();
+      };
+    })(this));
+  },
+  executeResourcesUnrender: function(teardownOptions) {
+    if (this.isResourcesRendered) {
+      return this.requestEventsUnrender().then((function(_this) {
         return function() {
-          _this.unsetResources();
-          return _this.assigningResources = null;
+          _this.captureScroll();
+          _this.freezeHeight();
+          _this.unrenderResources(teardownOptions);
+          _this.thawHeight();
+          _this.releaseScroll();
+          return _this.reportResourcesUnrender();
         };
       })(this));
     } else {
-      return $.when();
+      return Promise.resolve();
     }
-  };
-
-  ResourceView.prototype.setResources = function(resources) {};
-
-  ResourceView.prototype.unsetResources = function() {};
-
-  ResourceView.prototype.renderStoredResources = function() {};
-
-  ResourceView.prototype.unrenderStoredResources = function() {};
-
-  ResourceView.prototype.getResourceText = function(resource) {
+  },
+  executeResourceRender: function(resource) {
+    if (this.isResourcesRendered) {
+      this.captureScroll();
+      this.freezeHeight();
+      this.renderResource(resource);
+      this.thawHeight();
+      return this.releaseScroll();
+    } else {
+      return Promise.reject();
+    }
+  },
+  executeResourceUnrender: function(resource) {
+    if (this.isResourcesRendered) {
+      this.captureScroll();
+      this.freezeHeight();
+      this.unrenderResource(resource);
+      this.thawHeight();
+      return this.releaseScroll();
+    } else {
+      return Promise.reject();
+    }
+  },
+  reportResourcesRender: function() {
+    this.isResourcesRendered = true;
+    this.trigger('resourcesRender');
+    if (this.isEventsSet) {
+      this.requestEventsRender(this.getCurrentEvents());
+    }
+  },
+  reportResourcesUnrender: function() {
+    this.isResourcesRendered = false;
+    return this.isResourcesDirty = false;
+  },
+  whenResourcesRendered: function() {
+    if (this.isResourcesRendered && !this.isResourcesDirty) {
+      return Promise.resolve();
+    } else {
+      return new Promise((function(_this) {
+        return function(resolve) {
+          return _this.one('resourcesRender', resolve);
+        };
+      })(this));
+    }
+  },
+  renderResources: function(resources) {},
+  unrenderResources: function(teardownOptions) {},
+  renderResource: function(resource) {},
+  unrenderResource: function(resource) {},
+  isEventDraggable: function(event) {
+    return this.isEventResourceEditable(event) || View.prototype.isEventDraggable.call(this, event);
+  },
+  isEventResourceEditable: function(event) {
+    var ref, ref1, ref2;
+    return (ref = (ref1 = (ref2 = event.resourceEditable) != null ? ref2 : (event.source || {}).resourceEditable) != null ? ref1 : this.opt('eventResourceEditable')) != null ? ref : this.isEventGenerallyEditable(event);
+  },
+  getResourceText: function(resource) {
     return this.getResourceTextFunc()(resource);
-  };
-
-  ResourceView.prototype.getResourceTextFunc = function() {
+  },
+  getResourceTextFunc: function() {
     var func;
     if (this.resourceTextFunc) {
       return this.resourceTextFunc;
@@ -1569,20 +2130,23 @@ ResourceView = (function(superClass) {
       }
       return this.resourceTextFunc = func;
     }
-  };
-
-  ResourceView.prototype.triggerDayClick = function(span, dayEl, ev) {
+  },
+  triggerDayClick: function(span, dayEl, ev) {
     var resourceManager;
     resourceManager = this.calendar.resourceManager;
-    return this.trigger('dayClick', dayEl, this.calendar.applyTimezone(span.start), ev, this, resourceManager.getResourceById(span.resourceId));
-  };
-
-  ResourceView.prototype.triggerSelect = function(span, ev) {
+    return this.publiclyTrigger('dayClick', dayEl, this.calendar.applyTimezone(span.start), ev, this, resourceManager.getResourceById(span.resourceId));
+  },
+  triggerSelect: function(span, ev) {
     var resourceManager;
     resourceManager = this.calendar.resourceManager;
-    return this.trigger('select', null, this.calendar.applyTimezone(span.start), this.calendar.applyTimezone(span.end), ev, this, resourceManager.getResourceById(span.resourceId));
-  };
-
+    return this.publiclyTrigger('select', null, this.calendar.applyTimezone(span.start), this.calendar.applyTimezone(span.end), ev, this, resourceManager.getResourceById(span.resourceId));
+  },
+  triggerExternalDrop: function(event, dropLocation, el, ev, ui) {
+    this.publiclyTrigger('drop', el[0], dropLocation.start, ev, ui, dropLocation.resourceId);
+    if (event) {
+      return this.publiclyTrigger('eventReceive', null, event);
+    }
+  },
 
   /* Hacks
      * ------------------------------------------------------------------------------------------------------------------
@@ -1590,116 +2154,185 @@ ResourceView = (function(superClass) {
     But mutateEvent isn't aware of eventResourceField, so it might be setting the wrong property. Workaround.
     TODO: normalize somewhere else. maybe make a hook in core.
    */
-
-  ResourceView.prototype.reportEventDrop = function() {
-    var dropLocation, event, otherArgs;
-    event = arguments[0], dropLocation = arguments[1], otherArgs = 3 <= arguments.length ? slice.call(arguments, 2) : [];
-    return ResourceView.__super__.reportEventDrop.apply(this, [event, this.normalizeDropLocation(dropLocation)].concat(slice.call(otherArgs)));
-  };
-
-  ResourceView.prototype.reportExternalDrop = function() {
-    var dropLocation, meta, otherArgs;
+  reportExternalDrop: function() {
+    var dropLocation, meta, otherArgs, ref;
     meta = arguments[0], dropLocation = arguments[1], otherArgs = 3 <= arguments.length ? slice.call(arguments, 2) : [];
-    return ResourceView.__super__.reportExternalDrop.apply(this, [meta, this.normalizeDropLocation(dropLocation)].concat(slice.call(otherArgs)));
-  };
-
-  ResourceView.prototype.normalizeDropLocation = function(dropLocation) {
+    dropLocation = this.normalizeDropLocation(dropLocation);
+    return (ref = View.prototype.reportExternalDrop).call.apply(ref, [this, meta, dropLocation].concat(slice.call(otherArgs)));
+  },
+  normalizeDropLocation: function(dropLocation) {
     var out;
     out = $.extend({}, dropLocation);
     delete out.resourceId;
-    this.calendar.resourceManager.setEventResourceId(out, dropLocation.resourceId);
+    this.calendar.setEventResourceId(out, dropLocation.resourceId);
     return out;
-  };
-
-  return ResourceView;
-
-})(View);
-
-ResourceGrid = (function(superClass) {
-  extend(ResourceGrid, superClass);
-
-  function ResourceGrid() {
-    return ResourceGrid.__super__.constructor.apply(this, arguments);
+  },
+  filterResourcesWithEvents: function(resources, events) {
+    var event, j, k, len, len1, ref, resourceId, resourceIdHits;
+    resourceIdHits = {};
+    for (j = 0, len = events.length; j < len; j++) {
+      event = events[j];
+      ref = this.calendar.getEventResourceIds(event);
+      for (k = 0, len1 = ref.length; k < len1; k++) {
+        resourceId = ref[k];
+        resourceIdHits[resourceId] = true;
+      }
+    }
+    return _filterResourcesWithEvents(resources, resourceIdHits);
   }
+};
 
-  ResourceGrid.prototype.allowCrossResource = true;
+_filterResourcesWithEvents = function(sourceResources, resourceIdHits) {
+  var filteredChildren, filteredResource, filteredResources, j, len, sourceResource;
+  filteredResources = [];
+  for (j = 0, len = sourceResources.length; j < len; j++) {
+    sourceResource = sourceResources[j];
+    if (sourceResource.children.length) {
+      filteredChildren = _filterResourcesWithEvents(sourceResource.children, resourceIdHits);
+      if (filteredChildren.length || resourceIdHits[sourceResource.id]) {
+        filteredResource = createObject(sourceResource);
+        filteredResource.children = filteredChildren;
+        filteredResources.push(filteredResource);
+      }
+    } else {
+      if (resourceIdHits[sourceResource.id]) {
+        filteredResources.push(sourceResource);
+      }
+    }
+  }
+  return filteredResources;
+};
 
-  ResourceGrid.prototype.transformEventSpan = function(span, event) {
-    return span.resourceId = this.view.calendar.getEventResourceId(event);
-  };
 
-  ResourceGrid.prototype.renderFgEvents = function(events) {
-    var calendar, event;
-    calendar = this.view.calendar;
-    return ResourceGrid.__super__.renderFgEvents.call(this, (function() {
-      var j, len, results;
-      results = [];
-      for (j = 0, len = events.length; j < len; j++) {
-        event = events[j];
-        if (calendar.getEventResourceId(event)) {
-          results.push(event);
+/*
+For vertical resource view.
+For views that rely on grids that don't render their resources and dates together.
+ */
+
+VertResourceViewMixin = $.extend({}, ResourceViewMixin, {
+  executeResourcesRender: function(resources) {
+    this.setResourcesOnGrids(resources);
+    if (this.isDateRendered) {
+      return this.requestDateRender().then((function(_this) {
+        return function() {
+          return _this.reportResourcesRender();
+        };
+      })(this));
+    } else {
+      return Promise.resolve();
+    }
+  },
+  executeResourcesUnrender: function(teardownOptions) {
+    if (teardownOptions == null) {
+      teardownOptions = {};
+    }
+    this.unsetResourcesOnGrids();
+    if (this.isDateRendered && !teardownOptions.skipRerender) {
+      return this.requestDateRender().then((function(_this) {
+        return function() {
+          return _this.reportResourcesUnrender();
+        };
+      })(this));
+    } else {
+      this.reportResourcesUnrender();
+      return Promise.resolve();
+    }
+  },
+  executeDateRender: function(date) {
+    return View.prototype.executeDateRender.apply(this, arguments).then((function(_this) {
+      return function() {
+        if (_this.isResourcesSet) {
+          return _this.reportResourcesRender();
         }
+      };
+    })(this));
+  },
+  executeDateUnrender: function(date) {
+    return View.prototype.executeDateUnrender.apply(this, arguments).then((function(_this) {
+      return function() {
+        if (_this.isResourcesSet) {
+          return _this.reportResourcesUnrender();
+        }
+      };
+    })(this));
+  },
+  setResourcesOnGrids: function(resources) {},
+  unsetResourcesOnGrids: function() {}
+});
+
+ResourceGridMixin = {
+  allowCrossResource: true,
+  eventRangeToSpans: function(range, event) {
+    var j, len, resourceId, resourceIds, results;
+    resourceIds = this.view.calendar.getEventResourceIds(event);
+    if (resourceIds.length) {
+      results = [];
+      for (j = 0, len = resourceIds.length; j < len; j++) {
+        resourceId = resourceIds[j];
+        results.push($.extend({}, range, {
+          resourceId: resourceId
+        }));
       }
       return results;
-    })());
-  };
-
-  ResourceGrid.prototype.fabricateHelperEvent = function(eventLocation, seg) {
-    var event;
-    event = ResourceGrid.__super__.fabricateHelperEvent.apply(this, arguments);
-    this.view.calendar.resourceManager.setEventResourceId(event, eventLocation.resourceId);
-    return event;
-  };
-
-  ResourceGrid.prototype.computeEventDrop = function(startSpan, endSpan, event) {
-    var allowResourceChange, dropLocation;
-    allowResourceChange = true;
-    if (!allowResourceChange && startSpan.resourceId !== endSpan.resourceId) {
-      return null;
+    } else if (FC.isBgEvent(event)) {
+      return Grid.prototype.eventRangeToSpans.apply(this, arguments);
+    } else {
+      return [];
     }
-    dropLocation = ResourceGrid.__super__.computeEventDrop.apply(this, arguments);
+  },
+  fabricateHelperEvent: function(eventLocation, seg) {
+    var event;
+    event = Grid.prototype.fabricateHelperEvent.apply(this, arguments);
+    this.view.calendar.setEventResourceId(event, eventLocation.resourceId);
+    return event;
+  },
+  computeEventDrop: function(startSpan, endSpan, event) {
+    var dropLocation;
+    if (this.view.isEventStartEditable(event)) {
+      dropLocation = Grid.prototype.computeEventDrop.apply(this, arguments);
+    } else {
+      dropLocation = FC.pluckEventDateProps(event);
+    }
     if (dropLocation) {
-      dropLocation.resourceId = endSpan.resourceId;
+      if (this.view.isEventResourceEditable(event)) {
+        dropLocation.resourceId = endSpan.resourceId;
+      } else {
+        dropLocation.resourceId = startSpan.resourceId;
+      }
     }
     return dropLocation;
-  };
-
-  ResourceGrid.prototype.computeExternalDrop = function(span, meta) {
+  },
+  computeExternalDrop: function(span, meta) {
     var dropLocation;
-    dropLocation = ResourceGrid.__super__.computeExternalDrop.apply(this, arguments);
+    dropLocation = Grid.prototype.computeExternalDrop.apply(this, arguments);
     if (dropLocation) {
       dropLocation.resourceId = span.resourceId;
     }
     return dropLocation;
-  };
-
-  ResourceGrid.prototype.computeEventResize = function(type, startSpan, endSpan, event) {
+  },
+  computeEventResize: function(type, startSpan, endSpan, event) {
     var resizeLocation;
     if (!this.allowCrossResource && startSpan.resourceId !== endSpan.resourceId) {
       return;
     }
-    resizeLocation = ResourceGrid.__super__.computeEventResize.apply(this, arguments);
+    resizeLocation = Grid.prototype.computeEventResize.apply(this, arguments);
     if (resizeLocation) {
       resizeLocation.resourceId = startSpan.resourceId;
     }
     return resizeLocation;
-  };
-
-  ResourceGrid.prototype.computeSelectionSpan = function(startSpan, endSpan) {
+  },
+  computeSelectionSpan: function(startSpan, endSpan) {
     var selectionSpan;
     if (!this.allowCrossResource && startSpan.resourceId !== endSpan.resourceId) {
       return;
     }
-    selectionSpan = ResourceGrid.__super__.computeSelectionSpan.apply(this, arguments);
+    selectionSpan = Grid.prototype.computeSelectionSpan.apply(this, arguments);
     if (selectionSpan) {
       selectionSpan.resourceId = startSpan.resourceId;
     }
     return selectionSpan;
-  };
-
-  return ResourceGrid;
-
-})(Grid);
+  }
+};
 
 
 /*
@@ -1725,19 +2358,28 @@ ResourceDayTableMixin = {
     return this.updateDayTableCols();
   },
   flattenResources: function(resources) {
-    var orderSpecs, res, sortFunc;
-    orderSpecs = parseFieldSpecs(this.view.opt('resourceOrder'));
-    sortFunc = function(a, b) {
-      return compareByFieldSpecs(a, b, orderSpecs);
-    };
+    var orderSpecs, orderVal, res, sortFunc;
+    orderVal = this.view.opt('resourceOrder');
+    if (orderVal) {
+      orderSpecs = parseFieldSpecs(orderVal);
+      sortFunc = function(a, b) {
+        return compareByFieldSpecs(a, b, orderSpecs);
+      };
+    } else {
+      sortFunc = null;
+    }
     res = [];
     this.accumulateResources(resources, sortFunc, res);
     return res;
   },
   accumulateResources: function(resources, sortFunc, res) {
     var j, len, resource, results, sortedResources;
-    sortedResources = resources.slice(0);
-    sortedResources.sort(sortFunc);
+    if (sortFunc) {
+      sortedResources = resources.slice(0);
+      sortedResources.sort(sortFunc);
+    } else {
+      sortedResources = resources;
+    }
     results = [];
     for (j = 0, len = sortedResources.length; j < len; j++) {
       resource = sortedResources[j];
@@ -1790,76 +2432,133 @@ ResourceDayTableMixin = {
     } else {
       if (this.daysPerRow > 1) {
         if (this.datesAboveResources) {
-          return this.renderHeadDateTrHtml(1, this.resourceCnt) + this.renderHeadResourceTrHtml(this.daysPerRow);
+          return this.renderHeadDateAndResourceHtml();
         } else {
-          return this.renderHeadResourceTrHtml(1, this.daysPerRow) + this.renderHeadDateTrHtml(this.resourceCnt);
+          return this.renderHeadResourceAndDateHtml();
         }
       } else {
-        return this.renderHeadResourceTrHtml();
+        return this.renderHeadResourceHtml();
       }
     }
   },
-  renderHeadDateTrHtml: function(repeat, colspan) {
-    return '<tr>' + (this.isRTL ? '' : this.renderHeadIntroHtml()) + this.renderHeadDateCellsHtml(repeat, colspan) + (this.isRTL ? this.renderHeadIntroHtml() : '') + '</tr>';
+  renderHeadResourceHtml: function() {
+    var j, len, ref, resource, resourceHtmls;
+    resourceHtmls = [];
+    ref = this.flattenedResources;
+    for (j = 0, len = ref.length; j < len; j++) {
+      resource = ref[j];
+      resourceHtmls.push(this.renderHeadResourceCellHtml(resource));
+    }
+    return this.wrapTr(resourceHtmls, 'renderHeadIntroHtml');
   },
-  renderHeadDateCellsHtml: function(repeat, colspan) {
-    var date, dayIndex, htmls, i, j, k, ref, ref1;
-    if (repeat == null) {
-      repeat = 1;
-    }
-    if (colspan == null) {
-      colspan = 1;
-    }
-    htmls = [];
-    for (i = j = 0, ref = repeat; j < ref; i = j += 1) {
+  renderHeadResourceAndDateHtml: function() {
+    var date, dateHtmls, dayIndex, j, k, len, ref, ref1, resource, resourceHtmls;
+    resourceHtmls = [];
+    dateHtmls = [];
+    ref = this.flattenedResources;
+    for (j = 0, len = ref.length; j < len; j++) {
+      resource = ref[j];
+      resourceHtmls.push(this.renderHeadResourceCellHtml(resource, null, this.daysPerRow));
       for (dayIndex = k = 0, ref1 = this.daysPerRow; k < ref1; dayIndex = k += 1) {
         date = this.dayDates[dayIndex].clone();
-        htmls.push(this.renderHeadDateCellHtml(date, colspan));
+        dateHtmls.push(this.renderHeadResourceDateCellHtml(date, resource));
       }
     }
-    if (this.isRTL) {
-      htmls.reverse();
-    }
-    return htmls.join('');
+    return this.wrapTr(resourceHtmls, 'renderHeadIntroHtml') + this.wrapTr(dateHtmls, 'renderHeadIntroHtml');
   },
-  renderHeadResourceTrHtml: function(repeat, colspan) {
-    return '<tr>' + (this.isRTL ? '' : this.renderHeadIntroHtml()) + this.renderHeadResourceCellsHtml(repeat, colspan) + (this.isRTL ? this.renderHeadIntroHtml() : '') + '</tr>';
-  },
-  renderHeadResourceCellsHtml: function(repeat, colspan) {
-    var htmls, i, j, k, len, ref, ref1, resource;
-    if (repeat == null) {
-      repeat = 1;
-    }
-    if (colspan == null) {
-      colspan = 1;
-    }
-    htmls = [];
-    for (i = j = 0, ref = repeat; j < ref; i = j += 1) {
+  renderHeadDateAndResourceHtml: function() {
+    var date, dateHtmls, dayIndex, j, k, len, ref, ref1, resource, resourceHtmls;
+    dateHtmls = [];
+    resourceHtmls = [];
+    for (dayIndex = j = 0, ref = this.daysPerRow; j < ref; dayIndex = j += 1) {
+      date = this.dayDates[dayIndex].clone();
+      dateHtmls.push(this.renderHeadDateCellHtml(date, this.resourceCnt));
       ref1 = this.flattenedResources;
       for (k = 0, len = ref1.length; k < len; k++) {
         resource = ref1[k];
-        htmls.push(this.renderHeadResourceCellHtml(resource, colspan));
+        resourceHtmls.push(this.renderHeadResourceCellHtml(resource, date));
       }
     }
-    if (this.isRTL) {
-      htmls.reverse();
-    }
-    return htmls.join('');
+    return this.wrapTr(dateHtmls, 'renderHeadIntroHtml') + this.wrapTr(resourceHtmls, 'renderHeadIntroHtml');
   },
-  renderHeadResourceCellHtml: function(resource, colspan) {
-    if (colspan == null) {
-      colspan = 1;
-    }
-    return '<th class="fc-resource-cell"' + (colspan > 1 ? ' colspan="' + colspan + '"' : '') + '>' + htmlEscape(this.view.getResourceText(resource)) + '</th>';
+  renderHeadResourceCellHtml: function(resource, date, colspan) {
+    return '<th class="fc-resource-cell"' + ' data-resource-id="' + resource.id + '"' + (date ? ' data-date="' + date.format('YYYY-MM-DD') + '"' : '') + (colspan > 1 ? ' colspan="' + colspan + '"' : '') + '>' + htmlEscape(this.view.getResourceText(resource)) + '</th>';
+  },
+  renderHeadResourceDateCellHtml: function(date, resource, colspan) {
+    return this.renderHeadDateCellHtml(date, colspan, 'data-resource-id="' + resource.id + '"');
   },
   processHeadResourceEls: function(containerEl) {
     return containerEl.find('.fc-resource-cell').each((function(_this) {
       return function(col, node) {
         var resource;
-        resource = _this.getColResource(col);
-        return _this.view.trigger('resourceRender', resource, resource, $(node));
+        if (_this.datesAboveResources) {
+          resource = _this.getColResource(col);
+        } else {
+          resource = _this.flattenedResources[_this.isRTL ? _this.flattenedResources.length - 1 - col : col];
+        }
+        return _this.view.publiclyTrigger('resourceRender', resource, resource, $(node), $());
       };
     })(this));
+  },
+  renderBgCellsHtml: function(row) {
+    var col, date, htmls, j, ref, resource;
+    if (!this.resourceCnt) {
+      return FC.DayTableMixin.renderBgCellsHtml.call(this, row);
+    } else {
+      htmls = [];
+      for (col = j = 0, ref = this.colCnt; j < ref; col = j += 1) {
+        date = this.getCellDate(row, col);
+        resource = this.getColResource(col);
+        htmls.push(this.renderResourceBgCellHtml(date, resource));
+      }
+      return htmls.join('');
+    }
+  },
+  renderResourceBgCellHtml: function(date, resource) {
+    return this.renderBgCellHtml(date, 'data-resource-id="' + resource.id + '"');
+  },
+  wrapTr: function(cellHtmls, introMethodName) {
+    if (this.isRTL) {
+      cellHtmls.reverse();
+      return '<tr>' + cellHtmls.join('') + this[introMethodName]() + '</tr>';
+    } else {
+      return '<tr>' + this[introMethodName]() + cellHtmls.join('') + '</tr>';
+    }
+  },
+
+  /*
+    If there are no per-resource business hour definitions, returns null.
+    Otherwise, returns a list of business hours segs for *every* resource.
+   */
+  computePerResourceBusinessHourSegs: function(wholeDay) {
+    var allSegs, anyCustomBusinessHours, businessHours, event, events, j, k, l, len, len1, len2, ref, ref1, resource, segs;
+    if (this.flattenedResources) {
+      anyCustomBusinessHours = false;
+      ref = this.flattenedResources;
+      for (j = 0, len = ref.length; j < len; j++) {
+        resource = ref[j];
+        if (resource.businessHours) {
+          anyCustomBusinessHours = true;
+        }
+      }
+      if (anyCustomBusinessHours) {
+        allSegs = [];
+        ref1 = this.flattenedResources;
+        for (k = 0, len1 = ref1.length; k < len1; k++) {
+          resource = ref1[k];
+          businessHours = resource.businessHours || this.view.calendar.options.businessHours;
+          events = this.buildBusinessHourEvents(wholeDay, businessHours);
+          for (l = 0, len2 = events.length; l < len2; l++) {
+            event = events[l];
+            event.resourceId = resource.id;
+          }
+          segs = this.eventsToSegs(events);
+          allSegs.push.apply(allSegs, segs);
+        }
+        return allSegs;
+      }
+    }
+    return null;
   }
 };
 
@@ -1870,7 +2569,7 @@ ResourceDayGrid = (function(superClass) {
     return ResourceDayGrid.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceDayGrid.mixin(ResourceGrid);
+  ResourceDayGrid.mixin(ResourceGridMixin);
 
   ResourceDayGrid.mixin(ResourceDayTableMixin);
 
@@ -1907,6 +2606,7 @@ ResourceDayGrid = (function(superClass) {
           resourceObj = this.flattenedResources[resourceIndex];
           if (!span.resourceId || span.resourceId === resourceObj.id) {
             copy = $.extend({}, seg);
+            copy.resource = resourceObj;
             if (this.isRTL) {
               copy.leftCol = this.indicesToCol(resourceIndex, seg.lastRowDayIndex);
               copy.rightCol = this.indicesToCol(resourceIndex, seg.firstRowDayIndex);
@@ -1922,6 +2622,16 @@ ResourceDayGrid = (function(superClass) {
     }
   };
 
+  ResourceDayGrid.prototype.renderBusinessHours = function() {
+    var segs;
+    segs = this.computePerResourceBusinessHourSegs(true);
+    if (segs) {
+      return this.renderFill('businessHours', segs, 'bgevent');
+    } else {
+      return ResourceDayGrid.__super__.renderBusinessHours.apply(this, arguments);
+    }
+  };
+
   return ResourceDayGrid;
 
 })(FC.DayGrid);
@@ -1933,7 +2643,7 @@ ResourceTimeGrid = (function(superClass) {
     return ResourceTimeGrid.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceTimeGrid.mixin(ResourceGrid);
+  ResourceTimeGrid.mixin(ResourceGridMixin);
 
   ResourceTimeGrid.mixin(ResourceDayTableMixin);
 
@@ -1964,12 +2674,23 @@ ResourceTimeGrid = (function(superClass) {
           resourceObj = this.flattenedResources[resourceIndex];
           if (!span.resourceId || span.resourceId === resourceObj.id) {
             copy = $.extend({}, seg);
+            copy.resource = resourceObj;
             copy.col = this.indicesToCol(resourceIndex, seg.dayIndex);
             resourceSegs.push(copy);
           }
         }
       }
       return resourceSegs;
+    }
+  };
+
+  ResourceTimeGrid.prototype.renderBusinessHours = function() {
+    var segs;
+    segs = this.computePerResourceBusinessHourSegs(false);
+    if (segs) {
+      return this.renderBusinessSegs(segs);
+    } else {
+      return ResourceTimeGrid.__super__.renderBusinessHours.apply(this, arguments);
     }
   };
 
@@ -2059,6 +2780,26 @@ TimelineView = (function(superClass) {
     return this.timeGrid.unrenderBusinessHours();
   };
 
+  TimelineView.prototype.getNowIndicatorUnit = function() {
+    return this.timeGrid.getNowIndicatorUnit();
+  };
+
+  TimelineView.prototype.renderNowIndicator = function(date) {
+    return this.timeGrid.renderNowIndicator(date);
+  };
+
+  TimelineView.prototype.unrenderNowIndicator = function() {
+    return this.timeGrid.unrenderNowIndicator();
+  };
+
+  TimelineView.prototype.hitsNeeded = function() {
+    return this.timeGrid.hitsNeeded();
+  };
+
+  TimelineView.prototype.hitsNotNeeded = function() {
+    return this.timeGrid.hitsNotNeeded();
+  };
+
   TimelineView.prototype.prepareHits = function() {
     return this.timeGrid.prepareHits();
   };
@@ -2097,16 +2838,33 @@ TimelineView = (function(superClass) {
     return this.el.outerHeight() - this.timeGrid.headScroller.el.outerHeight() - this.timeGrid.bodyScroller.el.outerHeight();
   };
 
-  TimelineView.prototype.computeInitialScroll = function(prevScrollState) {
-    return this.timeGrid.computeInitialScroll(prevScrollState);
+  TimelineView.prototype.computeInitialScroll = function() {
+    var left, scrollTime;
+    left = 0;
+    if (this.timeGrid.isTimeScale) {
+      scrollTime = this.opt('scrollTime');
+      if (scrollTime) {
+        scrollTime = moment.duration(scrollTime);
+        left = this.timeGrid.dateToCoord(this.start.clone().time(scrollTime));
+      }
+    }
+    return {
+      left: left,
+      top: 0
+    };
   };
 
   TimelineView.prototype.queryScroll = function() {
-    return this.timeGrid.queryScroll();
+    return {
+      left: this.timeGrid.bodyScroller.getScrollLeft(),
+      top: this.timeGrid.bodyScroller.getScrollTop()
+    };
   };
 
-  TimelineView.prototype.setScroll = function(state) {
-    return this.timeGrid.setScroll(state);
+  TimelineView.prototype.setScroll = function(scroll) {
+    this.timeGrid.headScroller.setScrollLeft(scroll.left);
+    this.timeGrid.bodyScroller.setScrollLeft(scroll.left);
+    return this.timeGrid.bodyScroller.setScrollTop(scroll.top);
   };
 
   TimelineView.prototype.renderEvents = function(events) {
@@ -2186,6 +2944,8 @@ TimelineGrid = (function(superClass) {
 
   TimelineGrid.prototype.maxTime = null;
 
+  TimelineGrid.prototype.timeWindowMs = null;
+
   TimelineGrid.prototype.slotDuration = null;
 
   TimelineGrid.prototype.snapDuration = null;
@@ -2220,6 +2980,7 @@ TimelineGrid = (function(superClass) {
     this.initScaleProps();
     this.minTime = moment.duration(this.opt('minTime') || '00:00');
     this.maxTime = moment.duration(this.opt('maxTime') || '24:00');
+    this.timeWindowMs = this.maxTime - this.minTime;
     this.snapDuration = (input = this.opt('snapDuration')) ? moment.duration(input) : this.slotDuration;
     this.minResizeDuration = this.snapDuration;
     this.snapsPerSlot = divideDurationByDuration(this.slotDuration, this.snapDuration);
@@ -2231,12 +2992,13 @@ TimelineGrid = (function(superClass) {
   };
 
   TimelineGrid.prototype.isValidDate = function(date) {
-    var time;
+    var ms;
     if (this.view.isHiddenDay(date)) {
       return false;
     } else if (this.isTimeScale) {
-      time = date.time();
-      return time >= this.minTime && time < this.maxTime;
+      ms = date.time() - this.minTime;
+      ms = ((ms % 86400000) + 86400000) % 86400000;
+      return ms < this.timeWindowMs;
     } else {
       return true;
     }
@@ -2303,6 +3065,10 @@ TimelineGrid = (function(superClass) {
     var date, slotDates;
     this.start = this.normalizeGridDate(this.start);
     this.end = this.normalizeGridDate(this.end);
+    if (this.isTimeScale) {
+      this.start.add(this.minTime);
+      this.end.subtract(1, 'day').add(this.maxTime);
+    }
     slotDates = [];
     date = this.start.clone();
     while (date < this.end) {
@@ -2342,18 +3108,19 @@ TimelineGrid = (function(superClass) {
   TimelineGrid.prototype.spanToSegs = function(span) {
     var normalRange, seg;
     normalRange = this.normalizeGridRange(span);
-    seg = intersectRanges(normalRange, this);
-    if (seg) {
-      if (seg.isStart && !this.isValidDate(seg.start)) {
-        seg.isStart = false;
+    if (this.computeDateSnapCoverage(span.start) < this.computeDateSnapCoverage(span.end)) {
+      seg = intersectRanges(normalRange, this);
+      if (seg) {
+        if (seg.isStart && !this.isValidDate(seg.start)) {
+          seg.isStart = false;
+        }
+        if (seg.isEnd && seg.end && !this.isValidDate(seg.end.clone().subtract(1))) {
+          seg.isEnd = false;
+        }
+        return [seg];
       }
-      if (seg.isEnd && seg.end && !this.isValidDate(seg.end.clone().subtract(1))) {
-        seg.isEnd = false;
-      }
-      return [seg];
-    } else {
-      return [];
     }
+    return [];
   };
 
   TimelineGrid.prototype.prepareHits = function() {
@@ -2365,7 +3132,7 @@ TimelineGrid = (function(superClass) {
     snapsPerSlot = this.snapsPerSlot;
     slatCoordCache = this.slatCoordCache;
     containerCoordCache = this.containerCoordCache;
-    if (containerCoordCache.getVerticalIndex(topOffset) != null) {
+    if (containerCoordCache.isPointInBounds(leftOffset, topOffset)) {
       slatIndex = slatCoordCache.getHorizontalIndex(leftOffset);
       if (slatIndex != null) {
         slatWidth = slatCoordCache.getWidth(slatIndex);
@@ -2420,22 +3187,29 @@ TimelineGrid = (function(superClass) {
   };
 
   TimelineGrid.prototype.renderSkeleton = function() {
-    this.headScroller = new Scroller('invisible-scroll', 'hidden');
+    this.headScroller = new ClippedScroller({
+      overflowX: 'clipped-scroll',
+      overflowY: 'hidden'
+    });
+    this.headScroller.canvas = new ScrollerCanvas();
+    this.headScroller.render();
     this.headEl.append(this.headScroller.el);
-    this.bodyScroller = new Scroller();
+    this.bodyScroller = new ClippedScroller();
+    this.bodyScroller.canvas = new ScrollerCanvas();
+    this.bodyScroller.render();
     this.el.append(this.bodyScroller.el);
-    this.innerEl = this.bodyScroller.contentEl;
-    this.slatContainerEl = $('<div class="fc-slats"/>').appendTo(this.bodyScroller.bgEl);
-    this.segContainerEl = $('<div class="fc-event-container"/>').appendTo(this.bodyScroller.contentEl);
-    this.bgSegContainerEl = this.bodyScroller.bgEl;
+    this.innerEl = this.bodyScroller.canvas.contentEl;
+    this.slatContainerEl = $('<div class="fc-slats"/>').appendTo(this.bodyScroller.canvas.bgEl);
+    this.segContainerEl = $('<div class="fc-event-container"/>').appendTo(this.bodyScroller.canvas.contentEl);
+    this.bgSegContainerEl = this.bodyScroller.canvas.bgEl;
     this.containerCoordCache = new CoordCache({
-      els: this.bodyScroller.innerEl,
+      els: this.bodyScroller.canvas.el,
       isHorizontal: true,
       isVertical: true
     });
     this.joiner = new ScrollJoiner('horizontal', [this.headScroller, this.bodyScroller]);
     if (true) {
-      this.follower = new ScrollFollower(this.headScroller);
+      this.follower = new ScrollFollower(this.headScroller, true);
     }
     if (true) {
       this.eventTitleFollower = new ScrollFollower(this.bodyScroller);
@@ -2455,8 +3229,8 @@ TimelineGrid = (function(superClass) {
 
   TimelineGrid.prototype.renderDates = function() {
     var date, i, j, len, ref;
-    this.headScroller.contentEl.html(this.renderHeadHtml());
-    this.headColEls = this.headScroller.contentEl.find('col');
+    this.headScroller.canvas.contentEl.html(this.renderHeadHtml());
+    this.headColEls = this.headScroller.canvas.contentEl.find('col');
     this.slatContainerEl.html(this.renderSlatHtml());
     this.slatColEls = this.slatContainerEl.find('col');
     this.slatEls = this.slatContainerEl.find('td');
@@ -2467,15 +3241,15 @@ TimelineGrid = (function(superClass) {
     this.slatInnerCoordCache = new CoordCache({
       els: this.slatEls.find('> div'),
       isHorizontal: true,
-      offsetParent: this.bodyScroller.innerEl
+      offsetParent: this.bodyScroller.canvas.el
     });
     ref = this.slotDates;
     for (i = j = 0, len = ref.length; j < len; i = ++j) {
       date = ref[i];
-      this.view.trigger('dayRender', null, date, this.slatEls.eq(i));
+      this.view.publiclyTrigger('dayRender', null, date, this.slatEls.eq(i));
     }
     if (this.follower) {
-      return this.follower.setSprites(this.headEl.find('tr:not(:last-child) span'));
+      return this.follower.setSprites(this.headEl.find('tr:not(:last-child) .fc-cell-text'));
     }
   };
 
@@ -2483,16 +3257,14 @@ TimelineGrid = (function(superClass) {
     if (this.follower) {
       this.follower.clearSprites();
     }
-    this.headScroller.contentEl.empty();
+    this.headScroller.canvas.contentEl.empty();
     this.slatContainerEl.empty();
-    return this.headScroller.contentEl.add(this.bodyScroller.contentEl).css({
-      minWidth: '',
-      width: ''
-    });
+    this.headScroller.canvas.clearWidth();
+    return this.bodyScroller.canvas.clearWidth();
   };
 
   TimelineGrid.prototype.renderHeadHtml = function() {
-    var cell, cellRows, date, format, formats, html, i, isChrono, isLast, isSuperRow, isWeekStart, j, k, l, labelInterval, leadingCell, len, len1, len2, len3, len4, len5, len6, m, n, newCell, p, prevWeekNumber, q, row, rowCells, slatHtml, slotCells, slotDates, text, weekNumber;
+    var cell, cellRows, date, format, formats, headerCellClassNames, html, i, isChrono, isLast, isSingleDay, isSuperRow, isWeekStart, j, k, l, labelInterval, leadingCell, len, len1, len2, len3, len4, len5, len6, m, n, newCell, p, prevWeekNumber, q, row, rowCells, rowUnits, slatHtml, slotCells, slotDates, text, weekNumber;
     labelInterval = this.labelInterval;
     formats = this.headerFormats;
     cellRows = (function() {
@@ -2508,6 +3280,15 @@ TimelineGrid = (function(superClass) {
     prevWeekNumber = null;
     slotDates = this.slotDates;
     slotCells = [];
+    rowUnits = (function() {
+      var j, len, results;
+      results = [];
+      for (j = 0, len = formats.length; j < len; j++) {
+        format = formats[j];
+        results.push(FC.queryMostGranularFormatUnit(format));
+      }
+      return results;
+    })();
     for (j = 0, len = slotDates.length; j < len; j++) {
       date = slotDates[j];
       weekNumber = date.week();
@@ -2521,20 +3302,14 @@ TimelineGrid = (function(superClass) {
         if (isSuperRow) {
           text = date.format(format);
           if (!leadingCell || leadingCell.text !== text) {
-            newCell = {
-              text: text,
-              colspan: 1
-            };
+            newCell = this.buildCellObject(date, text, rowUnits[row]);
           } else {
             leadingCell.colspan += 1;
           }
         } else {
           if (!leadingCell || isInt(divideRangeByDuration(this.start, date, labelInterval))) {
             text = date.format(format);
-            newCell = {
-              text: text,
-              colspan: 1
-            };
+            newCell = this.buildCellObject(date, text, rowUnits[row]);
           } else {
             leadingCell.colspan += 1;
           }
@@ -2550,6 +3325,7 @@ TimelineGrid = (function(superClass) {
       prevWeekNumber = weekNumber;
     }
     isChrono = labelInterval > this.slotDuration;
+    isSingleDay = this.slotDuration.as('days') === 1;
     html = '<table>';
     html += '<colgroup>';
     for (l = 0, len2 = slotDates.length; l < len2; l++) {
@@ -2564,7 +3340,14 @@ TimelineGrid = (function(superClass) {
       html += '<tr' + (isChrono && isLast ? ' class="fc-chrono"' : '') + '>';
       for (n = 0, len4 = rowCells.length; n < len4; n++) {
         cell = rowCells[n];
-        html += '<th class="' + this.view.widgetHeaderClass + ' ' + (cell.weekStart ? 'fc-em-cell' : '') + '"' + (cell.colspan > 1 ? ' colspan="' + cell.colspan + '"' : '') + '>' + '<div class="fc-cell-content">' + '<span class="fc-cell-text">' + htmlEscape(cell.text) + '</span>' + '</div>' + '</th>';
+        headerCellClassNames = [this.view.widgetHeaderClass];
+        if (cell.weekStart) {
+          headerCellClassNames.push('fc-em-cell');
+        }
+        if (isSingleDay) {
+          headerCellClassNames = headerCellClassNames.concat(this.getDayClasses(cell.date, true));
+        }
+        html += '<th class="' + headerCellClassNames.join(' ') + '"' + ' data-date="' + cell.date.format() + '"' + (cell.colspan > 1 ? ' colspan="' + cell.colspan + '"' : '') + '>' + '<div class="fc-cell-content">' + cell.spanHtml + '</div>' + '</th>';
       }
       html += '</tr>';
     }
@@ -2585,6 +3368,24 @@ TimelineGrid = (function(superClass) {
     slatHtml += '</tr></tbody></table>';
     this._slatHtml = slatHtml;
     return html;
+  };
+
+  TimelineGrid.prototype.buildCellObject = function(date, text, rowUnit) {
+    var spanHtml;
+    date = date.clone();
+    spanHtml = this.view.buildGotoAnchorHtml({
+      date: date,
+      type: rowUnit,
+      forceOff: !rowUnit
+    }, {
+      'class': 'fc-cell-text'
+    }, htmlEscape(text));
+    return {
+      text: text,
+      spanHtml: spanHtml,
+      date: date,
+      colspan: 1
+    };
   };
 
   TimelineGrid.prototype.renderSlatHtml = function() {
@@ -2610,10 +3411,9 @@ TimelineGrid = (function(superClass) {
   TimelineGrid.prototype.businessHourSegs = null;
 
   TimelineGrid.prototype.renderBusinessHours = function() {
-    var events, segs;
+    var segs;
     if (!this.largeUnit) {
-      events = this.view.calendar.getBusinessHoursEvents(!this.isTimeScale);
-      segs = this.businessHourSegs = this.eventsToSegs(events);
+      segs = this.businessHourSegs = this.buildBusinessHourSegs(!this.isTimeScale);
       return this.renderFill('businessHours', segs, 'bgevent');
     }
   };
@@ -2622,32 +3422,75 @@ TimelineGrid = (function(superClass) {
     return this.unrenderFill('businessHours');
   };
 
+  TimelineGrid.prototype.nowIndicatorEls = null;
+
+  TimelineGrid.prototype.getNowIndicatorUnit = function() {
+    if (this.isTimeScale) {
+      return computeIntervalUnit(this.slotDuration);
+    }
+  };
+
+  TimelineGrid.prototype.renderNowIndicator = function(date) {
+    var coord, css, nodes;
+    nodes = [];
+    date = this.normalizeGridDate(date);
+    if (date >= this.start && date < this.end) {
+      coord = this.dateToCoord(date);
+      css = this.isRTL ? {
+        right: -coord
+      } : {
+        left: coord
+      };
+      nodes.push($("<div class='fc-now-indicator fc-now-indicator-arrow'></div>").css(css).appendTo(this.headScroller.canvas.el)[0]);
+      nodes.push($("<div class='fc-now-indicator fc-now-indicator-line'></div>").css(css).appendTo(this.bodyScroller.canvas.el)[0]);
+    }
+    return this.nowIndicatorEls = $(nodes);
+  };
+
+  TimelineGrid.prototype.unrenderNowIndicator = function() {
+    if (this.nowIndicatorEls) {
+      this.nowIndicatorEls.remove();
+      return this.nowIndicatorEls = null;
+    }
+  };
+
   TimelineGrid.prototype.explicitSlotWidth = null;
 
   TimelineGrid.prototype.defaultSlotWidth = null;
 
   TimelineGrid.prototype.updateWidth = function() {
-    var availableWidth, containerMinWidth, containerWidth, nonLastSlotWidth, slotWidth;
-    slotWidth = Math.round(this.slotWidth || (this.slotWidth = this.computeSlotWidth()));
-    containerWidth = slotWidth * this.slotDates.length;
-    containerMinWidth = '';
-    nonLastSlotWidth = slotWidth;
-    availableWidth = this.bodyScroller.scrollEl[0].clientWidth;
-    if (availableWidth > containerWidth) {
-      containerMinWidth = availableWidth;
+    var availableWidth, containerMinWidth, containerWidth, isDatesRendered, nonLastSlotWidth, slotWidth;
+    isDatesRendered = this.headColEls;
+    if (isDatesRendered) {
+      slotWidth = Math.round(this.slotWidth || (this.slotWidth = this.computeSlotWidth()));
+      containerWidth = slotWidth * this.slotDates.length;
+      containerMinWidth = '';
+      nonLastSlotWidth = slotWidth;
+      availableWidth = this.bodyScroller.getClientWidth();
+      if (availableWidth > containerWidth) {
+        containerMinWidth = availableWidth;
+        containerWidth = '';
+        nonLastSlotWidth = Math.floor(availableWidth / this.slotDates.length);
+      }
+    } else {
       containerWidth = '';
-      nonLastSlotWidth = Math.floor(availableWidth / this.slotDates.length);
+      containerMinWidth = '';
     }
-    this.headScroller.setContentWidth(containerWidth);
-    this.headScroller.setContentMinWidth(containerMinWidth);
-    this.bodyScroller.setContentWidth(containerWidth);
-    this.bodyScroller.setContentMinWidth(containerMinWidth);
-    this.headColEls.slice(0, -1).add(this.slatColEls.slice(0, -1)).width(nonLastSlotWidth);
-    this.headScroller.update();
-    this.bodyScroller.update();
+    this.headScroller.canvas.setWidth(containerWidth);
+    this.headScroller.canvas.setMinWidth(containerMinWidth);
+    this.bodyScroller.canvas.setWidth(containerWidth);
+    this.bodyScroller.canvas.setMinWidth(containerMinWidth);
+    if (isDatesRendered) {
+      this.headColEls.slice(0, -1).add(this.slatColEls.slice(0, -1)).width(nonLastSlotWidth);
+    }
+    this.headScroller.updateSize();
+    this.bodyScroller.updateSize();
     this.joiner.update();
-    this.buildCoords();
-    this.updateSegPositions();
+    if (isDatesRendered) {
+      this.buildCoords();
+      this.updateSegPositions();
+      this.view.updateNowIndicator();
+    }
     if (this.follower) {
       this.follower.update();
     }
@@ -2659,7 +3502,7 @@ TimelineGrid = (function(superClass) {
   TimelineGrid.prototype.computeSlotWidth = function() {
     var headerWidth, innerEls, maxInnerWidth, minWidth, slotWidth, slotsPerLabel;
     maxInnerWidth = 0;
-    innerEls = this.headEl.find('tr:last-child th span');
+    innerEls = this.headEl.find('tr:last-child th .fc-cell-text');
     innerEls.each(function(i, node) {
       var innerWidth;
       innerWidth = $(node).outerWidth();
@@ -2685,7 +3528,7 @@ TimelineGrid = (function(superClass) {
   };
 
   TimelineGrid.prototype.computeDateSnapCoverage = function(date) {
-    var snapCoverage, snapDiff, snapDiffInt, snapDiffRemainder;
+    var snapCoverage, snapDiff, snapDiffInt;
     snapDiff = divideRangeByDuration(this.start, date, this.snapDuration);
     if (snapDiff < 0) {
       return 0;
@@ -2693,10 +3536,11 @@ TimelineGrid = (function(superClass) {
       return this.snapCnt;
     } else {
       snapDiffInt = Math.floor(snapDiff);
-      snapDiffRemainder = snapDiff - snapDiffInt;
       snapCoverage = this.snapDiffToIndex[snapDiffInt];
       if (isInt(snapCoverage)) {
-        snapCoverage += snapDiffRemainder;
+        snapCoverage += snapDiff - snapDiffInt;
+      } else {
+        snapCoverage = Math.ceil(snapCoverage);
       }
       return snapCoverage;
     }
@@ -2733,7 +3577,7 @@ TimelineGrid = (function(superClass) {
 
   TimelineGrid.prototype.headHeight = function() {
     var table;
-    table = this.headScroller.contentEl.find('table');
+    table = this.headScroller.canvas.contentEl.find('table');
     return table.height.apply(table, arguments);
   };
 
@@ -2742,41 +3586,12 @@ TimelineGrid = (function(superClass) {
     segs = (this.segs || []).concat(this.businessHourSegs || []);
     for (j = 0, len = segs.length; j < len; j++) {
       seg = segs[j];
-      coords = this.rangeToCoords(seg, -1);
+      coords = this.rangeToCoords(seg);
       seg.el.css({
         left: (seg.left = coords.left),
         right: -(seg.right = coords.right)
       });
     }
-  };
-
-  TimelineGrid.prototype.computeInitialScroll = function(prevState) {
-    var left, scrollTime;
-    left = 0;
-    if (this.isTimeScale) {
-      scrollTime = this.opt('scrollTime');
-      if (scrollTime) {
-        scrollTime = moment.duration(scrollTime);
-        left = this.dateToCoord(this.start.clone().time(scrollTime));
-      }
-    }
-    return {
-      left: left,
-      top: 0
-    };
-  };
-
-  TimelineGrid.prototype.queryScroll = function() {
-    return {
-      left: normalizedHScroll(this.bodyScroller.scrollEl),
-      top: this.bodyScroller.scrollEl.scrollTop()
-    };
-  };
-
-  TimelineGrid.prototype.setScroll = function(state) {
-    normalizedHScroll(this.headScroller.scrollEl, state.left);
-    normalizedHScroll(this.bodyScroller.scrollEl, state.left);
-    return this.bodyScroller.scrollEl.scrollTop(state.top);
   };
 
   TimelineGrid.prototype.renderFgSegs = function(segs) {
@@ -2797,7 +3612,7 @@ TimelineGrid = (function(superClass) {
       ref = pairs[j], container = ref[0], segs = ref[1];
       for (k = 0, len1 = segs.length; k < len1; k++) {
         seg = segs[k];
-        coords = this.rangeToCoords(seg, -1);
+        coords = this.rangeToCoords(seg);
         seg.el.css({
           left: (seg.left = coords.left),
           right: -(seg.right = coords.right)
@@ -2893,7 +3708,7 @@ TimelineGrid = (function(superClass) {
     classes = this.getSegClasses(seg, isDraggable, isResizableFromStart || isResizableFromEnd);
     classes.unshift('fc-timeline-event', 'fc-h-event');
     timeText = this.getEventTimeText(event);
-    return '<a class="' + classes.join(' ') + '" style="' + cssToStr(this.getEventSkinCss(event)) + '"' + (event.url ? ' href="' + htmlEscape(event.url) + '"' : '') + '>' + '<div class="fc-content">' + (timeText ? '<span class="fc-time">' + htmlEscape(timeText) + '</span>' : '') + '<span class="fc-title">' + (event.title ? htmlEscape(event.title) : '&nbsp;') + '</span>' + '</div>' + '<div class="fc-bg" />' + (isResizableFromStart ? '<div class="fc-resizer fc-start-resizer"></div>' : '') + (isResizableFromEnd ? '<div class="fc-resizer fc-end-resizer"></div>' : '') + '</a>';
+    return '<a class="' + classes.join(' ') + '" style="' + cssToStr(this.getSegSkinCss(seg)) + '"' + (event.url ? ' href="' + htmlEscape(event.url) + '"' : '') + '>' + '<div class="fc-content">' + (timeText ? '<span class="fc-time">' + htmlEscape(timeText) + '</span>' : '') + '<span class="fc-title">' + (event.title ? htmlEscape(event.title) : '&nbsp;') + '</span>' + '</div>' + '<div class="fc-bg" />' + (isResizableFromStart ? '<div class="fc-resizer fc-start-resizer"></div>' : '') + (isResizableFromEnd ? '<div class="fc-resizer fc-end-resizer"></div>' : '') + '</a>';
   };
 
   TimelineGrid.prototype.updateSegFollowers = function(segs) {
@@ -2953,13 +3768,14 @@ TimelineGrid = (function(superClass) {
   };
 
   TimelineGrid.prototype.renderHelperSegsInContainers = function(pairs, sourceSeg) {
-    var containerObj, coords, helperContainerEl, helperNodes, j, k, l, len, len1, len2, len3, m, ref, ref1, ref2, seg, segs;
+    var containerObj, coords, helperContainerEl, helperNodes, j, k, l, len, len1, len2, len3, m, ref, ref1, ref2, seg, segNodes, segs;
     helperNodes = [];
+    segNodes = [];
     for (j = 0, len = pairs.length; j < len; j++) {
       ref = pairs[j], containerObj = ref[0], segs = ref[1];
       for (k = 0, len1 = segs.length; k < len1; k++) {
         seg = segs[k];
-        coords = this.rangeToCoords(seg, -1);
+        coords = this.rangeToCoords(seg);
         seg.el.css({
           left: (seg.left = coords.left),
           right: -(seg.right = coords.right)
@@ -2978,13 +3794,15 @@ TimelineGrid = (function(superClass) {
       for (m = 0, len3 = segs.length; m < len3; m++) {
         seg = segs[m];
         helperContainerEl.append(seg.el);
+        segNodes.push(seg.el[0]);
       }
     }
     if (this.helperEls) {
-      return this.helperEls = this.helperEls.add($(helperNodes));
+      this.helperEls = this.helperEls.add($(helperNodes));
     } else {
-      return this.helperEls = $(helperNodes);
+      this.helperEls = $(helperNodes);
     }
+    return $(segNodes);
   };
 
   TimelineGrid.prototype.unrenderHelper = function() {
@@ -3027,7 +3845,7 @@ TimelineGrid = (function(superClass) {
       containerEl = $('<div class="fc-' + className + '-container" />').appendTo(containerObj.bgSegContainerEl);
       for (j = 0, len = segs.length; j < len; j++) {
         seg = segs[j];
-        coords = this.rangeToCoords(seg, -1);
+        coords = this.rangeToCoords(seg);
         seg.el.css({
           left: (seg.left = coords.left),
           right: -(seg.right = coords.right)
@@ -3044,12 +3862,10 @@ TimelineGrid = (function(superClass) {
 
   TimelineGrid.prototype.renderDrag = function(dropLocation, seg) {
     if (seg) {
-      this.renderEventLocationHelper(dropLocation, seg);
-      this.applyDragOpacity(this.helperEls);
-      return true;
+      return this.renderEventLocationHelper(dropLocation, seg);
     } else {
       this.renderHighlight(this.eventToSpan(dropLocation));
-      return false;
+      return null;
     }
   };
 
@@ -3396,9 +4212,13 @@ ResourceTimelineView = (function(superClass) {
     return ResourceTimelineView.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceTimelineView.mixin(ResourceView);
+  ResourceTimelineView.mixin(ResourceViewMixin);
+
+  ResourceTimelineView.prototype.canRenderSpecificResources = true;
 
   ResourceTimelineView.prototype.resourceGrid = null;
+
+  ResourceTimelineView.prototype.tbodyHash = null;
 
   ResourceTimelineView.prototype.joiner = null;
 
@@ -3508,6 +4328,10 @@ ResourceTimelineView = (function(superClass) {
   ResourceTimelineView.prototype.renderSkeleton = function() {
     ResourceTimelineView.__super__.renderSkeleton.apply(this, arguments);
     this.renderResourceGridSkeleton();
+    this.tbodyHash = {
+      spreadsheet: this.resourceGrid.tbodyEl,
+      event: this.timeGrid.tbodyEl
+    };
     this.joiner = new ScrollJoiner('vertical', [this.resourceGrid.bodyScroller, this.timeGrid.bodyScroller]);
     return this.initDividerMoving();
   };
@@ -3563,13 +4387,13 @@ ResourceTimelineView = (function(superClass) {
           return _this.updateWidth();
         };
       })(this),
-      dragStop: (function(_this) {
+      dragEnd: (function(_this) {
         return function() {
           return _this.dividerEls.removeClass('fc-active');
         };
       })(this)
     });
-    return dragListener.mousedown(ev);
+    return dragListener.startInteraction(ev);
   };
 
   ResourceTimelineView.prototype.getNaturalDividerWidth = function() {
@@ -3634,22 +4458,19 @@ ResourceTimelineView = (function(superClass) {
     return headHeight;
   };
 
-  ResourceTimelineView.prototype.scrollToResource = function(resource) {
-    return this.timeGrid.scrollToResource(resource);
-  };
-
-  ResourceTimelineView.prototype.setResources = function(resources) {
+  ResourceTimelineView.prototype.renderResources = function(resources) {
     var j, len, resource;
     this.batchRows();
     for (j = 0, len = resources.length; j < len; j++) {
       resource = resources[j];
       this.insertResource(resource);
     }
+    this.rowHierarchy.show();
     this.unbatchRows();
     return this.reinitializeCellFollowers();
   };
 
-  ResourceTimelineView.prototype.unsetResources = function() {
+  ResourceTimelineView.prototype.unrenderResources = function() {
     this.batchRows();
     this.rowHierarchy.removeChildren();
     this.unbatchRows();
@@ -3660,14 +4481,16 @@ ResourceTimelineView = (function(superClass) {
   /*
     TODO: the scenario where there were previously unassociated events that are now
      attached to this resource. should render those events immediately.
+  
+    Responsible for rendering the new resource
    */
 
-  ResourceTimelineView.prototype.addResource = function(resource) {
+  ResourceTimelineView.prototype.renderResource = function(resource) {
     this.insertResource(resource);
     return this.reinitializeCellFollowers();
   };
 
-  ResourceTimelineView.prototype.removeResource = function(resource) {
+  ResourceTimelineView.prototype.unrenderResource = function(resource) {
     var row;
     row = this.getResourceRow(resource.id);
     if (row) {
@@ -3685,7 +4508,7 @@ ResourceTimelineView = (function(superClass) {
     if (this.cellFollower) {
       this.cellFollower.clearSprites();
     }
-    this.cellFollower = new ScrollFollower(this.resourceGrid.bodyScroller);
+    this.cellFollower = new ScrollFollower(this.resourceGrid.bodyScroller, true);
     this.cellFollower.isHFollowing = false;
     this.cellFollower.isVFollowing = true;
     nodes = [];
@@ -3834,6 +4657,7 @@ ResourceTimelineView = (function(superClass) {
     var isNesting, wasNesting;
     if (row instanceof ResourceRow) {
       this.resourceRowHash[row.resource.id] = row;
+      this.timeGrid.assignRowBusinessHourSegs(row);
     }
     wasNesting = this.isNesting;
     isNesting = Boolean(this.nestingCnt += row.depth ? 1 : 0);
@@ -3848,6 +4672,7 @@ ResourceTimelineView = (function(superClass) {
     var isNesting, wasNesting;
     if (row instanceof ResourceRow) {
       delete this.resourceRowHash[row.resource.id];
+      this.timeGrid.destroyRowBusinessHourSegs(row);
     }
     wasNesting = this.isNesting;
     isNesting = Boolean(this.nestingCnt -= row.depth ? 1 : 0);
@@ -3907,26 +4732,6 @@ ResourceTimelineView = (function(superClass) {
 
   ResourceTimelineView.prototype.rowsHidden = function(rows) {
     return this.updateWidth();
-  };
-
-  ResourceTimelineView.prototype.tbodyHash = null;
-
-  ResourceTimelineView.prototype.renderStoredResources = function() {
-    this.tbodyHash = {
-      spreadsheet: this.resourceGrid.tbodyEl,
-      event: this.timeGrid.tbodyEl
-    };
-    this.batchRows();
-    this.rowHierarchy.show();
-    this.unbatchRows();
-    return this.reinitializeCellFollowers();
-  };
-
-  ResourceTimelineView.prototype.unrenderStoredResources = function() {
-    this.batchRows();
-    this.rowHierarchy.recursivelyUnrender();
-    this.unbatchRows();
-    return this.reinitializeCellFollowers();
   };
 
   ResourceTimelineView.prototype.syncRowHeights = function(visibleRows, safe) {
@@ -3997,9 +4802,55 @@ ResourceTimelineView = (function(superClass) {
     return this.resourceRowHash[resourceId];
   };
 
-  ResourceTimelineView.prototype.setScroll = function(state) {
-    ResourceTimelineView.__super__.setScroll.apply(this, arguments);
-    return this.resourceGrid.bodyScroller.scrollTop(state.top);
+  ResourceTimelineView.prototype.queryScroll = function() {
+    var el, elBottom, j, len, ref, rowObj, scroll, scrollerTop;
+    scroll = ResourceTimelineView.__super__.queryScroll.apply(this, arguments);
+    scrollerTop = this.timeGrid.bodyScroller.scrollEl.offset().top;
+    ref = this.getVisibleRows();
+    for (j = 0, len = ref.length; j < len; j++) {
+      rowObj = ref[j];
+      if (rowObj.resource) {
+        el = rowObj.getTr('event');
+        elBottom = el.offset().top + el.outerHeight();
+        if (elBottom > scrollerTop) {
+          scroll.resourceId = rowObj.resource.id;
+          scroll.bottom = elBottom - scrollerTop;
+          break;
+        }
+      }
+    }
+    return scroll;
+  };
+
+  ResourceTimelineView.prototype.setScroll = function(scroll) {
+    var el, elBottom, innerTop, row;
+    if (scroll.resourceId) {
+      row = this.getResourceRow(scroll.resourceId);
+      if (row) {
+        el = row.getTr('event');
+        if (el) {
+          innerTop = this.timeGrid.bodyScroller.canvas.el.offset().top;
+          elBottom = el.offset().top + el.outerHeight();
+          scroll.top = elBottom - scroll.bottom - innerTop;
+        }
+      }
+    }
+    ResourceTimelineView.__super__.setScroll.call(this, scroll);
+    return this.resourceGrid.bodyScroller.setScrollTop(scroll.top);
+  };
+
+  ResourceTimelineView.prototype.scrollToResource = function(resource) {
+    var el, innerTop, row, scrollTop;
+    row = this.getResourceRow(resource.id);
+    if (row) {
+      el = row.getTr('event');
+      if (el) {
+        innerTop = this.timeGrid.bodyScroller.canvas.el.offset().top;
+        scrollTop = el.offset().top - innerTop;
+        this.timeGrid.bodyScroller.setScrollTop(scrollTop);
+        return this.resourceGrid.bodyScroller.setScrollTop(scrollTop);
+      }
+    }
   };
 
   return ResourceTimelineView;
@@ -4013,7 +4864,7 @@ ResourceTimelineGrid = (function(superClass) {
     return ResourceTimelineGrid.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceTimelineGrid.mixin(ResourceGrid);
+  ResourceTimelineGrid.mixin(ResourceGridMixin);
 
   ResourceTimelineGrid.prototype.eventRows = null;
 
@@ -4024,12 +4875,14 @@ ResourceTimelineGrid = (function(superClass) {
   ResourceTimelineGrid.prototype.rowCoordCache = null;
 
   ResourceTimelineGrid.prototype.spanToSegs = function(span) {
-    var j, len, resourceId, seg, segs;
+    var calendar, j, len, resourceId, seg, segs;
     segs = ResourceTimelineGrid.__super__.spanToSegs.apply(this, arguments);
+    calendar = this.view.calendar;
     resourceId = span.resourceId;
     if (resourceId) {
       for (j = 0, len = segs.length; j < len; j++) {
         seg = segs[j];
+        seg.resource = calendar.getResourceById(resourceId);
         seg.resourceId = resourceId;
       }
     }
@@ -4111,7 +4964,7 @@ ResourceTimelineGrid = (function(superClass) {
     ResourceTimelineGrid.__super__.renderSkeleton.apply(this, arguments);
     this.segContainerEl.remove();
     this.segContainerEl = null;
-    rowContainerEl = $('<div class="fc-rows"><table><tbody/></table></div>').appendTo(this.bodyScroller.contentEl);
+    rowContainerEl = $('<div class="fc-rows"><table><tbody/></table></div>').appendTo(this.bodyScroller.canvas.contentEl);
     return this.tbodyEl = rowContainerEl.find('tbody');
   };
 
@@ -4144,6 +4997,113 @@ ResourceTimelineGrid = (function(superClass) {
       eventRow.isSegsRendered = false;
     }
     return this.unrenderFgContainers(eventRows);
+  };
+
+  ResourceTimelineGrid.prototype.rowCntWithCustomBusinessHours = 0;
+
+  ResourceTimelineGrid.prototype.renderBusinessHours = function() {
+    if (this.rowCntWithCustomBusinessHours) {
+      return this.ensureIndividualBusinessHours();
+    } else {
+      return ResourceTimelineGrid.__super__.renderBusinessHours.apply(this, arguments);
+    }
+  };
+
+  ResourceTimelineGrid.prototype.unrenderBusinessHours = function() {
+    if (this.rowCntWithCustomBusinessHours) {
+      return this.clearIndividualBusinessHours();
+    } else {
+      return ResourceTimelineGrid.__super__.unrenderBusinessHours.apply(this, arguments);
+    }
+  };
+
+
+  /*
+    Ensures that all rows have their individual business hours DISPLAYED.
+   */
+
+  ResourceTimelineGrid.prototype.ensureIndividualBusinessHours = function() {
+    var j, len, ref, results, row;
+    ref = this.view.getEventRows();
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      row = ref[j];
+      if (this.view.isDateSet && !row.businessHourSegs) {
+        this.populateRowBusinessHoursSegs(row);
+      }
+      if (row.isShown) {
+        results.push(row.ensureBusinessHourSegsRendered());
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
+
+
+  /*
+    Ensures that all rows have their individual business hours CLEARED.
+   */
+
+  ResourceTimelineGrid.prototype.clearIndividualBusinessHours = function() {
+    var j, len, ref, results, row;
+    ref = this.view.getEventRows();
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      row = ref[j];
+      results.push(row.clearBusinessHourSegs());
+    }
+    return results;
+  };
+
+
+  /*
+    Called when a row has been added to the tree data structure, but before it's rendered.
+    Computes and assigns business hour data *if necessary*. To be rendered soon after.
+   */
+
+  ResourceTimelineGrid.prototype.assignRowBusinessHourSegs = function(row) {
+    if (row.resource.businessHours) {
+      if (!this.rowCntWithCustomBusinessHours) {
+        TimelineGrid.prototype.unrenderBusinessHours.call(this);
+        this.ensureIndividualBusinessHours();
+      }
+      this.rowCntWithCustomBusinessHours += 1;
+    }
+    if (this.view.isDateSet && this.rowCntWithCustomBusinessHours) {
+      return this.populateRowBusinessHoursSegs(row);
+    }
+  };
+
+
+  /*
+    Called when a row has been removed from the tree data structure.
+    Unrenders the row's segs and, if necessary, forces businessHours back to generic rendering.
+   */
+
+  ResourceTimelineGrid.prototype.destroyRowBusinessHourSegs = function(row) {
+    row.clearBusinessHourSegs();
+    if (row.resource.businessHours) {
+      this.rowCntWithCustomBusinessHours -= 1;
+      if (!this.rowCntWithCustomBusinessHours) {
+        this.clearIndividualBusinessHours();
+        return TimelineGrid.prototype.renderBusinessHours.call(this);
+      }
+    }
+  };
+
+
+  /*
+    Compute and assign to row.businessHourSegs unconditionally
+   */
+
+  ResourceTimelineGrid.prototype.populateRowBusinessHoursSegs = function(row) {
+    var businessHourSegs, businessHours, businessHoursEvents;
+    businessHours = row.resource.businessHours || this.view.opt('businessHours');
+    businessHoursEvents = this.view.calendar.computeBusinessHourEvents(!this.isTimeScale, businessHours);
+    businessHourSegs = this.eventsToSegs(businessHoursEvents);
+    businessHourSegs = this.renderFillSegEls('businessHours', businessHourSegs);
+    row.businessHourSegs = businessHourSegs;
   };
 
   ResourceTimelineGrid.prototype.renderFill = function(type, segs, className) {
@@ -4184,65 +5144,6 @@ ResourceTimelineGrid = (function(superClass) {
     segs = this.renderFgSegEls(segs);
     pairs = this.view.pairSegsWithRows(segs);
     return this.renderHelperSegsInContainers(pairs, sourceSeg);
-  };
-
-  ResourceTimelineGrid.prototype.computeInitialScroll = function(prevState) {
-    var state;
-    state = ResourceTimelineGrid.__super__.computeInitialScroll.apply(this, arguments);
-    if (prevState) {
-      state.resourceId = prevState.resourceId;
-      state.bottom = prevState.bottom;
-    }
-    return state;
-  };
-
-  ResourceTimelineGrid.prototype.queryScroll = function() {
-    var el, elBottom, j, len, ref, rowObj, scrollerTop, state;
-    state = ResourceTimelineGrid.__super__.queryScroll.apply(this, arguments);
-    scrollerTop = this.bodyScroller.scrollEl.offset().top;
-    ref = this.view.getVisibleRows();
-    for (j = 0, len = ref.length; j < len; j++) {
-      rowObj = ref[j];
-      if (rowObj.resource) {
-        el = rowObj.getTr('event');
-        elBottom = el.offset().top + el.outerHeight();
-        if (elBottom > scrollerTop) {
-          state.resourceId = rowObj.resource.id;
-          state.bottom = elBottom - scrollerTop;
-          break;
-        }
-      }
-    }
-    return state;
-  };
-
-  ResourceTimelineGrid.prototype.setScroll = function(state) {
-    var el, elBottom, innerTop, row;
-    if (state.resourceId) {
-      row = this.view.getResourceRow(state.resourceId);
-      if (row) {
-        el = row.getTr('event');
-        if (el) {
-          innerTop = this.bodyScroller.innerEl.offset().top;
-          elBottom = el.offset().top + el.outerHeight();
-          state.top = elBottom - state.bottom - innerTop;
-        }
-      }
-    }
-    return ResourceTimelineGrid.__super__.setScroll.call(this, state);
-  };
-
-  ResourceTimelineGrid.prototype.scrollToResource = function(resource) {
-    var el, innerTop, row, scrollTop;
-    row = this.view.getResourceRow(resource.id);
-    if (row) {
-      el = row.getTr('event');
-      if (el) {
-        innerTop = this.bodyScroller.innerEl.offset().top;
-        scrollTop = el.offset().top - innerTop;
-        return this.bodyScroller.scrollEl.scrollTop(scrollTop);
-      }
-    }
   };
 
   return ResourceTimelineGrid;
@@ -4295,17 +5196,26 @@ Spreadsheet = (function() {
   Spreadsheet.prototype.bodyTable = null;
 
   Spreadsheet.prototype.renderSkeleton = function() {
-    this.headScroller = new Scroller('invisible-scroll', 'hidden');
-    this.headScroller.contentEl.html(this.renderHeadHtml());
+    this.headScroller = new ClippedScroller({
+      overflowX: 'clipped-scroll',
+      overflowY: 'hidden'
+    });
+    this.headScroller.canvas = new ScrollerCanvas();
+    this.headScroller.render();
+    this.headScroller.canvas.contentEl.html(this.renderHeadHtml());
     this.headEl.append(this.headScroller.el);
-    this.bodyScroller = new Scroller('auto', 'invisible-scroll');
-    this.bodyScroller.contentEl.html('<table>' + this.colGroupHtml + '<tbody/></table>');
-    this.tbodyEl = this.bodyScroller.contentEl.find('tbody');
+    this.bodyScroller = new ClippedScroller({
+      overflowY: 'clipped-scroll'
+    });
+    this.bodyScroller.canvas = new ScrollerCanvas();
+    this.bodyScroller.render();
+    this.bodyScroller.canvas.contentEl.html('<div class="fc-rows"><table>' + this.colGroupHtml + '<tbody/></table></div>');
+    this.tbodyEl = this.bodyScroller.canvas.contentEl.find('tbody');
     this.el.append(this.bodyScroller.el);
     this.joiner = new ScrollJoiner('horizontal', [this.headScroller, this.bodyScroller]);
     this.headTable = this.headEl.find('table');
     this.headColEls = this.headEl.find('col');
-    this.headCellEls = this.headScroller.contentEl.find('tr:last-child th');
+    this.headCellEls = this.headScroller.canvas.contentEl.find('tr:last-child th');
     this.bodyColEls = this.el.find('col');
     this.bodyTable = this.el.find('table');
     this.colMinWidths = this.computeColMinWidths();
@@ -4338,7 +5248,7 @@ Spreadsheet = (function() {
     for (i = k = 0, len1 = colSpecs.length; k < len1; i = ++k) {
       o = colSpecs[i];
       isLast = i === colSpecs.length - 1;
-      html += '<th class="' + this.view.widgetHeaderClass + '">' + '<div>' + '<div class="fc-cell-content">' + (o.isMain ? '<div class="fc-icon fc-expander-space" />' : '') + '<span class="fc-cell-text">' + htmlEscape(o.labelText || '') + '</span>' + '</div>' + (!isLast ? '<div class="fc-col-resizer"></div>' : '') + '</div>' + '</th>';
+      html += '<th class="' + this.view.widgetHeaderClass + '">' + '<div>' + '<div class="fc-cell-content">' + (o.isMain ? '<span class="fc-expander-space">' + '<span class="fc-icon"></span>' + '</span>' : '') + '<span class="fc-cell-text">' + htmlEscape(o.labelText || '') + '</span>' + '</div>' + (!isLast ? '<div class="fc-col-resizer"></div>' : '') + '</div>' + '</th>';
     }
     html += '</tr>';
     html += '</tbody></table>';
@@ -4370,7 +5280,7 @@ Spreadsheet = (function() {
     var colWidths, dragListener, minWidth, origColWidth;
     colWidths = this.colWidths = this.queryColWidths();
     colWidths.pop();
-    colWidths.push('auto');
+    colWidths.push(null);
     origColWidth = colWidths[i];
     minWidth = Math.min(this.colMinWidths[i], COL_MIN_WIDTH);
     dragListener = new DragListener({
@@ -4388,13 +5298,13 @@ Spreadsheet = (function() {
           return _this.applyColWidths();
         };
       })(this),
-      dragStop: (function(_this) {
+      dragEnd: (function(_this) {
         return function() {
           return resizerEl.removeClass('fc-active');
         };
       })(this)
     });
-    return dragListener.mousedown(ev);
+    return dragListener.startInteraction(ev);
   };
 
   Spreadsheet.prototype.applyColWidths = function() {
@@ -4415,7 +5325,7 @@ Spreadsheet = (function() {
         }
       }
     }
-    defaultCssWidth = anyPercentages ? 'auto' : '';
+    defaultCssWidth = anyPercentages && !this.view.isHGrouping ? 'auto' : '';
     cssWidths = (function() {
       var k, len1, results;
       results = [];
@@ -4435,8 +5345,8 @@ Spreadsheet = (function() {
       this.headColEls.eq(i).width(cssWidth);
       this.bodyColEls.eq(i).width(cssWidth);
     }
-    this.headScroller.setContentMinWidth(tableMinWidth);
-    this.bodyScroller.setContentMinWidth(tableMinWidth);
+    this.headScroller.canvas.setMinWidth(tableMinWidth);
+    this.bodyScroller.canvas.setMinWidth(tableMinWidth);
     this.tableMinWidth = tableMinWidth;
     return this.tableWidth = allNumbers ? total : void 0;
   };
@@ -4468,8 +5378,8 @@ Spreadsheet = (function() {
   };
 
   Spreadsheet.prototype.updateWidth = function() {
-    this.headScroller.update();
-    this.bodyScroller.update();
+    this.headScroller.updateSize();
+    this.bodyScroller.updateSize();
     this.joiner.update();
     if (this.follower) {
       return this.follower.update();
@@ -4478,7 +5388,7 @@ Spreadsheet = (function() {
 
   Spreadsheet.prototype.headHeight = function() {
     var table;
-    table = this.headScroller.contentEl.find('table');
+    table = this.headScroller.canvas.contentEl.find('table');
     return table.height.apply(table, arguments);
   };
 
@@ -4938,7 +5848,7 @@ RowParent = (function() {
    */
 
   RowParent.prototype.indicateExpanded = function() {
-    return this.trs.find('.fc-expander').removeClass(this.getCollapsedIcon()).addClass(this.getExpandedIcon());
+    return this.trs.find('.fc-expander .fc-icon').removeClass(this.getCollapsedIcon()).addClass(this.getExpandedIcon());
   };
 
 
@@ -4947,7 +5857,7 @@ RowParent = (function() {
    */
 
   RowParent.prototype.indicateCollapsed = function() {
-    return this.trs.find('.fc-expander').removeClass(this.getExpandedIcon()).addClass(this.getCollapsedIcon());
+    return this.trs.find('.fc-expander .fc-icon').removeClass(this.getExpandedIcon()).addClass(this.getCollapsedIcon());
   };
 
 
@@ -4963,7 +5873,7 @@ RowParent = (function() {
    */
 
   RowParent.prototype.disableExpanding = function() {
-    return this.trs.find('.fc-expander-space').removeClass('fc-expander').removeClass(this.getExpandedIcon()).removeClass(this.getCollapsedIcon());
+    return this.trs.find('.fc-expander-space').removeClass('fc-expander').find('.fc-icon').removeClass(this.getExpandedIcon()).removeClass(this.getCollapsedIcon());
   };
 
   RowParent.prototype.getExpandedIcon = function() {
@@ -5008,7 +5918,7 @@ RowParent = (function() {
     $.each(this.trHash, (function(_this) {
       return function(type, tr) {
         var innerEl;
-        innerEl = getFirstOwnRow(tr).find('> div');
+        innerEl = getOwnCells(tr).find('> div:not(.fc-cell-content):first');
         return max = Math.max(innerEl.height(), max);
       };
     })(this));
@@ -5021,7 +5931,11 @@ RowParent = (function() {
    */
 
   RowParent.prototype.setTrInnerHeight = function(height) {
-    return getFirstOwnRow(this.trs).find('> div').height(height);
+    return $.each(this.trHash, (function(_this) {
+      return function(type, tr) {
+        return getOwnCells(tr).find('> div:not(.fc-cell-content):first').height(height);
+      };
+    })(this));
   };
 
 
@@ -5199,7 +6113,7 @@ HRowGroup = (function(superClass) {
   HRowGroup.prototype.renderSpreadsheetContent = function(tr) {
     var contentEl;
     contentEl = this.renderGroupContentEl();
-    contentEl.prepend('<span class="fc-icon fc-expander" />');
+    contentEl.prepend('<span class="fc-expander">' + '<span class="fc-icon"></span>' + '</span>');
     return $('<td class="fc-divider" />').attr('colspan', this.view.colSpecs.length).append($('<div/>').append(contentEl)).appendTo(tr);
   };
 
@@ -5309,6 +6223,10 @@ EventRow = (function(superClass) {
 
   EventRow.prototype.isSegsRendered = false;
 
+  EventRow.prototype.isBusinessHourSegsRendered = false;
+
+  EventRow.prototype.businessHourSegs = null;
+
   EventRow.prototype.bgSegs = null;
 
   EventRow.prototype.fgSegs = null;
@@ -5322,6 +6240,7 @@ EventRow = (function(superClass) {
 
   EventRow.prototype.ensureSegsRendered = function() {
     if (!this.isSegsRendered) {
+      this.ensureBusinessHourSegsRendered();
       if (this.bgSegs) {
         this.view.timeGrid.renderFillInContainer('bgEvent', this, this.bgSegs);
       }
@@ -5332,10 +6251,33 @@ EventRow = (function(superClass) {
     }
   };
 
+  EventRow.prototype.ensureBusinessHourSegsRendered = function() {
+    if (this.businessHourSegs && !this.isBusinessHourSegsRendered) {
+      this.view.timeGrid.renderFillInContainer('businessHours', this, this.businessHourSegs, 'bgevent');
+      return this.isBusinessHourSegsRendered = true;
+    }
+  };
+
   EventRow.prototype.unrenderEventContent = function() {
+    this.clearBusinessHourSegs();
     this.bgSegs = null;
     this.fgSegs = null;
     return this.isSegsRendered = false;
+  };
+
+  EventRow.prototype.clearBusinessHourSegs = function() {
+    var j, len, ref, seg;
+    if (this.businessHourSegs) {
+      ref = this.businessHourSegs;
+      for (j = 0, len = ref.length; j < len; j++) {
+        seg = ref[j];
+        if (seg.el) {
+          seg.el.remove();
+        }
+      }
+      this.businessHourSegs = null;
+    }
+    return this.isBusinessHourSegsRendered = false;
   };
 
   return EventRow;
@@ -5397,7 +6339,12 @@ ResourceRow = (function(superClass) {
     } else {
       this.disableExpanding();
     }
-    return this.view.trigger('resourceRender', this.resource, this.resource, this.getTr('spreadsheet').find('> td'), this.getTr('event').find('> td'));
+    return this.view.publiclyTrigger('resourceRender', this.resource, this.resource, this.getTr('spreadsheet').find('> td'), this.getTr('event').find('> td'));
+  };
+
+  ResourceRow.prototype.renderEventContent = function(tr) {
+    ResourceRow.__super__.renderEventContent.apply(this, arguments);
+    return tr.attr('data-resource-id', this.resource.id);
   };
 
 
@@ -5406,10 +6353,9 @@ ResourceRow = (function(superClass) {
    */
 
   ResourceRow.prototype.renderSpreadsheetContent = function(tr) {
-    var colSpec, contentEl, input, j, len, ref, resource, results, td, text;
+    var colSpec, contentEl, input, j, len, ref, resource, td, text;
     resource = this.resource;
     ref = this.view.colSpecs;
-    results = [];
     for (j = 0, len = ref.length; j < len; j++) {
       colSpec = ref[j];
       if (colSpec.group) {
@@ -5425,9 +6371,9 @@ ResourceRow = (function(superClass) {
       if (colSpec.isMain) {
         td.wrapInner('<div/>');
       }
-      results.push(tr.append(td));
+      tr.append(td);
     }
-    return results;
+    return tr.attr('data-resource-id', resource.id);
   };
 
 
@@ -5442,7 +6388,7 @@ ResourceRow = (function(superClass) {
     for (i = j = 0, ref = this.depth; j < ref; i = j += 1) {
       html += '<span class="fc-icon"/>';
     }
-    html += '<span class="fc-icon fc-expander-space"/>';
+    html += '<span class="fc-expander-space">' + '<span class="fc-icon"></span>' + '</span>';
     return html;
   };
 
@@ -5459,7 +6405,7 @@ ResourceAgendaView = (function(superClass) {
     return ResourceAgendaView.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceAgendaView.mixin(ResourceView);
+  ResourceAgendaView.mixin(VertResourceViewMixin);
 
   ResourceAgendaView.prototype.timeGridClass = ResourceTimeGrid;
 
@@ -5470,26 +6416,18 @@ ResourceAgendaView = (function(superClass) {
     return this.timeGrid.processHeadResourceEls(this.headContainerEl);
   };
 
-  ResourceAgendaView.prototype.setResources = function(resources) {
+  ResourceAgendaView.prototype.setResourcesOnGrids = function(resources) {
     this.timeGrid.setResources(resources);
     if (this.dayGrid) {
       return this.dayGrid.setResources(resources);
     }
   };
 
-  ResourceAgendaView.prototype.unsetResources = function() {
+  ResourceAgendaView.prototype.unsetResourcesOnGrids = function() {
     this.timeGrid.unsetResources();
     if (this.dayGrid) {
       return this.dayGrid.unsetResources();
     }
-  };
-
-  ResourceAgendaView.prototype.renderStoredResources = function() {
-    return this.redisplay();
-  };
-
-  ResourceAgendaView.prototype.unrenderStoredResources = function() {
-    return this.redisplay();
   };
 
   return ResourceAgendaView;
@@ -5510,7 +6448,7 @@ ResourceBasicView = (function(superClass) {
     return ResourceBasicView.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceBasicView.mixin(ResourceView);
+  ResourceBasicView.mixin(VertResourceViewMixin);
 
   ResourceBasicView.prototype.dayGridClass = ResourceDayGrid;
 
@@ -5519,20 +6457,12 @@ ResourceBasicView = (function(superClass) {
     return this.dayGrid.processHeadResourceEls(this.headContainerEl);
   };
 
-  ResourceBasicView.prototype.setResources = function(resources) {
+  ResourceBasicView.prototype.setResourcesOnGrids = function(resources) {
     return this.dayGrid.setResources(resources);
   };
 
-  ResourceBasicView.prototype.unsetResources = function() {
+  ResourceBasicView.prototype.unsetResourcesOnGrids = function() {
     return this.dayGrid.unsetResources();
-  };
-
-  ResourceBasicView.prototype.renderStoredResources = function() {
-    return this.redisplay();
-  };
-
-  ResourceBasicView.prototype.unrenderStoredResources = function() {
-    return this.redisplay();
   };
 
   return ResourceBasicView;
@@ -5546,7 +6476,7 @@ ResourceMonthView = (function(superClass) {
     return ResourceMonthView.__super__.constructor.apply(this, arguments);
   }
 
-  ResourceMonthView.mixin(ResourceView);
+  ResourceMonthView.mixin(VertResourceViewMixin);
 
   ResourceMonthView.prototype.dayGridClass = ResourceDayGrid;
 
@@ -5555,26 +6485,12 @@ ResourceMonthView = (function(superClass) {
     return this.dayGrid.processHeadResourceEls(this.headContainerEl);
   };
 
-  ResourceMonthView.prototype.setResources = function(resources) {
+  ResourceMonthView.prototype.setResourcesOnGrids = function(resources) {
     return this.dayGrid.setResources(resources);
   };
 
-  ResourceMonthView.prototype.unsetResources = function() {
+  ResourceMonthView.prototype.unsetResourcesOnGrids = function() {
     return this.dayGrid.unsetResources();
-  };
-
-  ResourceMonthView.prototype.renderStoredResources = function() {
-    if (this.isSkeletonRendered) {
-      this.renderDates();
-      return this.updateSize();
-    }
-  };
-
-  ResourceMonthView.prototype.unrenderStoredResources = function() {
-    if (this.isSkeletonRendered) {
-      this.renderDates();
-      return this.updateSize();
-    }
   };
 
   return ResourceMonthView;
@@ -5594,7 +6510,7 @@ FC.views.month.queryResourceClass = function(viewSpec) {
   }
 };
 
-RELEASE_DATE = '2015-11-30';
+RELEASE_DATE = '2017-02-14';
 
 UPGRADE_WINDOW = {
   years: 1,
@@ -5607,7 +6523,9 @@ PRESET_LICENSE_KEYS = ['GPL-My-Project-Is-Open-Source', 'CC-Attribution-NonComme
 
 processLicenseKey = function(key, containerEl) {
   if (!isImmuneUrl(window.location.href) && !isValidKey(key)) {
-    return renderingWarningInContainer('Please use a valid license key. <a href="' + LICENSE_INFO_URL + '">More Info</a>', containerEl);
+    if (!detectWarningInContainer(containerEl)) {
+      return renderingWarningInContainer('Please use a valid license key. <a href="' + LICENSE_INFO_URL + '">More Info</a>', containerEl);
+    }
   }
 };
 
@@ -5641,6 +6559,10 @@ isImmuneUrl = function(url) {
 
 renderingWarningInContainer = function(messageHtml, containerEl) {
   return containerEl.append($('<div class="fc-license-message" />').html(messageHtml));
+};
+
+detectWarningInContainer = function(containerEl) {
+  return containerEl.find('.fc-license-message').length >= 1;
 };
 
 });
