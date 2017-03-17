@@ -5,6 +5,8 @@ import json
 from switsol.switsol.doctype.certificate.certificate import add_attachments
 from frappe.desk.form.load import get_attachments
 from frappe.utils.pdf import get_pdf
+from datetime import datetime, timedelta
+import datetime
 
 @frappe.whitelist()
 def certificate_creation(**kwargs):
@@ -160,31 +162,33 @@ def download_pdf(doctype, name, format=None, doc=None,print_format=None):
 	
 @frappe.whitelist()
 def get_events(start=None,end=None,filters=None):
-	# data = frappe.db.sql("""select p.name as name,timestamp(pt.start_date, pt.start_time) as start_date,
-	# 		timestamp(pt.start_date, pt.end_time) as end_date
-	# 		from `tabProject` p, `tabProject Training Details` pt
-	# 		where 
-	# 		pt.parent = p.name and 
-	# 		timestamp(pt.start_date, pt.start_time) between %(start)s 
-	# 		and %(end)s or timestamp(pt.start_date, pt.end_time) between %(start)s and %(end)s """,{
-	# 		"start":start,
-	# 		"end":end
-	# 		},as_dict=True)
 	data = frappe.db.sql("""select p.name as name,timestamp(pt.start_date, pt.start_time) as start_date,timestamp(pt.start_date, pt.end_time) as end_date from `tabProject` p, `tabProject Training Details` pt where pt.parent = p.name and timestamp(pt.start_date, pt.start_time) between '2017-01-10' and '2017-02-17' or timestamp(pt.start_date, pt.end_time) between '2017-01-10' and '2017-02-17' """,as_dict=True)
 	return data
 
 @frappe.whitelist()
-def get_room(room=None):
+def get_room(render_counter,room=None,cal_date=None):
+	if str(render_counter) == '0':
+		date = datetime.date.today() 
+	else:
+		date = datetime.datetime.strptime(str(cal_date),'%d-%m-%Y') 
+	week_start_day = date - datetime.timedelta(days=(date.weekday()+1)%7)
+	week_end_day = week_start_day + datetime.timedelta(days=6)
 	room = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
 							ifnull (pt.instructor_name,"") as instructor,
 							r.room_name as room,
-							pt.start_date as date
+							pt.start_date as date,
+							pt.training_center
 							from `tabProject` p, `tabProject Training Details` pt, `tabRoom` r
-							where pt.parent = p.name and pt.start_date is not null and pt.room != '' and
-							pt.room = r.name 
-							""",as_dict=1)
+							where 
+							pt.parent = p.name and 
+							pt.room = r.name and 
+							pt.start_date is not null and 
+							pt.room != '' and
+							pt.start_date between "{0}" and "{1}"
+							order by pt.training_center,r.room_name
+							""".format(week_start_day,week_end_day),as_dict=1,debug=1)
 	room_data = []
 	room_event_data = []
 	event_index = 1
@@ -205,7 +209,9 @@ def get_room(room=None):
 	if room_event_data:
 		for i in room_event_data:
 			for j in i:
-				sorted_room_data.append(j)			
+				sorted_room_data.append(j)
+
+
 	return {'room_data':room_data,'room_event_data':sorted_room_data}
  	
 def make_event_data(data,row,event_index):

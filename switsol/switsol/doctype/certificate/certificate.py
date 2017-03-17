@@ -24,6 +24,7 @@ class Certificate(Document):
 			else:
 				url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+self.name+\
 												"&format=New Horizons Certificate&no_letterhead=0"
+
 				add_attachments(self.name,url,_("New Horizons Certificate"))	
 
 
