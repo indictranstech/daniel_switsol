@@ -51,12 +51,14 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 		frappe.breadcrumbs.add(module, this.doctype)
 
 		this.add_filters();
-
+		this.render_counter = 0
+		console.log(this.doctype)
 		this.page.add_field({fieldtype:"Date", label:"Date",
 			fieldname:"selected",
 			"default": frappe.datetime.month_start(),
 			input_css: {"z-index": 1},
 			change: function() {
+				me.render_counter = 1
 				var selected = $(this).val();
 				if (selected) {
 					//me.$cal.fullCalendar('changeView', 'agendaDay');
@@ -156,13 +158,8 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 	//------------------------------------------------------------------------------------------
 		var me = this;
 		if (this.doctype=='Project'){
-		
-			
-
 		var res_list=[];
 		var res_dict={};
-		view_room = viewRender()
-		
         this.cal_options = {
 
 			
@@ -179,6 +176,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
     		defaultView: 'resourceAgendaDay',
     		allDaySlot: false,
     		groupByDateAndResource: true,
+    		refetchResourcesOnNavigate: true,
     		views: {
       			resourceAgendaDay: {
         			type: 'timeline',
@@ -188,9 +186,36 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
       			}
     		},
     		resourceLabelText: 'Rooms',
-    		resources: view_room['room_data'],
-    		events: view_room['room_event_data'],
-            
+            resources: function(callback, start, end, timezone) {
+            	date = $('input[data-fieldname="selected"]').val()
+			   return frappe.call({
+				method: "switsol.custom_script.project.get_room",
+				type: "GET",
+				args:{"get_args":me.get_args(start, end),
+					 "cal_date":date,
+					 "render_counter":me.render_counter
+				},
+				callback: function(r) {
+					var rooms = r.message;
+					callback(rooms['room_data']);
+					}
+				})
+			},
+            events: function(start, end, timezone, callback) {
+			   date = $('input[data-fieldname="selected"]').val()
+			   return frappe.call({
+				method: "switsol.custom_script.project.get_room",
+				type: "GET",
+				args:{"get_args":me.get_args(start, end),
+					 "cal_date":date,
+					 "render_counter":me.render_counter},
+				callback: function(r) {
+					var events = r.message;
+					callback(events['room_event_data']);
+					}
+				})
+				
+			},
     		/*eventRender: function(event, element){ 
 			    element.find('.fc-title').append("<br/>" + event.title); 
 			},*/
@@ -208,6 +233,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 				me.update_event(event, revertFunc);
 			},
 			select: function(startDate, endDate, jsEvent, view) {
+				console.log("inside select")
 				if (view.name==="month" && (endDate - startDate)===86400000) {
 					// detect single day click in month view
 					return;
@@ -238,10 +264,10 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 			}
 		};
 
-		}
+		}//for rooms on project doctype
+
 		// 	----------------------------------
 		else{
-
 			this.cal_options = {
 				header: {
 					left: 'prev,next today',
@@ -528,17 +554,21 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 	
 })
 
- viewRender = function(){
+/* viewRender = function(date){
    			var res = {}
 			frappe.call({
 				method: "switsol.custom_script.project.get_room",
 				type: "GET",
 				async:false,
+				args:{
+				"cal_date":date
+				},
 				callback: function(r) {
+					// console.log(r.message,"sdfsdfsdfsdfsddfdfsefdvbgd")
 					 res=r.message;
 				}
 		})
-		
+		console.log(res,"res data*************")
    		return res
-		}
+		}*/
 
