@@ -166,13 +166,12 @@ def get_events(start=None,end=None,filters=None):
 	return data
 
 @frappe.whitelist()
-def get_room(render_counter,room=None,cal_date=None):
-	if str(render_counter) == '0':
-		date = datetime.date.today() 
-	else:
-		date = datetime.datetime.strptime(str(cal_date),'%d-%m-%Y') 
-	week_start_day = date - datetime.timedelta(days=(date.weekday()+1)%7)
-	week_end_day = week_start_day + datetime.timedelta(days=6)
+def get_room(get_args,room=None):
+	data = json.loads(get_args)
+	date = datetime.datetime.strptime(data['start'],'%Y-%m-%d %H:%M:%S').date()
+	week_end_day = datetime.datetime.strptime(data['end'],'%Y-%m-%d %H:%M:%S').date() 
+	week_start_day = date + datetime.timedelta(days=1)
+
 	room = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
@@ -188,7 +187,7 @@ def get_room(render_counter,room=None,cal_date=None):
 							pt.room != '' and
 							pt.start_date between "{0}" and "{1}"
 							order by pt.training_center,r.room_name
-							""".format(week_start_day,week_end_day),as_dict=1,debug=1)
+							""".format(week_start_day,week_end_day),as_dict=1)
 	room_data = []
 	room_event_data = []
 	event_index = 1
