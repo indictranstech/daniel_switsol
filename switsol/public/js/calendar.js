@@ -51,14 +51,11 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 		frappe.breadcrumbs.add(module, this.doctype)
 
 		this.add_filters();
-		this.render_counter = 0
-		console.log(this.doctype)
 		this.page.add_field({fieldtype:"Date", label:"Date",
 			fieldname:"selected",
 			"default": frappe.datetime.month_start(),
 			input_css: {"z-index": 1},
 			change: function() {
-				me.render_counter = 1
 				var selected = $(this).val();
 				if (selected) {
 					//me.$cal.fullCalendar('changeView', 'agendaDay');
@@ -187,12 +184,10 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
     		},
     		resourceLabelText: 'Rooms',
             resources: function(callback, start, end, timezone) {
-            	date = $('input[data-fieldname="selected"]').val()
 			   return frappe.call({
 				method: "switsol.custom_script.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
-					 "cal_date":date,
 					 "render_counter":me.render_counter
 				},
 				callback: function(r) {
@@ -202,12 +197,10 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 				})
 			},
             events: function(start, end, timezone, callback) {
-			   date = $('input[data-fieldname="selected"]').val()
 			   return frappe.call({
 				method: "switsol.custom_script.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
-					 "cal_date":date,
 					 "render_counter":me.render_counter},
 				callback: function(r) {
 					var events = r.message;
