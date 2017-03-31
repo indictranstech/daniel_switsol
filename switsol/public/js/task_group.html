@@ -5,20 +5,25 @@
 	<div class="col-xs-12 title task_group_title" align="left" group-name = "{{ Object.keys(data)[i] }}" style="padding-bottom: 15px;border-bottom:1px solid #d1d8dd">
 		<div class="row name">
 			{% if (Object.keys(data)[i] == "TN AMT") { %}
-			<div class="col-xs-4"><a class="tlink" scroll-id ="task_group_sb_tn_amt" href=""><b>{{ Object.keys(data)[i] }}</b></a></div>
+				<div class="col-xs-4"><a class="tlink" scroll-id ="task_group_sb_tn_amt" href=""><b>{{ Object.keys(data)[i] }}</b></a></div>
+			
 			{% } else if(Object.keys(data)[i] == "mobiles Klassenzimmer") { %}
-			<div class="col-xs-4"><a class="tlink" scroll-id ="task_group_sb_mobiles_klassenzimmer" href=""><b>{{ Object.keys(data)[i] }}</b></a></div>
+				<div class="col-xs-4"><a class="tlink" scroll-id ="task_group_sb_mobiles_klassenzimmer" href=""><b>{{ Object.keys(data)[i] }}</b></a></div>
+			
 			{% } else { %}
-			<div class="col-xs-4"><a class="tlink" scroll-id ={{"task_group_sb_"+ Object.keys(data)[i].toLowerCase()}} href=""><b>{{ Object.keys(data)[i] }}</b></a></div>
+				<div class="col-xs-4"><a class="tlink" scroll-id ={{"task_group_sb_"+ Object.keys(data)[i].toLowerCase()}} href=""><b>{{ Object.keys(data)[i] }}</b></a></div>
 			{% } %}
+
 
 			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[0])[i]) { %}
 				<div class="col-xs-4" data-decimals="3"><b>{{ due_and_done_task[0][Object.keys(due_and_done_task[0])[i]] }} % {%= __("Done") %}</b></div>
 			{% } else { %}		
 				<div class="col-xs-4"></div> 
 			{% } %}
+
+			
 			{% if (Object.keys(data)[i] == Object.keys(due_and_done_task[1])[i]) { %}
-				<div class="col-xs-4"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} {%= __("Überfällig") %}</b></div>
+				<div class="col-xs-4"><b>{{ due_and_done_task[1][Object.keys(due_and_done_task[0])[i]] }} {%= __("Überfällig") %}</b></div>			
 			{% } else { %}		
 				<div class="col-xs-4"></div>
 			{% } %}

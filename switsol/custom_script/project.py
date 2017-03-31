@@ -177,7 +177,7 @@ def get_room(get_args,room=None):
 							r.room_name as room,
 							r.name as room_id,
 							pt.start_date as date,
-							pt.start_time as time
+							min(pt.start_time) as time
 							from `tabProject` p, `tabProject Training Details` pt, `tabRoom` r
 							where 
 							pt.parent = p.name and 
@@ -185,20 +185,23 @@ def get_room(get_args,room=None):
 							pt.start_date is not null and 
 							pt.room != '' and
 							pt.start_date between "{0}" and "{1}"
+							group by pt.start_date,p.name
 							order by r.room_name
 							""".format(week_start_day,week_end_day),as_dict=1)
 
+	
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
 	
 	if room_id_list:
+		room_ids = ""
 		if len(room_id_list) == 1:
-			center_name = frappe.db.sql("""select name as room_id ,training_center as center 
-										from `tabRoom` where name = '{0}'
-							""".format(tuple(room_id_list)[0]),as_dict=1)
+			room_ids = "where name = '{0}'".format(tuple(room_id_list))
 		else:
-			center_name = frappe.db.sql("""select name as room_id ,training_center as center 
-										from `tabRoom` where name in {0}
-							""".format(tuple(room_id_list)),as_dict=1)
+			room_ids = "where name in {0}".format(tuple(room_id_list))
+
+		center_name = frappe.db.sql("""select name as room_id ,training_center as center 
+										from `tabRoom` {0}
+							""".format(room_ids),as_dict=1)
 
 		center_name = {center['room_id']:center['center'] for center in center_name}
 
