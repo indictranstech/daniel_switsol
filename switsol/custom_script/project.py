@@ -136,10 +136,7 @@ def attach_pdf_as_certificate(certificate_name,print_format_name):
 def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
 	employee = frappe.get_doc("Employee",instructor.employee) if instructor and instructor.employee else ""
-	error = ""
-	# if employee and employee.signature:
-	# 	error = "true"
-		
+	error = ""		
 	if not employee and not instructor.image:
 		error = _("Add signature to Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) 
 
@@ -205,23 +202,10 @@ def get_room(get_args,room=None):
 
 		center_name = {center['room_id']:center['center'] for center in center_name}
 
-
-		dd = {}
-		for r in rooms_data:
-			if (r.get("date"), r.get("room_id")) not in dd.keys():
-				dd[(r.get("date"),r.get("room_id"))] = r.get("time")
-			elif (r.get("date"), r.get("room_id")) in dd.keys():
-				if (dd[(r.get("date"), r.get("room_id"))]) > (r.get("time")):
-					dd[(r.get("date"), r.get("room_id"))] = r.get("time")
-
 		for row in rooms_data:
 			if row['room_id'] in center_name.keys():
 				row['center'] = center_name[row['room_id']]
-			if row['room_id'] in [j[1] for j in dd.keys()]:
-				row['time'] = dd[(row['date'],row['room_id'])]
-
-		rooms_data = [dict(t) for t in set([tuple(d.items()) for d in rooms_data])]
-
+		
 		for row_dict in rooms_data:
 			if row_dict.get('center') == "Glattbrugg (NH)":
 				row_dict['sort_id'] = 1
@@ -238,11 +222,11 @@ def get_room(get_args,room=None):
 	room_event_data = []
 	event_index = 1
 	for row in rooms_data:
-		# if row['participant'] == '0':
-		# 	row['participant'] = _("No participant added")
+		doc = frappe.get_doc("Project",row['name'])
+		length = len(doc.project_participant_details)
 		room_description = [
 							"1 -"+row['name'],
-							"2 -"+row['participant']+' ('+row['solution_name'] + ')' if row['solution_name'] else "2 -"+_("No Learning Solution"),
+							"2 -"+str(length)+'/'+row['participant']+' ('+row['solution_name'] + ')' if row['solution_name'] else "2 -"+_("No Learning Solution"),
 							"3 -"+row['instructor'] if row['instructor'] else "3 -"+_("No trainer added")
 							]		
 		room_data.append({"title":row['room'],"id":row['room']})
