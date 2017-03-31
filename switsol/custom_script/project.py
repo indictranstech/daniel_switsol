@@ -172,13 +172,13 @@ def get_room(get_args,room=None):
 	week_end_day = datetime.datetime.strptime(data['end'],'%Y-%m-%d %H:%M:%S').date() 
 	week_start_day = date + datetime.timedelta(days=1)
 
-	room = frappe.db.sql("""select p.name as name,
+	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
 							ifnull (pt.instructor_name,"") as instructor,
 							r.room_name as room,
-							pt.start_date as date,
-							pt.training_center
+							r.name as room_id,
+							pt.start_date as date
 							from `tabProject` p, `tabProject Training Details` pt, `tabRoom` r
 							where 
 							pt.parent = p.name and 
@@ -186,12 +186,41 @@ def get_room(get_args,room=None):
 							pt.start_date is not null and 
 							pt.room != '' and
 							pt.start_date between "{0}" and "{1}"
-							order by pt.training_center,r.room_name
+							order by r.room_name
 							""".format(week_start_day,week_end_day),as_dict=1)
+
+	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
+	if room_id_list:
+		if len(room_id_list) == 1:
+			center_name = frappe.db.sql("""select name as room_id ,training_center as center 
+										from `tabRoom` where name = '{0}'
+							""".format(tuple(room_id_list)[0]),as_dict=1)
+		else:
+			center_name = frappe.db.sql("""select name as room_id ,training_center as center 
+										from `tabRoom` where name in {0}
+							""".format(tuple(room_id_list)),as_dict=1)
+
+		center_name = {center['room_id']:center['center'] for center in center_name}
+
+		for row in rooms_data:
+			if row['room_id'] in center_name.keys():
+				row['center'] = center_name[row['room_id']]
+		for row_dict in rooms_data:
+			if row_dict['center'] == "Glattbrugg (NH)":
+				row_dict['sort_id'] = 1
+			if row_dict['center'] == "Aarau (NH)":
+				row_dict['sort_id'] = 2
+			if row_dict['center'] == "Extern":
+				row_dict['sort_id'] = 4
+			else:
+				row_dict['sort_id'] == 3
+		import operator
+		rooms_data.sort(key=operator.itemgetter('sort_id'))
+
 	room_data = []
 	room_event_data = []
 	event_index = 1
-	for row in room:
+	for row in rooms_data:
 		if row['participant'] == '0':
 			row['participant'] = _("No participant added")
 		room_description = [

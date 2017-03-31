@@ -92,6 +92,11 @@ feed_back_summary = Class.extend({
 					me.page.find(".pie-chart").append(__html)
 					me.set_chart();
 				}
+				else{
+					$(me.page).find(".pie-chart").empty();
+					__html = "<h1 class='pie-chart' style='padding-left: 25px;'>No Feedback Record Found</h1>"
+					me.page.find(".pie-chart").append(__html)
+				}
 			}
 		})		
 	},

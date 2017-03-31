@@ -23,7 +23,6 @@ def get_task_details(project):
 
 @frappe.whitelist()	
 def all_data(id):
-	frappe.errprint(id)
 	data = frappe.db.sql("""select subject,status,group_name,exp_start_date,exp_end_date,responsible_user,name
 							from `tabTask` 
 							where name = '{0}' """.format(id),as_dict=1)
