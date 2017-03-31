@@ -92,14 +92,17 @@ common_function = function(){
 							due_and_done_task[0][i] = 0
 							due_and_done_task[1][i] = 0
 							$.each(r.message[i],function(j,k){
-								if(k[5] < dateutil.get_today() && ($.inArray(k[1], ["Done", "Closed", "Unnecessary"]) == -1)) {
-										due_and_done_task[0][i] += 1;
-									}
-									if(!($.inArray(k[1], ["Done", "Closed", "Unnecessary"]) == -1)) {
-										due_and_done_task[1][i] += 1
-									}
-								due_and_done_task[0][i] = (due_and_done_task[1][i]*100/r.message[i].length).toFixed(2);
+
+								if(k[5] && k[5] < dateutil.get_today() && ($.inArray(k[1], ["Done", "Closed", "Unnecessary"]) == -1)) {
+									due_and_done_task[1][i] += 1;
+								}
+
+								if(!($.inArray(k[1], ["Done", "Closed", "Unnecessary"]) == -1)) {
+									due_and_done_task[0][i] += 1
+								}
+								
 							})
+							due_and_done_task[0][i] = (due_and_done_task[0][i]*100/r.message[i].length).toFixed(2);
 						})
 						me.data = r.message;
 						cur_frm.fields_dict['task_group_template'].$wrapper.html(frappe.render_template("task_group",
