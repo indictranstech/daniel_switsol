@@ -12,9 +12,54 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.set_route("query-report","Feedback");
 		});
 		common_function();	
+		make_jumping_section();
 	}
 });
 
+make_jumping_section = function(){
+	
+	cur_frm.fields_dict['section_jump_template'].$wrapper.html(frappe.render_template("section_jump"))
+
+	var section_name = ['sb_project_customer_details','training_details_sb','sb_learning_material',
+						'section_break0','agenda_sb','task_group_sb_trainer',
+						'task_group_sb_lernumgebung','task_group_sb_lernmaterial',
+						'task_group_sb_raum','task_group_sb_tn_amt','task_group_sb_teilnehmer',
+						'task_group_sb_organisation','task_group_sb_mobiles_klassenzimmer']
+	
+	$.each(cur_frm.fields_dict,function(i,d){
+		if(inList(section_name, d.df.fieldname)) {
+			$(d.wrapper[0]).attr('id',String(d.df.fieldname))
+		}
+	});
+
+	$('[scroll-id="comments"]').click(function(e){
+		e.preventDefault();
+		 $("html, body").animate({scrollTop: $('.timeline-items').offset().top - $("html, body").offset().top, scrollLeft: 0},300); 
+	});
+
+	$(cur_frm.fields_dict.section_jump_template.wrapper).find('.jump').click(function(e){
+		e.preventDefault();
+		$('html, body').animate({
+        scrollTop: $("#"+$(this).attr('scroll-id')).offset().top-100},'slow');
+		});
+
+	var comment_list = []
+	$.each(cur_frm.timeline.get_communications(),function(i,d){
+		if(d.content){
+			comment_list.push(d.content)
+		}
+	})
+	if (comment_list.length){
+			$('[scroll-id="comments"]').css("color","green")
+			}
+	if (cur_frm.doc.agenda)
+	{
+	  $('[scroll-id="agenda_sb"]').css("color","green")	
+	}
+	if(cur_frm.doc.notes){
+		 $('[scroll-id="section_break0"]').css("color","green")	
+	}
+}
 
 show_table = function(task_group_details_field){
 	var me = this;
@@ -47,12 +92,13 @@ common_function = function(){
 							due_and_done_task[0][i] = 0
 							due_and_done_task[1][i] = 0
 							$.each(r.message[i],function(j,k){
-								if(k[1] == "Done"){
-									due_and_done_task[0][i] =  (flt(due_and_done_task[0][i]) + flt(1/r.message[i].length*100)).toFixed(2)
-								}
-								if(k[1] != "Done" && k[5] < frappe.datetime.nowdate()){
-									due_and_done_task[1][i] += 1
-								}
+								if(k[5] < dateutil.get_today() && ($.inArray(k[1], ["Done", "Closed", "Unnecessary"]) == -1)) {
+										due_and_done_task[0][i] += 1;
+									}
+									if(!($.inArray(k[1], ["Done", "Closed", "Unnecessary"]) == -1)) {
+										due_and_done_task[1][i] += 1
+									}
+								due_and_done_task[0][i] = (due_and_done_task[1][i]*100/r.message[i].length).toFixed(2);
 							})
 						})
 						me.data = r.message;
@@ -61,6 +107,12 @@ common_function = function(){
 																					"due_and_done_task":due_and_done_task}
 																					))
 						show_table(cur_frm.fields_dict['task_group_template'].$wrapper.html);
+
+						$(".tlink").click(function(e){
+								e.preventDefault();
+								$('html, body').animate({
+								scrollTop: $("#"+$(this).attr('scroll-id')).offset().top-100},'slow');
+						})
 						$(cur_frm.fields_dict['task_group_template'].$wrapper).find(".triangle").click(function(){
 							id = $(this).attr("task-id")
 							var dialog = new frappe.ui.Dialog({
@@ -170,7 +222,6 @@ return lang
 }
 
 cur_frm.cscript.kursbestatigung_generieren = function() {
-
 	var lang = language_of_user()
 	if(lang == "de"){
 		var print_format = "New Horizons Zertifikat"
@@ -178,7 +229,6 @@ cur_frm.cscript.kursbestatigung_generieren = function() {
 	else if(lang == "en" || lang == "en-US"){
 		var print_format = "New Horizons Certificate"
 	}
-	//var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
 	dialog_for_SC_MS_certificate(print_format)
 }
 
@@ -190,7 +240,6 @@ cur_frm.cscript.ms_zertifikat_generieren = function() {
 	else if(lang == "en" || lang == "en-US"){
 		var print_format = "Microsoft Certificate"		
 	}
-	//var name_of_instructor = cur_frm.doc.project_training_details[0]['instructor']
 	dialog_for_SC_MS_certificate(print_format)
 }
 
