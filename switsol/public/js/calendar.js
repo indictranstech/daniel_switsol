@@ -174,6 +174,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
     		allDaySlot: false,
     		groupByDateAndResource: true,
     		refetchResourcesOnNavigate: true,
+    		weekNumberCalculation: "ISO",
     		views: {
       			resourceAgendaDay: {
         			type: 'timeline',

@@ -129,16 +129,14 @@ def attach_pdf_as_certificate(certificate_name,print_format_name):
 		if print_format_name == "New Horizons Certificate" or print_format_name == "New Horizons Zertifikat": 
 			url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
 														"&format=New Horizons Certificate&no_letterhead=0"
+			print frappe.request.host,"***************"
 			add_attachments(certificate_name,url,print_format_name)
 		
 @frappe.whitelist()
 def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
 	employee = frappe.get_doc("Employee",instructor.employee) if instructor and instructor.employee else ""
-	error = ""
-	# if employee and employee.signature:
-	# 	error = "true"
-		
+	error = ""		
 	if not employee and not instructor.image:
 		error = _("Add signature to Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) 
 
@@ -175,10 +173,11 @@ def get_room(get_args,room=None):
 	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
-							ifnull (pt.instructor_name,"") as instructor,
+							ifnull (pt.training_instructor_name,"") as instructor,
 							r.room_name as room,
 							r.name as room_id,
-							pt.start_date as date
+							pt.start_date as date,
+							pt.start_time as time
 							from `tabProject` p, `tabProject Training Details` pt, `tabRoom` r
 							where 
 							pt.parent = p.name and 
@@ -190,6 +189,7 @@ def get_room(get_args,room=None):
 							""".format(week_start_day,week_end_day),as_dict=1)
 
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
+	
 	if room_id_list:
 		if len(room_id_list) == 1:
 			center_name = frappe.db.sql("""select name as room_id ,training_center as center 
@@ -205,15 +205,16 @@ def get_room(get_args,room=None):
 		for row in rooms_data:
 			if row['room_id'] in center_name.keys():
 				row['center'] = center_name[row['room_id']]
+		
 		for row_dict in rooms_data:
-			if row_dict['center'] == "Glattbrugg (NH)":
+			if row_dict.get('center') == "Glattbrugg (NH)":
 				row_dict['sort_id'] = 1
-			if row_dict['center'] == "Aarau (NH)":
+			elif row_dict.get('center') == "Aarau (NH)":
 				row_dict['sort_id'] = 2
-			if row_dict['center'] == "Extern":
+			elif row_dict.get('center') == "Extern":
 				row_dict['sort_id'] = 4
 			else:
-				row_dict['sort_id'] == 3
+				row_dict['sort_id'] = 3
 		import operator
 		rooms_data.sort(key=operator.itemgetter('sort_id'))
 
@@ -221,13 +222,12 @@ def get_room(get_args,room=None):
 	room_event_data = []
 	event_index = 1
 	for row in rooms_data:
-		if row['participant'] == '0':
-			row['participant'] = _("No participant added")
+		doc = frappe.get_doc("Project",row['name'])
+		length = len(doc.project_participant_details)
 		room_description = [
 							"1 -"+row['name'],
-							"2 -"+row['participant'],
-							"3 -"+'('+row['solution_name'] + ')' if row['solution_name'] else "3 -"+_("No Learning Solution"),
-							"4 -"+row['instructor'] if row['instructor'] else "4 -"+_("No trainer added")
+							"2 -"+str(length)+'/'+row['participant']+' ('+row['solution_name'] + ')' if row['solution_name'] else "2 -"+_("No Learning Solution"),
+							"3 -"+row['instructor'] if row['instructor'] else "3 -"+_("No trainer added")
 							]		
 		room_data.append({"title":row['room'],"id":row['room']})
 		room_event_data.append(make_event_data(room_description,row,event_index)["room_list"])
