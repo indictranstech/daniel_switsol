@@ -49,16 +49,13 @@ make_jumping_section = function(){
 			comment_list.push(d.content)
 		}
 	})
-	if (comment_list.length){
-			$('[scroll-id="comments"]').css("color","green")
-			}
-	if (cur_frm.doc.agenda)
-	{
-	  $('[scroll-id="agenda_sb"]').css("color","green")	
-	}
-	if(cur_frm.doc.notes){
-		 $('[scroll-id="section_break0"]').css("color","green")	
-	}
+	
+	comment_list.length ? $('[scroll-id="comments"]').css({"color":"green","font-weight":"bold"}) : ""
+	cur_frm.doc.agenda ? $('[scroll-id="agenda_sb"]').css({"color":"green","font-weight":"bold"})  : ""
+	cur_frm.doc.notes ? $('[scroll-id="section_break0"]').css({"color":"green","font-weight":"bold"}) : ""
+	cur_frm.doc.project_participant_details.length ? $('[scroll-id="sb_project_customer_details"]').css("font-weight","bold") : ""
+	cur_frm.doc.project_learning_material ? $('[scroll-id="sb_learning_material"]').css("font-weight","bold") : ""
+	cur_frm.doc.project_training_details ? $('[scroll-id="training_details_sb"]').css("font-weight","bold") : ""
 }
 
 show_table = function(task_group_details_field){

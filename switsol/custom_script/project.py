@@ -8,8 +8,14 @@ from frappe.utils.pdf import get_pdf
 from datetime import datetime, timedelta
 import datetime
 
+
+"""On Project doctype if user select student and hit button either to create MS Certificate or 
+	   New Horizons Certificate then Certificate is created automatically in the background 
+	   with attachement of print format as certificate 
+    """  
 @frappe.whitelist()
 def certificate_creation(**kwargs):
+	 
 	name_of_certificate = []
 	data = json.loads(kwargs.get('args'))
 	email_id_of_cc = []
@@ -73,7 +79,7 @@ def certificate_creation(**kwargs):
 			name_of_certificate.append(certificate.name)
 	return name_of_certificate
 
-
+"""It checks student mai id if exist then mail is send to particular student wit attachement of print format """
 def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name,predefined_text_content,predefined_text_value,email_id_of_cc):
 	orientation = "Landscape" if print_format == 'Microsoft Certificate' or print_format == "Microsoft Zertifikat" else "Portrait"
 	if print_format in ["Microsoft Certificate", "Microsoft Zertifikat"]:
@@ -117,9 +123,12 @@ def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_f
 	except Exception,e:
 		frappe.throw(_("Mail has not been Sent. Kindly Contact to Administrator"))
 
+"""To check if certificate is already created for student having project name and instructor"""
 def check_student_for_certificate(project_name,student_name,instructor_name):
 	return frappe.db.get_value("Certificate",{"project":project_name,"student":student_name,"instructor":instructor_name},"name")
 
+""" When certificate is created print format is attached in attachments for particular certificate creation.
+    Method is imported from certificate.py"""
 def attach_pdf_as_certificate(certificate_name,print_format_name):
 	if print_format_name == "Microsoft Certificate" or print_format_name == "Microsoft Zertifikat":
 		url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
@@ -131,7 +140,9 @@ def attach_pdf_as_certificate(certificate_name,print_format_name):
 														"&format=New Horizons Certificate&no_letterhead=0"
 			print frappe.request.host,"***************"
 			add_attachments(certificate_name,url,print_format_name)
-		
+
+"""On print format i.e certificate of student instructor or employee signature is needed.
+returns message if instructor is not having signature and if instructor and employee both are not having signature"""	
 @frappe.whitelist()
 def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
@@ -195,7 +206,7 @@ def get_room(get_args,room=None):
 	if room_id_list:
 		room_ids = ""
 		if len(room_id_list) == 1:
-			room_ids = "where name = '{0}'".format(tuple(room_id_list))
+			room_ids = "where name = '{0}'".format(room_id_list[0])
 		else:
 			room_ids = "where name in {0}".format(tuple(room_id_list))
 
@@ -224,37 +235,41 @@ def get_room(get_args,room=None):
 	room_data = []
 	room_event_data = []
 	event_index = 1
-	for row in rooms_data:
+
+	for event_id,row in enumerate(rooms_data):
 		doc = frappe.get_doc("Project",row['name'])
 		length = len(doc.project_participant_details)
 		room_description = [
-							"1 -"+row['name'],
-							"2 -"+str(length)+'/'+row['participant']+' ('+row['solution_name'] + ')' if row['solution_name'] else "2 -"+_("No Learning Solution"),
-							"3 -"+row['instructor'] if row['instructor'] else "3 -"+_("No trainer added")
-							]		
+							(row['name']) + "**" +
+							(str(length)+'/'+row['participant']+' ('+row['solution_name'] + ')' if row['solution_name'] else  _("No Learning Solution")) + "**" +
+							(row['instructor'] if row['instructor'] else _("No trainer added"))
+							]	
 		room_data.append({"title":row['room'],"id":row['room']})
-		room_event_data.append(make_event_data(room_description,row,event_index)["room_list"])
-		event_index = make_event_data(room_description,row,event_index)["event_index"]
+		room_event_data.append([{
+							"project":row['name'],
+							"id":event_id,
+							"resourceId":row['room'],
+							"start":row['date'],
+							"title":room_description
+							}])
 
-	sorted_room_data = []
+
+ 	sorted_room_data = []
 	if room_event_data:
 		for i in room_event_data:
 			for j in i:
 				sorted_room_data.append(j)
+ 
+	room_ids = ""
+	if room_id_list:
+		if len(room_id_list) == 1:
+			room_ids = "where name != '{0}'".format(room_id_list[0])
+		else:
+			room_ids = "where name not in {0}".format(tuple(room_id_list))
 
+	all_rooms = frappe.db.sql("""select name as id,room_name as room from `tabRoom` 
+						 {0} order by room_name""".format(room_ids),as_dict=1,debug=1)
+	for row in all_rooms:
+			room_data.append({"title":row['room'],"id":row['room']})
 
 	return {'room_data':room_data,'room_event_data':sorted_room_data}
- 	
-def make_event_data(data,row,event_index):
-	room_list = []
-	for event_id,j in enumerate(data):
-		room_list.append({"project":row['name'],
-							"id":event_id+event_index,
-							"resourceId":row['room'],
-							"start":row['date'],
-							"title":data[event_id]
-						})
-	event_index += len(data)
-	return {"room_list":room_list,"event_index":event_index}
-
-		

@@ -1391,7 +1391,7 @@ View.prototype.handleDate = function(date, isReset) {
 };
 
 View.prototype.onDateRender = function() {
-  processLicenseKey(this.calendar.options.schedulerLicenseKey, this.el);
+  // processLicenseKey(this.calendar.options.schedulerLicenseKey, this.el);
   return origOnDateRender.apply(this, arguments);
 };
 
@@ -6521,13 +6521,13 @@ LICENSE_INFO_URL = 'http://fullcalendar.io/scheduler/license/';
 
 PRESET_LICENSE_KEYS = ['GPL-My-Project-Is-Open-Source', 'CC-Attribution-NonCommercial-NoDerivatives'];
 
-processLicenseKey = function(key, containerEl) {
+/*processLicenseKey = function(key, containerEl) {
   if (!isImmuneUrl(window.location.href) && !isValidKey(key)) {
     if (!detectWarningInContainer(containerEl)) {
       return renderingWarningInContainer('Please use a valid license key. <a href="' + LICENSE_INFO_URL + '">More Info</a>', containerEl);
     }
   }
-};
+};*/
 
 
 /*
