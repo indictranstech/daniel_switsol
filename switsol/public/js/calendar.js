@@ -210,9 +210,11 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 				})
 				
 			},
-    		/*eventRender: function(event, element){ 
-			    element.find('.fc-title').append("<br/>" + event.title); 
-			},*/
+    		eventRender: function(event, element){
+    			var title = cstr(event.title[0]).split("**")
+			    element.find('.fc-title').html(title[0] +"<br>"+ title[1]+"<br>"+title[2]);
+
+			},
 			eventClick: function(event, jsEvent, view) {
 				// edit event description or delete
 				var doctype = "Project" || me.doctype;
