@@ -268,7 +268,7 @@ def get_room(get_args,room=None):
 			room_ids = "where name not in {0}".format(tuple(room_id_list))
 
 	all_rooms = frappe.db.sql("""select name as id,room_name as room from `tabRoom` 
-						 {0} order by room_name""".format(room_ids),as_dict=1,debug=1)
+						 {0} order by room_name""".format(room_ids),as_dict=1)
 	for row in all_rooms:
 			room_data.append({"title":row['room'],"id":row['room']})
 
