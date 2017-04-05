@@ -79,7 +79,7 @@ def certificate_creation(**kwargs):
 			name_of_certificate.append(certificate.name)
 	return name_of_certificate
 
-"""It checks student mai id if exist then mail is send to particular student wit attachement of print format """
+"""It checks student mail id if exist then mail is send to particular student with attachement of print format """
 def check_student_email_id_and_send_mail(student_mail_id,name_of_student,print_format,name,predefined_text_content,predefined_text_value,email_id_of_cc):
 	orientation = "Landscape" if print_format == 'Microsoft Certificate' or print_format == "Microsoft Zertifikat" else "Portrait"
 	if print_format in ["Microsoft Certificate", "Microsoft Zertifikat"]:
@@ -155,6 +155,11 @@ def check_employee_signature(instructor_name):
 		error = _("Add signature to either Instructor") + " <b>{0}</b> ".format(instructor.instructor_name) + _("or Employee") + " <b>{0}</b> ".format(employee.name)
 	return error	
 
+"""
+override_whitelisted_methods is mentioned in hooks.py.
+download_pdf method is called in print format URL. 
+Here download_pdf method is overrided for making orientation of print format as landscape 
+"""
 @frappe.whitelist()
 def download_pdf(doctype, name, format=None, doc=None,print_format=None):
 	if print_format in ["Microsoft Certificate", "Microsoft Zertifikat"]:
@@ -174,6 +179,25 @@ def get_events(start=None,end=None,filters=None):
 	data = frappe.db.sql("""select p.name as name,timestamp(pt.start_date, pt.start_time) as start_date,timestamp(pt.start_date, pt.end_time) as end_date from `tabProject` p, `tabProject Training Details` pt where pt.parent = p.name and timestamp(pt.start_date, pt.start_time) between '2017-01-10' and '2017-02-17' or timestamp(pt.start_date, pt.end_time) between '2017-01-10' and '2017-02-17' """,as_dict=True)
 	return data
 
+"""Returns room data for showing rooms on left side of calendar and room event data for showing event on calendar.
+   
+	param: get_args- start and end of week
+
+	if room is alloted on same date with diferent times then data having mininmum time is displayed on event
+	for eg:
+		In rooms_data query:
+		min(pt.start_time) as time
+		group by pt.start_date,p.name
+
+	Mapping of rooms from `tabProject` and `tabRoom` then sorting of rooms according 
+	to training center from `tabRoom` 
+	Sorting Rule:
+		1. Rooms with Training Center Glattbrugg 
+		2. Rooms with Training Center Aarau 
+		3. Rooms with other Training Centers 
+		4. Rooms with Training Center Extern
+	all_rooms query for dispaying all rooms on calendar
+"""
 @frappe.whitelist()
 def get_room(get_args,room=None):
 	data = json.loads(get_args)

@@ -16,6 +16,12 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 	}
 });
 
+/*
+section_jump.html is rendered in 'section_jump_template' html field in which id is attached.
+For jumping to the particular section, id is generated dynamically for each section
+
+By scrollTop(jquery plugin), it redirects to particuar section by providing # + dynamic id 
+*/
 make_jumping_section = function(){
 	
 	cur_frm.fields_dict['section_jump_template'].$wrapper.html(frappe.render_template("section_jump"))
@@ -50,9 +56,9 @@ make_jumping_section = function(){
 		}
 	})
 	
-	comment_list.length ? $('[scroll-id="comments"]').css({"color":"green","font-weight":"bold"}) : ""
-	cur_frm.doc.agenda ? $('[scroll-id="agenda_sb"]').css({"color":"green","font-weight":"bold"})  : ""
-	cur_frm.doc.notes ? $('[scroll-id="section_break0"]').css({"color":"green","font-weight":"bold"}) : ""
+	comment_list.length ? $('[scroll-id="comments"]').css("font-weight","bold") : ""
+	cur_frm.doc.agenda ? $('[scroll-id="agenda_sb"]').css("font-weight","bold")  : ""
+	cur_frm.doc.notes ? $('[scroll-id="section_break0"]').css("font-weight","bold") : ""
 	cur_frm.doc.project_participant_details.length ? $('[scroll-id="sb_project_customer_details"]').css("font-weight","bold") : ""
 	cur_frm.doc.project_learning_material ? $('[scroll-id="sb_learning_material"]').css("font-weight","bold") : ""
 	cur_frm.doc.project_training_details ? $('[scroll-id="training_details_sb"]').css("font-weight","bold") : ""
@@ -113,90 +119,8 @@ common_function = function(){
 								$('html, body').animate({
 								scrollTop: $("#"+$(this).attr('scroll-id')).offset().top-100},'slow');
 						})
-						$(cur_frm.fields_dict['task_group_template'].$wrapper).find(".triangle").click(function(){
-							id = $(this).attr("task-id")
-							var dialog = new frappe.ui.Dialog({
-			 				fields: [
-									{
-										"label": __("Title"), 
-										"fieldname": "title",
-										"fieldtype": "Data",
-										"read_only": 1
-									},
-									{
-										"label": __("Status"), 
-										"fieldname": "status",
-										"fieldtype": "Select",
-										"options": ['Open','Waiting for Other Person','Unnecessary','Done','Working','Closed']
-									},
-									{
-										"label": __("Task Group"), 
-										"fieldname": "task_group",
-										"fieldtype": "Data",
-										"read_only": 1
-									},
-									{
-										"fieldtype":"Column Break"
-									},
-									{
-										"label": __("Start Date"), 
-										"fieldname": "start_date",
-										"fieldtype": "Date" 
-									},
-									{
-										"label": __("End Date"), 
-										"fieldname": "end_date",
-										"fieldtype": "Date"
-									},
-									{
-										"label": __("Responsible Staff Member"), 
-										"fieldname": "responsible_staff_member",
-										"fieldtype": "Link",
-										"options":"Employee" 
-									},
-									{
-										"label": __("Task ID"), 
-										"fieldname": "task_id",
-										"fieldtype": "Data" ,
-										"read_only": 1
-									}
-							]
-
-						});
-						$.each(cur_frm.doc.tasks,function(task_index,task_data){
-							if(id == task_data.task_id){
-								dialog.fields_dict.title.set_value(task_data.title)
-								dialog.fields_dict.status.set_value(task_data.status)
-								dialog.fields_dict.task_group.set_value(task_data.group_name)
-								dialog.fields_dict.start_date.set_value(task_data.start_date)
-								dialog.fields_dict.end_date.set_value(task_data.end_date)
-								dialog.fields_dict.responsible_staff_member.$input.val(task_data.responsible_user)
-								dialog.fields_dict.task_id.set_value(task_data.task_id)
-								$(dialog.fields_dict.task_id.$wrapper).hide();
-								dialog.show();
-							}
-						});
-						dialog.set_primary_action(__("Update"), function() {
-							var id_value = dialog.fields_dict.task_id.value
-							$.each(cur_frm.doc.tasks,function(i,d){
-								if(id_value == d.task_id){
-									frappe.model.set_value(String(d.doctype),String(d.name),"status",dialog.fields_dict.status.$input.val())
-									frappe.model.set_value(String(d.doctype),String(d.name),"start_date",dialog.fields_dict.start_date.$input.val())
-									frappe.model.set_value(String(d.doctype),String(d.name),"end_date",dialog.fields_dict.end_date.$input.val())
-									frappe.model.set_value(String(d.doctype),String(d.name),"responsible_user",dialog.fields_dict.responsible_staff_member.$input.val())
-								}
-							});
-							$.each($(cur_frm.fields_dict['task_group_template'].$wrapper).find(".task_row_data"),function(index,r_data){
-								if(id_value == $(r_data).attr("task-id")) {
-									$(r_data).find(".status").text(dialog.fields_dict.status.$input.val())	
-									$(r_data).find(".start_date").text(dialog.fields_dict.start_date.$input.val())	
-									$(r_data).find(".responsible_user").text(dialog.fields_dict.responsible_staff_member.$input.val())
-								}
-							});
-							dialog.hide();
-						});
-			 		})
-				}
+					
+					}
 				}				
 			})	
 }
@@ -220,7 +144,7 @@ language_of_user = function(){
 
 return lang
 }
-
+//for new horizon certificate creation
 cur_frm.cscript.kursbestatigung_generieren = function() {
 	var lang = language_of_user()
 	if(lang == "de"){
@@ -232,6 +156,7 @@ cur_frm.cscript.kursbestatigung_generieren = function() {
 	dialog_for_SC_MS_certificate(print_format)
 }
 
+//for microsoft certificate creation
 cur_frm.cscript.ms_zertifikat_generieren = function() {
 	var lang = language_of_user()
 	if(lang == "de"){
@@ -243,6 +168,9 @@ cur_frm.cscript.ms_zertifikat_generieren = function() {
 	dialog_for_SC_MS_certificate(print_format)
 }
 
+/*
+Dialog created for both "Microsoft Certificate"	and "New Horizons Certificate"
+*/
 dialog_for_SC_MS_certificate = function(print_format){
 	var student_data = {}
 	$.each(cur_frm.doc.project_participant_details, function(idx, val){
