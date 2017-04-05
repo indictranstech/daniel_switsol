@@ -89,8 +89,8 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 		var me = this;
 		this.$wrapper = this.page.main;
 		this.$cal = $("<div>").appendTo(this.$wrapper);
-		footnote = frappe.utils.set_footnote(this, this.$wrapper, __("Select or drag across time slots to create a new event."));
-		footnote.css({"border-top": "0px"});
+		// footnote = frappe.utils.set_footnote(this, this.$wrapper, __("Select or drag across time slots to create a new event."));
+		// footnote.css({"border-top": "0px"});
 		//
 		// $('<div class="help"></div>')
 		// 	.html(__("Select dates to create a new ") + __(me.doctype))
@@ -167,7 +167,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 
 			},
 			resourceAreaWidth: 200,
-    		editable: true,
+    		editable: false,
     		aspectRatio: 1.5,
     		scrollTime: '00:00',
     		defaultView: 'resourceAgendaDay',
@@ -550,21 +550,5 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 	
 })
 
-/* viewRender = function(date){
-   			var res = {}
-			frappe.call({
-				method: "switsol.custom_script.project.get_room",
-				type: "GET",
-				async:false,
-				args:{
-				"cal_date":date
-				},
-				callback: function(r) {
-					// console.log(r.message,"sdfsdfsdfsdfsddfdfsefdvbgd")
-					 res=r.message;
-				}
-		})
-		console.log(res,"res data*************")
-   		return res
-		}*/
+
 
