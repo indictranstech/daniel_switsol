@@ -4,7 +4,6 @@ frappe.ui.form.on("Customer", "refresh", function(frm) {
 		// Make Log button
 		cur_frm.add_custom_button(__('Make Log'), 
 		function() {
-			console.log("hihihi")
 			click_on_make_log_customer("Yes")                     
 		});
         
@@ -25,7 +24,6 @@ frappe.ui.form.on("Customer", "refresh", function(frm) {
 		// Show Log Button
 		frm.add_custom_button(__('Show Log'), 
 			function() {
-				console.log("hihihi")
 				show_logs_customer()                      
 			});	
 	}
@@ -38,7 +36,6 @@ show_logs_customer = function(){
 		//frappe.route_options["client_info"] = cur_frm.doc.doctype+"//"+cur_frm.doc.name
 	}
 	else{
-		console.log("in else cond")
 		frappe.route_options = {
 			"client_info":cur_frm.doc.doctype+"//"+cur_frm.doc.name
 		}
@@ -55,7 +52,6 @@ click_on_make_log_customer = function(flag){
 		var contact_type = frappe.route_options["contact_type"]
 		var call_type = frappe.route_options["call_type"]
     	if(flag == "Yes"){
-			console.log("in frappe.route_options",frappe.route_options)
 	        frappe.route_options = null;
 			tn = frappe.model.make_new_doc_and_get_name('Call Logs');
 			locals['Call Logs'][tn].call_type = call_type

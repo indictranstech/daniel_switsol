@@ -3,7 +3,6 @@ frappe.ui.form.on("Supplier", "refresh", function(frm) {
 		// Make Log button 
 		cur_frm.add_custom_button(__('Anrufe eintragen'),
 		function() {
-			console.log("hihihi")
 			click_on_make_log_supplier()                      
 		});
 	}
@@ -11,7 +10,6 @@ frappe.ui.form.on("Supplier", "refresh", function(frm) {
 	// show log
 	cur_frm.add_custom_button(__('Anrufe anzeigen'), 
 		function() {
-			console.log("hihihi")
 			show_logs_supplier()                      
 		});	
 	}
@@ -19,11 +17,9 @@ frappe.ui.form.on("Supplier", "refresh", function(frm) {
 
 show_logs_supplier = function(){
 	if(frappe.route_options){
-		console.log("in if cond")
 		frappe.route_options["client_info"] = cur_frm.doc.doctype+"//"+cur_frm.doc.name
 	}
 	else{
-		console.log("in else cond")
 		frappe.route_options = {
 			"client_info":cur_frm.doc.doctype+"//"+cur_frm.doc.name
 		}
@@ -33,7 +29,6 @@ show_logs_supplier = function(){
 
 click_on_make_log_supplier = function(name){
     if (frappe.route_options){
-		console.log("in frappe.route_options",frappe.route_options)
         var contact_person = frappe.route_options["contact_person"]
         var phone_number = frappe.route_options["mobile_no"]
 		var call_receive_time = frappe.route_options["call_receive_time"]
