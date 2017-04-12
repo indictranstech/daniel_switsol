@@ -2,7 +2,6 @@
 // For license information, please see license.txt
 
 
-
 frappe.ui.form.on('Call Logs', {
 	refresh: function(frm) {
 		if(!cur_frm.doc.__islocal && cur_frm.doc.phone_number){			
@@ -19,16 +18,7 @@ frappe.ui.form.on('Call Logs', {
 			cur_frm.set_value('call_attendant',sessionStorage['call_attendant'])
 			cur_frm.set_value('start_time',sessionStorage['start_time'])
 			cur_frm.set_value('call_type',sessionStorage['call_type'])
-		}
-		if(sessionStorage.length > 1 && cur_frm.doc.__islocal){
-			console.log(sessionStorage['call_attendant'])
-			cur_frm.set_value('phone_number',sessionStorage['phone_number'])
-			cur_frm.set_value('contact_type',sessionStorage['contact_type'])
-			cur_frm.set_value('contact_person',sessionStorage['contact_person'])
-			cur_frm.set_value('client',sessionStorage['client'])
-			cur_frm.set_value('call_attendant',sessionStorage['call_attendant'])
-			cur_frm.set_value('start_time',sessionStorage['start_time'])
-			cur_frm.set_value('call_type',sessionStorage['call_type'])
+
 		}
 	}
 });
