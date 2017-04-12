@@ -3,6 +3,7 @@ from frappe import _
 from frappe.utils.password import check_password
 from datetime import datetime,date
 from frappe.model.mapper import get_mapped_doc
+import webbrowser
 
 @frappe.whitelist(allow_guest=True)
 def logged_and_redirect(user_name,password,email,contact_no):
@@ -122,6 +123,8 @@ def redirect_login(desk_user,url,contact_not_found):
 	frappe.local.response["type"] = "redirect"
 	# the #desktop is added to prevent a facebook redirect bug
 	frappe.local.response["location"] = "/desk#{0}".format(url)
+	#new = 0
+	#webbrowser.open("http://{0}/desk#Form/Call Logs/Neu%20Kunde%201".format(frappe.request.host),new=new)
 	if contact_not_found == "Yes":
 		update_tabsingles(frappe.local.form_dict["contact_no"],"voip_contact_no")
 
@@ -146,6 +149,9 @@ def update_reference_person_after_making_call_logs(reference_person,reference_ty
 
 @frappe.whitelist()
 def get_salt_key(user):
+	# print frappe.db.sql("""select name, salt 
+	# 						from `__Auth` where doctype="User" 
+	# 						and name="{0}" """.format(user),as_dict=1)
 	return frappe.db.sql("""select name, salt 
 							from `__Auth` where doctype="User" 
 							and name="{0}" """.format(user),as_dict=1)		

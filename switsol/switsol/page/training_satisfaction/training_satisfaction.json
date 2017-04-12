@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-12-07 18:32:00.030924", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-12-07 18:34:05.108803", 
+ "modified_by": "Administrator", 
+ "module": "Switsol", 
+ "name": "training_satisfaction", 
+ "owner": "Administrator", 
+ "page_name": "training_satisfaction", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Feed Back Training Satisfaction"
+}

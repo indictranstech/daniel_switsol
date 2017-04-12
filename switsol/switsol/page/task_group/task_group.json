@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-12-22 16:54:22.925435", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-12-22 17:24:47.265024", 
+ "modified_by": "Administrator", 
+ "module": "Switsol", 
+ "name": "task-group", 
+ "owner": "Administrator", 
+ "page_name": "Task Group", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Task Group"
+}
