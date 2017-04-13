@@ -10,6 +10,8 @@ frappe.ready(function() {
 		$('body').find('.sidebar-block').remove();
 		$('body').find('.navbar-header').hide();
 	}
+	$('[name="Message"]').addClass("control-label text-muted");
+	$('[name="Message"]').css("padding-top","40px");
 });
 
 
