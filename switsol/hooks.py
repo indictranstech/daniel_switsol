@@ -22,26 +22,18 @@ app_include_js = "/assets/js/switsol.desk.min.js"
 
 fixtures = ['Custom Field', 'Property Setter', "Print Format"]
 
-doctype_js = {
-    "Contact":["custom_script_voip/contact.js"],
-    "Sales Partner":["custom_script_voip/sales_sartner"],
-    "Supplier":["custom_script_voip/supplier.js"],
-    "Timesheet":["custom_script_voip/timesheet.js"],
-    "User":["custom_script_voip/user.js"]
-}
-
 # include js, css files in header of web template
 # web_include_css = "/assets/switsol/css/switsol.css"
 # web_include_js = "/assets/switsol/js/switsol.js"
 
 doctype_js = {
-    "Customer":["custom_script_project/customer.js"],
-    "Contact":["custom_script_project/contact.js"],
+    "Contact":["custom_script_voip/contact.js"],
+    "Sales Partner":["custom_script_voip/sales_partner.js"],
+    "Supplier":["custom_script_voip/supplier.js"],
+    "Timesheet":["custom_script_voip/timesheet.js"],
+    "User":["custom_script_voip/user.js"],
+    "Customer":["custom_script_voip/customer.js"],
     "Employee":["custom_script_project/employee.js"],
-    "Sales Partner":["custom_script_project/sales_sartner"],
-    "Supplier":["custom_script_project/supplier.js"],
-    "Timesheet":["custom_script_project/timesheet.js"],
-    "User":["custom_script_project/user.js"],
     "Quotation":["custom_script_project/quotation.js"],
     "Sales Order":["custom_script_project/sales_order.js"]
 }

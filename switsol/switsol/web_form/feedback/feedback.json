@@ -8,7 +8,7 @@
  "allow_print": 0, 
  "amount": 0.0, 
  "amount_based_on_field": 0, 
- "creation": "2017-02-16 10:22:03.676500", 
+ "creation": "2017-04-03 17:24:10.406881", 
  "doc_type": "Feedback", 
  "docstatus": 0, 
  "doctype": "Web Form", 
@@ -17,7 +17,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2017-02-21 10:49:24.154754", 
+ "modified": "2017-04-13 11:36:50.498226", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -155,15 +155,29 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "", 
+   "fieldtype": "HTML", 
+   "hidden": 0, 
+   "label": "Message", 
+   "max_length": 0, 
+   "max_value": 0, 
+   "options": "Rating from 9 (best) to 1 (worst)", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "", 
    "fieldtype": "Section Break", 
    "hidden": 0, 
    "label": "TRAINING ROOM", 
    "max_length": 0, 
    "max_value": 0, 
+   "options": "", 
    "read_only": 0, 
    "reqd": 0
   }, 
   {
+   "default": "9", 
    "fieldname": "quality_training_room", 
    "fieldtype": "Select", 
    "hidden": 0, 
