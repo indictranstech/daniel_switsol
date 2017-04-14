@@ -11,7 +11,7 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
 		});
-		common_function();	
+		render_task_group();	
 		make_jumping_section();
 	}
 });
@@ -81,7 +81,7 @@ show_table = function(task_group_details_field){
 }
 
 
-common_function = function(){
+render_task_group = function(){
 	var me = this;
 			frappe.call({
 				method: "switsol.switsol.page.task_group.task_group.get_task_details",
