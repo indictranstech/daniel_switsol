@@ -148,10 +148,10 @@ def check_employee_signature(instructor_name):
 	instructor = frappe.get_doc("Instructor",instructor_name)
 	employee = frappe.get_doc("Employee",instructor.employee) if instructor and instructor.employee else ""
 	error = ""		
-	if not employee and not instructor.image:
+	if not employee and not instructor.signature:
 		error = _("Add signature to Instructor ") + " <b>{0}</b> ".format(instructor.instructor_name) 
 
-	if employee and not employee.signature and not instructor.image:
+	if employee and not employee.signature and not instructor.signature:
 		error = _("Add signature to either Instructor") + " <b>{0}</b> ".format(instructor.instructor_name) + _("or Employee") + " <b>{0}</b> ".format(employee.name)
 	return error	
 
