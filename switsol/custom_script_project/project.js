@@ -182,7 +182,7 @@ dialog_for_SC_MS_certificate = function(print_format){
 		var dialog = new frappe.ui.Dialog({ 
 			title: __("Details"),
 			fields: [
-					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"INS/00002",
+					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"TRAINER-00001",
 					change: function() {
 						validate_signature($(this).val(),dialog)
 						}
