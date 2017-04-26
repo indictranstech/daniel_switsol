@@ -155,6 +155,7 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "", 
    "fieldtype": "HTML", 
    "hidden": 0, 
    "label": "Message", 
@@ -165,16 +166,18 @@
    "reqd": 0
   }, 
   {
+   "fieldname": "", 
    "fieldtype": "Section Break", 
    "hidden": 0, 
    "label": "TRAINING ROOM", 
    "max_length": 0, 
    "max_value": 0, 
+   "options": "", 
    "read_only": 0, 
    "reqd": 0
   }, 
   {
-   "default": "8", 
+   "default": "9", 
    "fieldname": "quality_training_room", 
    "fieldtype": "Select", 
    "hidden": 0, 
@@ -186,7 +189,7 @@
    "reqd": 0
   }, 
   {
-   "default": "5", 
+   "default": "9", 
    "fieldname": "performance_hard_soft", 
    "fieldtype": "Select", 
    "hidden": 0, 
@@ -276,7 +279,7 @@
    "reqd": 0
   }, 
   {
-   "default": "6", 
+   "default": "9", 
    "fieldname": "total_of_leader", 
    "fieldtype": "Select", 
    "hidden": 0, 

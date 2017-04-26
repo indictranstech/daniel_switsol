@@ -32,7 +32,7 @@ def get_data():
 								ts.employee,td.customer,
 								td.project,ts.name,ts.status from  
 								`tabTimesheet` ts,`tabTimesheet Detail` td 
-								where td.parent = ts.name and ts.docstatus = 0 and td.idx = 1 order by ts.name""", as_list=1,debug=1)
+								where td.parent = ts.name and ts.docstatus = 0 and td.idx = 1 order by ts.name""", as_list=1)
 	#time_sheet_details = frappe.db.sql("""select td.project,td""")
 	return time_sheet
 

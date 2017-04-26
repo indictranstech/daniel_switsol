@@ -11,10 +11,10 @@ frappe.views.CalendarFactory = frappe.views.Factory.extend({
 		var me = this;
 
 		frappe.require([
-			'assets/switsol/js/fullcalendar.css',
+			'assets/switsol/css/fullcalendar.css',
 			'assets/switsol/js/fullcalendar.js',
 			'assets/switsol/js/scheduler.js',
-			'assets/switsol/js/scheduler.min.css'
+			'assets/switsol/css/scheduler.min.css'
 		], function() {
 			frappe.model.with_doctype(route[1], function() {
 				var options = {
@@ -186,7 +186,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
     		resourceLabelText: 'Rooms',
             resources: function(callback, start, end, timezone) {
 			   return frappe.call({
-				method: "switsol.custom_script.project.get_room",
+				method: "switsol.custom_script_project.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
 					 "render_counter":me.render_counter
@@ -199,7 +199,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 			},
             events: function(start, end, timezone, callback) {
 			   return frappe.call({
-				method: "switsol.custom_script.project.get_room",
+				method: "switsol.custom_script_project.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
 					 "render_counter":me.render_counter},
