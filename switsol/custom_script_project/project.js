@@ -182,7 +182,7 @@ dialog_for_SC_MS_certificate = function(print_format){
 		var dialog = new frappe.ui.Dialog({ 
 			title: __("Details"),
 			fields: [
-					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"INS/00002",
+					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"TRAINER-00001",
 					change: function() {
 						validate_signature($(this).val(),dialog)
 						}
@@ -236,7 +236,7 @@ make_certificate = function(student_data,print_format,dialog){
 	
 	var name_of_certificate
 	frappe.call({
-		method: "switsol.custom_script.project.certificate_creation",
+		method: "switsol.custom_script_project.project.certificate_creation",
 		freeze: true,
 		freeze_message: __("Sending Mails"),
 		args: {
@@ -297,7 +297,7 @@ _instructor_name = function(dialog){
 validate_signature = function(instructor_name,dialog){
 	if(instructor_name){
 		frappe.call({
-			method:"switsol.custom_script.project.check_employee_signature",
+			method:"switsol.custom_script_project.project.check_employee_signature",
 			args:{
 				"instructor_name": instructor_name
 			},

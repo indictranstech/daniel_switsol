@@ -21,6 +21,7 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
                    	]
 	       		});
        	this.fd = this.dialog.fields_dict;
+		// console.log(this.dialog.$wrapper,"&&&&&&&&&&&&&&&&&&&&&&&&&")
        	this.dialog.$wrapper.find('.modal-dialog').css("width", "450px");
        	this.dialog.$wrapper.find('.modal-dialog').css("height", "450px");
        	//this.dialog.$wrapper.find('.hidden-xs').css("margin-left","-2px");
@@ -29,6 +30,7 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 	add_signature:function(report){
 		var me = this;
 		html = "signature"
+		// console.log(me.fd.signature.wrapper)
 		$(frappe.render_template(html)).appendTo(me.fd.signature.wrapper);
 		me.assign_signature();
 		me.dialog.clear();
@@ -38,6 +40,8 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 	assign_signature:function(){
 		var me = this;
 		$(me.dialog.fields_dict.signature.wrapper).find("#sig").signature();
+		 // var els = $(me.dialog.fields_dict.signature.wrapper).find('canvas').css({"width": "398%","height": "198%"});
+		 // console.log(els,"*****")
 		//$(me.dialog.fields_dict.signature.wrapper).find("#resig").signature();
 	},
 	click_buttons:function(){
@@ -52,9 +56,9 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 			$(me.dialog.fields_dict.signature.wrapper).find("#sig").signature("clear");
 		});
 		$(me.dialog.fields_dict.signature.wrapper).find("#json").click(function() {
+			console.log(me.dialog.fields_dict.signature.wrapper,"***************8")
 			me.sign = $(me.dialog.fields_dict.signature.wrapper).find("#sig").signature("toJSON")
 			me.svg = $(me.dialog.fields_dict.signature.wrapper).find("#sig").signature("toSVG")
-			console.log(me.svg,JSON.stringify(me.svg))
 			//$(me.dialog.fields_dict.signature.wrapper).find("#resig").signature("draw", me.sign)
 			me.update_timesheet();
 		});
@@ -82,10 +86,10 @@ frappe.query_reports["Daily Unapproved Timesheet Summary"] = {
 	},
 	"formatter":function (row, cell, value, columnDef, dataContext, default_formatter) {
         value = default_formatter(row, cell, value, columnDef, dataContext);
-        console.log(columnDef.id,"columnDef.id")
-        console.log(dataContext['Zeiterfassung'],"dataContext['Zeiterfassung']")
-        console.log(dataContext['Timesheet'],"dataContext['Timesheet']")
-        console.log(columnDef,"columnDef")
+        // console.log(columnDef.id,"columnDef.id")
+        // console.log(dataContext['Zeiterfassung'],"dataContext['Zeiterfassung']")
+        // console.log(dataContext['Timesheet'],"dataContext['Timesheet']")
+        // console.log(columnDef,"columnDef")
 	    if(columnDef.id == "") {
 	    	if(dataContext['Zeiterfassung']){
             	value = "<input type='checkbox' class='_select' value="+dataContext['Zeiterfassung']+" >" + value + "</input>";

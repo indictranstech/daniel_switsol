@@ -8,5 +8,5 @@ frappe.views.calendar["Project"] = {
 		"Room" : "room"
 		//"allDay": "allDay"
 	},
-	get_events_method: "switsol.custom_script.project.get_events"
+	get_events_method: "switsol.custom_script_project.project.get_events"
 }

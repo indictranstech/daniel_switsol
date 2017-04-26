@@ -20,21 +20,23 @@ app_include_js = "/assets/js/switsol.desk.min.js"
 
 
 
-fixtures = ['Custom Field', 'Property Setter', "Print Format","Custom Script"]
+fixtures = ['Custom Field', 'Property Setter', "Print Format","Workflow"]
+
 # include js, css files in header of web template
 # web_include_css = "/assets/switsol/css/switsol.css"
 # web_include_js = "/assets/switsol/js/switsol.js"
 
 doctype_js = {
-    "Customer":["custom_script/customer.js"],
-    "Contact":["custom_script/contact.js"],
-    "Employee":["custom_script/employee.js"],
-    "Sales Partner":["custom_script/sales_sartner"],
-    "Supplier":["custom_script/supplier.js"],
-    "Timesheet":["custom_script/timesheet.js"],
-    "User":["custom_script/user.js"],
-    "Quotation":["custom_script/quotation.js"],
-    "Sales Order":["custom_script/sales_order.js"]
+    "Contact":["custom_script_voip/contact.js"],
+    "Sales Partner":["custom_script_voip/sales_partner.js"],
+    "Supplier":["custom_script_voip/supplier.js"],
+    "Timesheet":["custom_script_voip/timesheet.js"],
+    "User":["custom_script_voip/user.js"],
+    "Customer":["custom_script_voip/customer.js"],
+    "Employee":["custom_script_project/employee.js"],
+    "Quotation":["custom_script_project/quotation.js"],
+    "Sales Order":["custom_script_project/sales_order.js"],
+    "Leave Application":["custom_script_project/leave_application.js"]
 }
 #"Project":["custom_script/project.js"],
 
@@ -129,5 +131,5 @@ doctype_js = {
 # 	"frappe.desk.doctype.event.event.get_events": "switsol.event.get_events"
 # }
 override_whitelisted_methods = {
-    "frappe.utils.print_format.download_pdf":"switsol.custom_script.project.download_pdf"
+    "frappe.utils.print_format.download_pdf":"switsol.custom_script_project.project.download_pdf"
 }

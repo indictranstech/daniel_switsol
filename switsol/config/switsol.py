@@ -17,7 +17,12 @@ def get_data():
 			       "type": "doctype",
 			       "name": "Certificate",
 			       "description": _("Certificate"),
-                }   
+                },
+                {
+               		"type": "doctype",
+			    	"name": "Call Logs",
+			    	"description": _("Call Logs"),
+                }  
 			]
 		},
 		{
@@ -51,6 +56,22 @@ def get_data():
 					"label": _("Sales Person"),
 					"description": _("Record of Sales Person"),
 					"doctype": "Sales Person",
+				},
+				{
+					"type": "report",
+					"is_query_report": True,
+					"name": "Call Logs Report",
+					"label": _("Call Logs Report"),
+					"description": _("Record of Call Logs Report"),
+					"doctype": "Call Logs",
+				},
+				{
+					"type": "report",
+					"is_query_report": True,
+					"name": "Daily Unapproved Timesheet Summary",
+					"label": _("Daily Unapproved Timesheet Summary"),
+					"description": _("Record of Daily Unapproved Timesheet Summary"),
+					"doctype": "Timesheet",
 				}
 			]
 		},
