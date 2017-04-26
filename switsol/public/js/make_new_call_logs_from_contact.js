@@ -20,10 +20,11 @@ $.extend(erpnext.utils, {
 			);
 		}
 		console.log("my file trigger")
-		$(frm.fields_dict['contact_html'].wrapper).find(".outgoing-call").on("click", function() {
+		if(frm.fields_dict['contact_html']) {
+				$(frm.fields_dict['contact_html'].wrapper).find(".outgoing-call").on("click", function() {
 				make_new_call_log_from_contact($(this).attr("contact-name"),$(this).attr("phone-number"));
-			}
-		);
+			});
+		}
 	}
 })	
 
