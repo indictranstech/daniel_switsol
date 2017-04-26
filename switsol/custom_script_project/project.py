@@ -138,7 +138,6 @@ def attach_pdf_as_certificate(certificate_name,print_format_name):
 		if print_format_name == "New Horizons Certificate" or print_format_name == "New Horizons Zertifikat": 
 			url = "http://"+frappe.request.host+"/api/method/frappe.utils.print_format.download_pdf?doctype=Certificate&name="+certificate_name+\
 														"&format=New Horizons Certificate&no_letterhead=0"
-			print frappe.request.host,"***************"
 			add_attachments(certificate_name,url,print_format_name)
 
 """On print format i.e certificate of student instructor or employee signature is needed.
