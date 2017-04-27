@@ -20,7 +20,7 @@ app_include_js = "/assets/js/switsol.desk.min.js"
 
 
 
-fixtures = ['Custom Field', 'Property Setter', "Print Format","Workflow"]
+fixtures = ['Custom Field', 'Property Setter', "Print Format","Workflow","Workflow State","Workflow Action"]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/switsol/css/switsol.css"
@@ -32,7 +32,7 @@ doctype_js = {
     "Supplier":["custom_script_voip/supplier.js"],
     "Timesheet":["custom_script_voip/timesheet.js"],
     "User":["custom_script_voip/user.js"],
-    "Customer":["custom_script_voip/customer.js"],
+    # "Customer":["custom_script_voip/customer.js"],
     "Employee":["custom_script_project/employee.js"],
     "Quotation":["custom_script_project/quotation.js"],
     "Sales Order":["custom_script_project/sales_order.js"],
