@@ -38,10 +38,10 @@ get_leave_approver_role = function(user_id,cdt,cdn){
 				role_list.push(d[0])		
 			})
 		 	if(inList(role_list,"Approver")) {
-				frappe.model.set_value(cdt,cdn,"approver_type", "Approver");
+				frappe.model.set_value(cdt,cdn,"approver_type", __("Approver"));
 			}
 			else if(inList(role_list,"Executor")) {
-				frappe.model.set_value(cdt,cdn,"approver_type", "Executor");
+				frappe.model.set_value(cdt,cdn,"approver_type", __("Executor"));
 			}
 			
 		}		
