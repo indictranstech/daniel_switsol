@@ -40,5 +40,19 @@
   "modified": "2017-04-27 09:07:40.919839", 
   "name": "Cancel", 
   "workflow_action_name": "Cancel"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2017-04-30 10:44:06.501986", 
+  "name": "Reject By Approver", 
+  "workflow_action_name": "Reject By Approver"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2017-04-30 10:44:52.293100", 
+  "name": "Reject By Executor", 
+  "workflow_action_name": "Reject By Executor"
  }
 ]

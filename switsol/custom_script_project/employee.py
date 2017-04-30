@@ -4,13 +4,18 @@ from frappe import _
 
 
 @frappe.whitelist()
-def get_approver_role(user_id):
-	roles = frappe.db.sql("select role from `tabUserRole` where parent = '{0}'".format(user_id))
-	return roles
+def get_approver_role(user_id,user_type):
+	roles = frappe.db.sql("select role from `tabUserRole` where parent = '{0}'".format(user_id),as_list=1)
+	if user_type not in [role[0] for role in roles]:
+		href = "http://"+frappe.request.host+"/desk#Form/User/{0}".format(user_id)
+		return "User <b><a href="+href+" target='blank'>{0}</a></b> Not has {1} Role<br>Please Add {1} In User Roles".format(user_id,user_type)
 
 @frappe.whitelist()
-def get_user(doctype, txt, searchfield, start, page_len, filters):
-	user = frappe.db.sql("""select distinct parent from `tabUserRole` where role in ("Approver","Executor")
-							and parent != 'Administrator' and parent like '{txt}'""".format(txt= "%%%s%%" % txt),as_list=1)
+def get_user_by_role(doctype, txt, searchfield, start, page_len, filters):
+	user = frappe.db.sql("""select distinct parent from `tabUserRole`
+							where role in ("Approver","Executor")
+								and parent != 'Administrator'
+								and parent like '{txt}'
+								and parent <> '{user_id}' """.format(user_id=filters.get("user_id"),txt= "%%%s%%" % txt),as_list=1)
 	return user
 

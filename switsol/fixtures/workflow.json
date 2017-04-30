@@ -4,7 +4,7 @@
   "doctype": "Workflow", 
   "document_type": "Leave Application", 
   "is_active": 1, 
-  "modified": "2017-04-27 09:14:06.762268", 
+  "modified": "2017-04-30 10:44:55.612229", 
   "name": "leave approval", 
   "override_status": 0, 
   "states": [
@@ -28,9 +28,17 @@
     "allow_edit": "Approver", 
     "doc_status": "0", 
     "message": null, 
-    "state": "Rejected", 
+    "state": "Rejected by Approver", 
     "update_field": "status", 
     "update_value": "Rejected"
+   }, 
+   {
+    "allow_edit": "Executor", 
+    "doc_status": "0", 
+    "message": null, 
+    "state": "Rejected by Executor", 
+    "update_field": null, 
+    "update_value": null
    }, 
    {
     "allow_edit": "Executor", 
@@ -39,14 +47,6 @@
     "state": "Approved", 
     "update_field": "status", 
     "update_value": "Approved"
-   }, 
-   {
-    "allow_edit": "Executor", 
-    "doc_status": "0", 
-    "message": null, 
-    "state": "Rejected", 
-    "update_field": null, 
-    "update_value": null
    }, 
    {
     "allow_edit": "Executor", 
@@ -65,15 +65,15 @@
     "state": "Applied"
    }, 
    {
-    "action": "Reject", 
+    "action": "Reject By Approver", 
     "allowed": "Approver", 
-    "next_state": "Rejected", 
+    "next_state": "Rejected by Approver", 
     "state": "Approved by Approver"
    }, 
    {
-    "action": "Reject", 
+    "action": "Reject By Approver", 
     "allowed": "Approver", 
-    "next_state": "Rejected", 
+    "next_state": "Rejected by Approver", 
     "state": "Applied"
    }, 
    {
@@ -83,9 +83,9 @@
     "state": "Approved by Approver"
    }, 
    {
-    "action": "Reject", 
+    "action": "Reject By Executor", 
     "allowed": "Executor", 
-    "next_state": "Rejected", 
+    "next_state": "Rejected by Executor", 
     "state": "Approved by Approver"
    }, 
    {
