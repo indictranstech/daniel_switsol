@@ -11,40 +11,25 @@ cur_frm.fields_dict.employee_trainings.grid.get_field("item_code").get_query = f
 
 cur_frm.fields_dict.leave_approvers.grid.get_field("approver").get_query = function(doc) {
 	return {
-			query: "switsol.custom_script_project.employee.get_user"
-
-			}	
+			query: "switsol.custom_script_project.employee.get_user_by_role",
+			filters: {'user_id': cur_frm.doc.user_id}
+		}	
 }
 
-frappe.ui.form.on("Employee Leave Approver", {
-
-approver:function(doc,cdt,cdn){
+cur_frm.cscript.user_type = function(doc, cdt, cdn){
 	var d  = locals[cdt][cdn];
-	get_leave_approver_role(d.approver,cdt,cdn)
-}
-
-})
-
-get_leave_approver_role = function(user_id,cdt,cdn){
-	var role_list = []
 	frappe.call({
 		method: "switsol.custom_script_project.employee.get_approver_role",
 		args: {
-			"user_id":user_id
+			"user_id":d.approver,
+			"user_type":d.user_type
 		},
 		callback: function(r) {
 			if(r.message){
-			 	$.each(r.message,function(i,d){
-				role_list.push(d[0])		
-			})
-		 	if(inList(role_list,"Approver")) {
-				frappe.model.set_value(cdt,cdn,"approver_type", __("Approver"));
-			}
-			else if(inList(role_list,"Executor")) {
-				frappe.model.set_value(cdt,cdn,"approver_type", __("Executor"));
-			}
-			
-		}		
-	 }
-  })
+				frappe.msgprint(r.message)
+				d.user_type = ""
+				refresh_field("leave_approvers")
+			}		
+	 	}
+  	})
 }
