@@ -52,5 +52,23 @@
   "name": "Cancelled", 
   "style": "", 
   "workflow_state_name": "Cancelled"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2017-04-30 10:37:50.200018", 
+  "name": "Rejected by Approver", 
+  "style": "", 
+  "workflow_state_name": "Rejected by Approver"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2017-04-30 10:38:08.701672", 
+  "name": "Rejected by Executor", 
+  "style": "", 
+  "workflow_state_name": "Rejected by Executor"
  }
 ]
