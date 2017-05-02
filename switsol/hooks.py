@@ -92,13 +92,11 @@ permission_query_conditions = {
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+		"Leave Application": {
+        "on_cancel": "switsol.custom_script_project.leave_application.on_cancel"
+        }
+}
 
 # Scheduled Tasks
 # ---------------

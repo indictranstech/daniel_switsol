@@ -4,7 +4,7 @@
   "doctype": "Workflow", 
   "document_type": "Leave Application", 
   "is_active": 1, 
-  "modified": "2017-04-30 10:44:55.612229", 
+  "modified": "2017-05-02 11:30:55.202119", 
   "name": "leave approval", 
   "override_status": 0, 
   "states": [
@@ -21,7 +21,7 @@
     "doc_status": "0", 
     "message": null, 
     "state": "Approved by Approver", 
-    "update_field": null, 
+    "update_field": "", 
     "update_value": null
    }, 
    {
@@ -37,7 +37,7 @@
     "doc_status": "0", 
     "message": null, 
     "state": "Rejected by Executor", 
-    "update_field": null, 
+    "update_field": "", 
     "update_value": null
    }, 
    {
@@ -53,8 +53,8 @@
     "doc_status": "2", 
     "message": null, 
     "state": "Cancelled", 
-    "update_field": null, 
-    "update_value": null
+    "update_field": "status", 
+    "update_value": "Cancelled"
    }
   ], 
   "transitions": [
