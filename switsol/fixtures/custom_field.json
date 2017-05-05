@@ -1,5 +1,6 @@
-
-w_on_submit": 0, 
+[
+ {
+  "allow_on_submit": 0, 
   "collapsible": 0, 
   "collapsible_depends_on": null, 
   "default": "Today", 
@@ -10529,7 +10530,7 @@ w_on_submit": 0,
   "in_list_view": 0, 
   "in_standard_filter": 0, 
   "insert_after": "country", 
-  "label": "Phone Number 1", 
+  "label": "Mobile Phone Number", 
   "modified": "2017-03-18 07:52:11.314570", 
   "name": "Instructor-phone_number_1", 
   "no_copy": 0, 
@@ -10565,7 +10566,7 @@ w_on_submit": 0,
   "in_list_view": 0, 
   "in_standard_filter": 0, 
   "insert_after": "phone_number_1", 
-  "label": "Phone Number 2", 
+  "label": "Home Phone Number", 
   "modified": "2017-03-18 07:52:11.639778", 
   "name": "Instructor-phone_number_2", 
   "no_copy": 0, 
@@ -10601,7 +10602,7 @@ w_on_submit": 0,
   "in_list_view": 0, 
   "in_standard_filter": 0, 
   "insert_after": "phone_number_2", 
-  "label": "Phone Number 3", 
+  "label": "Other Phone Number", 
   "modified": "2017-03-18 07:52:11.969977", 
   "name": "Instructor-phone_number_3", 
   "no_copy": 0, 
@@ -17386,4 +17387,4 @@ w_on_submit": 0,
   "unique": 0, 
   "width": null
  }
-]:
+]

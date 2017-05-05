@@ -1,11 +1,13 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
+from collections import defaultdict
 
 
 def on_cancel(self,method=None):
 	if self.workflow_state == "Cancelled":
 		self.status=self.workflow_state
+		frappe.db.set_value("Leave Application", self.name, "status",self.workflow_state)
 
 @frappe.whitelist()
 def get_user(doctype, txt, searchfield, start, page_len, filters):
@@ -14,6 +16,30 @@ def get_user(doctype, txt, searchfield, start, page_len, filters):
 								and parent = '{1}' 
 								and approver like '{txt}'""".format(filters.get('role'),filters.get('employee'),txt= "%%%s%%" % txt),as_list=1)
 	return user
+
+@frappe.whitelist()
+def get_approver_executor(employee=None):
+	if employee:
+		employee_doc = frappe.get_doc("Employee",employee)
+		approver_counter,executor_counter = 0, 0
+		users_dict = defaultdict(list)
+		
+		for row in employee_doc.leave_approvers:
+			if row.user_type == "Approver":
+				approver_counter+=1
+				if approver_counter == 1:
+				 	users_dict[row.user_type].append(row.approver)
+				else : users_dict[row.user_type] = ""
+
+			elif row.user_type == "Executor":
+				executor_counter+=1
+				if executor_counter <= 2:
+					users_dict[row.user_type].append(row.approver)
+				else : users_dict[row.user_type] = ""
+		print "**************************",users_dict
+		return users_dict
+	
+
 
 def get_permission_query_conditions(user):
 	if not user: user = frappe.session.user
