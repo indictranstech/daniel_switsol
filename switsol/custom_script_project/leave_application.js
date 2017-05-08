@@ -2,6 +2,10 @@
 // License: GNU General Public License v3. See license.txt
 
 frappe.ui.form.on("Leave Application", {
+
+	refresh:function(frm){
+		set_data(frm)
+	},
 	approver: function(frm) {
 		if(frm.doc.approver){
 			frm.set_value("leave_approver_name", frappe.user.full_name(frm.doc.approver));
@@ -16,6 +20,8 @@ frappe.ui.form.on("Leave Application", {
 			frm.reload_doc();
 			frappe.throw("Your are not Executor");
 		}
+
+		set_data(frm);
 	},
 	employee:function(frm){
 		frappe.call({
@@ -26,14 +32,20 @@ frappe.ui.form.on("Leave Application", {
 			
 			callback: function(r) {
 				if(r.message){
-					console.log("EEEE",r.message)
-					frm.set_value("approver",r.message['Approver'][0])
-					frm.set_value("leave_executor",r.message['Executor'][0])
-					if(r.message['Executor'][1]){
-						frm.set_value("leave_executor_2",r.message['Executor'][1])
+					if(r.message['Approver'][0]){
+						frm.set_value("approver",r.message['Approver'][0])
+						cur_frm.set_df_property("approver", "read_only",1);
 					}
 
+					if(r.message['Executor'][0]){
+						frm.set_value("leave_executor",r.message['Executor'][0])
+						cur_frm.set_df_property("leave_executor", "read_only",1);
+					}
 
+					if(r.message['Executor'][1]){
+						frm.set_value("leave_executor_2",r.message['Executor'][1])
+						cur_frm.set_df_property("leave_executor_2", "read_only",1);
+					}
 				}
 			}
 		})
@@ -51,5 +63,24 @@ cur_frm.fields_dict.leave_executor.get_query = function(doc) {
 	return {
 		"query": "switsol.custom_script_project.leave_application.get_user",
 		"filters": {"role":"Executor","employee":doc.employee}
+	}
+}
+
+cur_frm.fields_dict.leave_executor_2.get_query = function(doc) {
+	return {
+		"query": "switsol.custom_script_project.leave_application.get_user",
+		"filters": {"role":"Executor","employee":doc.employee}
+	}
+}
+
+set_data = function(frm){
+	if(frm.doc.approver){
+		cur_frm.set_df_property("approver", "read_only",1);
+	}
+	if(frm.doc.leave_executor){
+		cur_frm.set_df_property("leave_executor", "read_only",1);
+	}
+	if(frm.doc.leave_executor_2){
+		cur_frm.set_df_property("leave_executor_2", "read_only",1);
 	}
 }

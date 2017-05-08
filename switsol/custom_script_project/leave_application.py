@@ -36,7 +36,6 @@ def get_approver_executor(employee=None):
 				if executor_counter <= 2:
 					users_dict[row.user_type].append(row.approver)
 				else : users_dict[row.user_type] = ""
-		print "**************************",users_dict
 		return users_dict
 	
 
