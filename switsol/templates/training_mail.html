@@ -1,0 +1,16 @@
+<div class="row">
+	<div class="col-xs-12">
+		<div class="row text-right">Dear {% if salutation -%}
+				{{ salutation }}
+				{%- endif %} {{ first_name }}</div>
+		<p>Here is the landing page for our training:</p>
+		{%- for link in project_link -%}
+			<p>{{ link }}</p>
+		{%- endfor -%}
+		<div class="row">
+			<p>Thank you for registering.</p>
+			<p>Regards,</p>
+			<p>NH</p>
+		</div>
+	</div>
+</div>

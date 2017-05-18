@@ -22,6 +22,11 @@ def get_data():
                		"type": "doctype",
 			    	"name": "Call Logs",
 			    	"description": _("Call Logs"),
+                },
+                {
+                	"type": "doctype",
+                	"name": "Training Mail",
+                	"description": _("Training Mail")
                 }  
 			]
 		},

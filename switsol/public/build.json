@@ -16,6 +16,7 @@
 		"public/js/calendar.js",
 		"public/js/project_calendar.js",
 		"public/js/make_new_call_logs_from_contact.js",
-		"public/html/contact_list.html"
+		"public/html/contact_list.html",
+		"public/html/training_mail.html"
 	]
 }
