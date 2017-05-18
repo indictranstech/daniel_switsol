@@ -1,15 +1,15 @@
 <div class="row">
 	<div class="col-xs-12">
-		<div class="row text-right">Dear Mr {{ first_name }}</div>
-		{% for(var i=0, l=projects_link.length; i < l; i++) { %}
-			<p>{{ projects_link[i] }} </p>
-		{% } %}
+		<div class="row text-right">Dear {% if salutation -%}
+				{{ salutation }}
+				{%- endif %} {{ first_name }}</div>
+		<p>Here is the landing page for our training:</p>
+		{%- for link in project_link -%}
+			<p>{{ link }}</p>
+		{%- endfor -%}
 		<div class="row">
-			<p>Here is the landing page for our training:</p>
 			<p>Thank you for registering.</p>
-			<br>
 			<p>Regards,</p>
-			<br>
 			<p>NH</p>
 		</div>
 	</div>

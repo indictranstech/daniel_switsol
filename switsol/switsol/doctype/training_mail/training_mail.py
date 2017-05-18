@@ -10,26 +10,20 @@ from frappe.model.document import Document
 class TrainingMail(Document):
 	pass
 
-# @frappe.whitelist()
-# def get_contact(doctype, txt, searchfield, start, page_len, filters):
-# 	contact = frappe.db.sql("""select name from `tabContact` 
-# 							where customer = '{0}'  
-# 								and name like '{txt}'""".format(filters.get('customer'),txt= "%%%s%%" % txt),as_list=1)
-# 	return contact
-
-
 @frappe.whitelist()
-def send_mail_to_client(project_data,contact_data):
+def send_mail_to_client(project_data,contact_data,predefined_text):
 	project_data = json.loads(project_data)
 	contact_data = json.loads(contact_data)
-	# print project_data,contact_data,"\n\n\n\n\n\n\n\n"
 	project_bundle = []
+
 	for project in project_data:
 		project_bundle.append("http://"+frappe.request.host+"/project_participant?training_id="+project.get("training_id"))
 
 	for contact in contact_data:
-		html = frappe.render_template("switsol/templates/training_mail.html",{"first_name":contact.get("first_name"),"projects_link":project_bundle})	
-		print html,"***************\n\n\n\n\n\n\n"
+		html = frappe.render_template("switsol/templates/training_mail.html",{
+										"first_name":contact.get("first_name"),
+										"salutation":contact.get("salutation"),
+										"project_link":project_bundle}) + predefined_text
 		send_mail(contact.get("email_id"),html)
 
 def send_mail(email_id,html):

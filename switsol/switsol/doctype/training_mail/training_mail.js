@@ -7,29 +7,29 @@ cur_frm.add_fetch('contact_name','email_id','email_id');
 cur_frm.add_fetch('contact_name','first_name','first_name');
 
 frappe.ui.form.on('Training Mail', {
-	/*refresh: function(frm) {
+	refresh: function(frm) {
+		frm.disable_save();
+		if(frappe.route_options){
+			var row = frappe.model.add_child(cur_frm.doc, "Training Mail Project Details", "training_mail_project_details");
+			row.project_name = frappe.route_options.project_name;
+			row.training_id= frappe.route_options.training_id;
+			refresh_field("training_mail_project_details")
+		}
+	},
 
-	},
-	project: function(frm){
-		training_id = get_email_id_or_training_id()
-		var row = frappe.model.add_child(frm.doc, "Training Mail Project Details", "training_mail_project_details");
-		row.project_name = frm.doc.project;
-		row.training_id = training_id
-		frm.refresh_field("training_mail_project_details")
-	},
-	contact: function(frm){
-		email_id = get_email_id_or_training_id()
-		var row = frappe.model.add_child(frm.doc, "Training Mail Contact Details", "training_mail_contact_details");
-		row.email_id = email_id;
-		frm.refresh_field("training_mail_contact_details")
-	},*/
 	send_mail: function(frm){
-		console.log("inside send_mail")
 		if (cur_frm.doc.training_mail_project_details.length && cur_frm.doc.training_mail_contact_details.length){
 			send_mail();
 		}
-		else{
+		else if(!cur_frm.doc.training_mail_project_details.length && !cur_frm.doc.training_mail_contact_details.length) {
 			msgprint(__("Please Add Project and Contact Details."))
+		}
+		else if (!cur_frm.doc.training_mail_project_details.length)
+		{
+			msgprint(__("Please Add Project Details."))
+		}
+		else if (!cur_frm.doc.training_mail_contact_details.length) {
+			msgprint(__("Please Add Contact Details."))
 		}
 	}
 });
@@ -81,7 +81,8 @@ send_mail = function(frm){
 		freeze_message: __("Sending Mails"),
 		args: {
 			"project_data" : cur_frm.doc.training_mail_project_details,
-			"contact_data" : cur_frm.doc.training_mail_contact_details
+			"contact_data" : cur_frm.doc.training_mail_contact_details,
+			"predefined_text": cur_frm.doc.predefined_text_container
 		},
 		callback: function(r) {
 			if(r.message){
@@ -90,44 +91,3 @@ send_mail = function(frm){
 		}
 	})
 }
-
-/*get_email_id = function(frm){
-	var email_id 
-	contact = cur_frm.doc.contact
-    frappe.call({
-			method: "frappe.client.get_value",
-			args: {
-				doctype: "Contact",
-				fieldname: "email_id",
-				filters: {name:contact}
-			},
-			async: false,
-			callback: function(r) {
-				if(r.message) {
-					email_id = r.message['email_id']
-				}
-
-			}
-		});
-    return email_id
-}*/
-
-/*get_training_id = function(){
-	var training_id = ""
-	project = cur_frm.doc.project
-	frappe.call({
-		method: "frappe.client.get_value",
-		args: {
-			doctype: "Project",
-			fieldname: "training_id",
-			filters: {name:project}
-		},
-		async: false,
-		callback: function(r) {
-			if(r.message) {
-				training_id = r.message['training_id']
-			}
-		}
-	});
-	return training_id
-}*/
