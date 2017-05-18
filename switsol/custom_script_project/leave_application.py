@@ -19,6 +19,8 @@ def get_user(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def get_approver_executor(employee=None):
+	"""check total approver and executor for an employee"""
+	
 	if employee:
 		employee_doc = frappe.get_doc("Employee",employee)
 		approver_counter,executor_counter = 0, 0
@@ -47,7 +49,7 @@ def get_permission_query_conditions(user):
 	"""
 	if not user == 'Administrator':
 		leave_applications = frappe.db.sql("""select name from `tabLeave Application` 
-											where approver = '{0}' or leave_executor  = '{0}' or owner = '{0}' """.format(user),as_list=1)
+											where approver = '{0}' or leave_executor = '{0}' or leave_executor_2  = '{0}' or owner = '{0}' """.format(user),as_list=1)
 		leave_applications = tuple([application[0].encode('utf-8') for application in leave_applications])
 		if leave_applications:
 			if len(leave_applications) == 1:
