@@ -11,6 +11,9 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
 		});
+		frm.add_custom_button(__("Training Mail"), function() {
+			send_training_mail();
+		});
 		render_task_group();	
 		make_jumping_section();
 	}
@@ -125,6 +128,42 @@ render_task_group = function(){
 			})	
 }
 
+send_training_mail = function(){
+	// var project_name = [cur_frm.doc.name]
+	var dialog = new frappe.ui.Dialog({ 
+			title: __("Training Mail"),
+			fields: [
+					{fieldtype: "Link", fieldname: "project", label: __("Project"),options: "Project",default:cur_frm.doc.name,
+						change: function(){
+							// project_name.push($(this).val())
+							$(dialog.body).find('.project_name').append("<tr><td>"+$(this).val()+"</td><td>x</td></tr>")
+							// console.log(project_name,"**********")
+						}
+					},
+					{fieldtype: "HTML", fieldname: "project_table"},
+					{fieldtype: "Link", fieldname: "customer", label: __("Customer"),options: "Customer"},
+					{fieldtype: "Link", fieldname: "contact", label: __("Contact"),options: "Contact",
+						change: function(){
+
+						}
+					},
+					{fieldtype: "HTML", fieldname: "contact_table"},
+					{fieldtype: "Link", fieldname: "predefined_text", label: __("Email Content"),options: "Predefined Text Container",
+					 change: function(){
+					 	content_of_predefined_text(dialog)
+					 }
+					},
+					{fieldtype: "Text Editor", fieldname: "predefined_text_value"}
+
+			]
+		})
+	// console.log(project_name,"**********")
+	$(frappe.render_template("training_mail",{"name":dialog.fields_dict.project.value})).appendTo(dialog.fields_dict.project_table.wrapper);
+	$(frappe.render_template("training_mail",{"name":dialog.fields_dict.contact.value})).appendTo(dialog.fields_dict.contact_table.wrapper);
+
+	dialog.show();
+}
+
 language_of_user = function(){
 	var lang
 	frappe.call({
@@ -182,12 +221,12 @@ dialog_for_SC_MS_certificate = function(print_format){
 		var dialog = new frappe.ui.Dialog({ 
 			title: __("Details"),
 			fields: [
-					{fieldtype: "Link", fieldname: "instructor", label: __("Instructor"),options: "Instructor",default:"TRAINER-00001",
+					{fieldtype: "Link", fieldname: "instructor", label: __("Signature Certificate"),options: "Instructor",default:"TRAINER-00001",
 					change: function() {
 						validate_signature($(this).val(),dialog)
 						}
 					},
-					{fieldtype: "Data", fieldname: "instructor_name", label: __("Instructor Name"),read_only: 1},
+					{fieldtype: "Data", fieldname: "instructor_name", label: __("Name of the signature person"),read_only: 1},
 					{fieldtype: "Check", fieldname: "send_by_mail", label: __("Send certificate by mail")},
 					{fieldtype: "Data", fieldname: "cc", label: __("CC"),default:"operations@newhorizons.ch",depends_on: 'eval:doc.send_by_mail == "1"'},
 					{fieldtype: "Link", fieldname: "predefined_text", label: __("Email Content"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
