@@ -36,7 +36,7 @@ doctype_js = {
     "Employee":["custom_script_project/employee.js"],
     "Quotation":["custom_script_project/quotation.js"],
     "Sales Order":["custom_script_project/sales_order.js"],
-    "Leave Application":["custom_script_project/leave_application.js"]
+    # "Leave Application":["custom_script_project/leave_application.js"]
 }
 #"Project":["custom_script/project.js"],
 

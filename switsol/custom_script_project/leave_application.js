@@ -16,7 +16,7 @@ frappe.ui.form.on("Leave Application", {
 			frm.reload_doc();
 			frappe.throw(__("Your are not Approver"));
 		}
-		if((user != frm.doc.leave_executor && user != frm.doc.leave_executor) && inList(['Approved','Rejected by Executor','Cancelled'],frm.doc.workflow_state)) {
+		if((user != frm.doc.leave_executor && user != frm.doc.leave_executor_2) && inList(['Approved','Rejected by Executor','Cancelled'],frm.doc.workflow_state)) {
 			frm.reload_doc();
 			frappe.throw(__("Your are not Executor"));
 		}
