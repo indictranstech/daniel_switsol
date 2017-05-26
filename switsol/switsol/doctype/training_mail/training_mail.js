@@ -19,23 +19,6 @@ frappe.ui.form.on('Training Mail', {
 	},
 
 	send_mail: function(frm){
-		/*if (cur_frm.doc.training_mail_project_details.length && cur_frm.doc.training_mail_contact_details.length){
-			send_mail();
-		}
-		else if(!cur_frm.doc.training_mail_project_details.length && !cur_frm.doc.training_mail_contact_details.length) {
-			msgprint(__("Please Add Project and Contact Details."))
-		}
-		if (!cur_frm.doc.training_mail_project_details.length && cur_frm.doc.training_mail_contact_details)
-		{
-			msgprint(__("Please Add Project Details."))
-		}
-		if (!cur_frm.doc.training_mail_contact_details.length && cur_frm.doc.training_mail_project_details) {
-			msgprint(__("Please Add Contact Details."))
-		}
-		if(!cur_frm.doc.email_content) {
-			msgprint(__("Please add Email Content"))
-		}*/
-
 
 		$.each(cur_frm.doc.training_mail_project_details,function(i,d){
 			if (!d.training_id){
@@ -80,6 +63,14 @@ cur_frm.fields_dict.training_mail_contact_details.grid.get_field("contact_name")
 
 }
 
+cur_frm.fields_dict['email_content'].get_query = function(doc){
+	return {
+		filters: [
+				['Predefined Text Container', 'using_doctype', '=', "Training Mail"]
+			]
+		}
+}
+
 cur_frm.cscript.contact_name = function(doc, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if(!d.email_id) {
@@ -91,8 +82,6 @@ cur_frm.cscript.contact_name = function(doc, cdt, cdn) {
 send_mail = function(frm){
 	frappe.call({
 		method: "switsol.switsol.doctype.training_mail.training_mail.send_mail_to_client",
-		freeze: true,
-		freeze_message: __("Sending Mails"),
 		args: {
 			"project_data" : cur_frm.doc.training_mail_project_details,
 			"contact_data" : cur_frm.doc.training_mail_contact_details,
@@ -100,7 +89,7 @@ send_mail = function(frm){
 		},
 		callback: function(r) {
 			if(r.message){
-					
+				frappe.msgprint(r.message)
 			}
 		}
 	})
@@ -135,3 +124,19 @@ send_mail = function(frm){
 			}
 		}
 	})*/
+	/*if (cur_frm.doc.training_mail_project_details.length && cur_frm.doc.training_mail_contact_details.length){
+			send_mail();
+		}
+		else if(!cur_frm.doc.training_mail_project_details.length && !cur_frm.doc.training_mail_contact_details.length) {
+			msgprint(__("Please Add Project and Contact Details."))
+		}
+		if (!cur_frm.doc.training_mail_project_details.length && cur_frm.doc.training_mail_contact_details)
+		{
+			msgprint(__("Please Add Project Details."))
+		}
+		if (!cur_frm.doc.training_mail_contact_details.length && cur_frm.doc.training_mail_project_details) {
+			msgprint(__("Please Add Contact Details."))
+		}
+		if(!cur_frm.doc.email_content) {
+			msgprint(__("Please add Email Content"))
+		}*/

@@ -6,6 +6,7 @@
 from __future__ import unicode_literals
 import frappe
 import json
+from frappe import _
 from frappe.model.document import Document
 from frappe.email.email_body import get_message_id
 from frappe.utils import flt, today, get_url, get_datetime
@@ -21,35 +22,40 @@ def send_mail_to_client(project_data,contact_data,predefined_text):
 	
 	for project in project_data:
 		project_id = "http://"+frappe.request.host+"/project_participant?training_id="+project.get("training_id")
-		project_bundle += "<a href="+project_id+">diesem Link</a><br>"
+		project_bundle += "<a href="+project_id+">"+project.get("project_name")+"</a><br>"
 		index = predefined_text.replace("<a href=\"%TRAININGSPLAN\" rel=\"nofollow\" target=\"_blank\">diesem Link</a>.", "<br>"+project_bundle)
 		message = index.encode('utf-8').strip()
 	for contact in contact_data:	
-		send_mail(contact.get("email_id"),json.dumps(message))
+		msg = send_mail(contact.get("email_id"),json.dumps(message))
 		contact_doc = frappe.get_doc("Contact",contact.get("contact_name"))
 		add_email_communication(json.dumps(message),contact.get("email_id"),contact_doc)
 
 		if contact_doc.customer:
 			customer_doc = frappe.get_doc("Customer",frappe.get_doc("Contact",contact.get("contact_name")).customer)
 			add_email_communication(json.dumps(message),contact.get("email_id"),customer_doc)
+	return msg
 
 def send_mail(email_id,message):
-	frappe.sendmail(
-		recipients=(email_id),
-		expose_recipients="header",
-		sender=None,
-		reply_to=None,
-		subject="Training",
-		content=None,
-		reference_doctype=None,
-		reference_name=None,
-		attachments=None,
-		message = message,
-		message_id=None,
-		unsubscribe_message=None,
-		delayed=False,
-		communication=None
-)
+	try:
+		frappe.sendmail(
+			recipients=(email_id),
+			expose_recipients="header",
+			sender=None,
+			reply_to=None,
+			subject="Training",
+			content=None,
+			reference_doctype=None,
+			reference_name=None,
+			attachments=None,
+			message = message,
+			message_id=None,
+			unsubscribe_message=None,
+			delayed=False,
+			communication=None
+		)
+		return _("The invitation email has been sent")
+	except Exception,e:
+		frappe.throw(_("Mail has not been Sent. Kindly Contact to Administrator"))
 
 def add_email_communication(html,email_id,doc):
 	comm = frappe.get_doc({
