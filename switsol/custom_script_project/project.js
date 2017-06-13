@@ -11,7 +11,7 @@ frappe.ui.form.on("Project", "refresh", function(frm) {
 			frappe.route_options = {"project": cur_frm.doc.name};
 			frappe.set_route("query-report","Feedback");
 		});
-		frm.add_custom_button(__("Training Mail"), function() {
+		frm.add_custom_button(__("Werbemail Senden"), function() {
 			frappe.route_options = {
 				"project_name": frm.doc.name,
 				"training_id": frm.doc.training_id
