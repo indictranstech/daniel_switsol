@@ -50,15 +50,19 @@ def certificate_creation(**kwargs):
 		else:
 			student_not_have_certficate.append(student_name)
 
+
 	if student_not_have_certficate:
 		for student in student_not_have_certficate:
+			student_doc = frappe.get_doc("Student",student)
+			item_doc = frappe.get_doc("Item",kwargs.get('item'))
+			item_name = frappe.db.get_value("Item",{"name":item_doc.variant_of},"item_name")
 		 	certificate = frappe.new_doc("Certificate")
 		 	certificate.student = student
 			certificate.student_email_id = student_data[student][0]
-			certificate.student_name = student_data[student][1]
+			certificate.student_name = student_doc.first_name + " " + student_doc.last_name if student_doc.last_name else student_doc.first_name
 			certificate.project = kwargs['project_name']
 			certificate.item = kwargs['item']
-			certificate.item_name = kwargs['item_name']
+			certificate.item_name = item_name if item_name else kwargs.get('item_name')
 			certificate.training_center = kwargs['training_center']
 			certificate.instructor = data.get('instructor')
 			if data.get('instructor'):

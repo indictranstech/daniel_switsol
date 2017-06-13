@@ -32,17 +32,17 @@ frappe.ui.form.on("Leave Application", {
 			
 			callback: function(r) {
 				if(r.message){
-					if(r.message['Approver'][0]){
+					if(r.message['Approver']){
 						frm.set_value("approver",r.message['Approver'][0])
 						cur_frm.set_df_property("approver", "read_only",1);
 					}
 
-					if(r.message['Executor'][0]){
+					if(r.message['Executor']){
 						frm.set_value("leave_executor",r.message['Executor'][0])
 						cur_frm.set_df_property("leave_executor", "read_only",1);
 					}
 
-					if(r.message['Executor'][1]){
+					if(r.message['Executor']){
 						frm.set_value("leave_executor_2",r.message['Executor'][1])
 						cur_frm.set_df_property("leave_executor_2", "read_only",1);
 					}

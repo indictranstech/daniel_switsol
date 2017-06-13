@@ -85,7 +85,7 @@ send_mail = function(frm){
 		args: {
 			"project_data" : cur_frm.doc.training_mail_project_details,
 			"contact_data" : cur_frm.doc.training_mail_contact_details,
-			"predefined_text": cur_frm.doc.predefined_text_container,
+			"predefined_text": cur_frm.doc.predefined_text_container
 		},
 		callback: function(r) {
 			if(r.message){
