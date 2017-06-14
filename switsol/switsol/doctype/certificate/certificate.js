@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 
 cur_frm.add_fetch('student','title','student_name'); 
-cur_frm.add_fetch('item','item_name','item_name'); 
+// cur_frm.add_fetch('item','item_name','item_name'); 
 cur_frm.add_fetch('instructor','instructor_name','instructor_name'); 
 cur_frm.add_fetch('instructor','employee','employee');
 cur_frm.add_fetch('student','student_email_id','student_email_id');
@@ -11,7 +11,33 @@ cur_frm.add_fetch('predefined_text_container','predefined_text_container','prede
 
 
 frappe.ui.form.on('Certificate', {
-	/*validate : function(frm){
+	item : function(){
+		if(cur_frm.doc.item){
+			get_item_template_name()
+		}
+		else{
+			cur_frm.set_value("item_name","")
+		}
+	}
+	
+});
+
+get_item_template_name = function(){
+	frappe.call({
+			method: "switsol.switsol.doctype.certificate.certificate.get_item_template_name",
+			args: {
+				"item":cur_frm.doc.item
+			},
+			callback: function(r) {
+				if(r.message) {
+					cur_frm.set_value("item_name",r.message)
+				}
+			}
+		});
+}
+
+/*frappe.ui.form.on('Certificate', {
+	validate : function(frm){
 		if (frm.doc.__islocal){
 			cur_frm.doc.ms_certificate = 1
 			refresh_field("ms_certificate")
@@ -27,14 +53,14 @@ frappe.ui.form.on('Certificate', {
 	},
 	onload:function(frm){
 		console.log("inside onload111")
-	}*/
+	}
 });
 
 
 
 save_attachments = function(frm){
 	console.log("save_attachments")
-	/*if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
+	if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length > 0){
 		console.log("inside my function")
 		var attachments = []
 		$.each(frm.attachments.get_attachments(),function(index,row){
@@ -45,11 +71,11 @@ save_attachments = function(frm){
         	console.log("inside attachments empty")
             attach_new_horizon_certificate(frm);		        
         }
-	}*/
+	}
 	
 	if(frm.attachments.get_attachments() && frm.attachments.get_attachments().length == 0){
 		console.log("inside empty")
-		//attach_new_horizon_certificate(frm);
+		attach_new_horizon_certificate(frm);
 	}
 
 }
@@ -74,7 +100,7 @@ attach_new_horizon_certificate = function(frm) {
 }
 
 
-/*attach_ms_certificate = function(frm) {
+attach_ms_certificate = function(frm) {
 		console.log("inside attach_ms_certificate")
 	var print_format = "Certificate"
 	cur_frm.print_preview.with_old_style({
