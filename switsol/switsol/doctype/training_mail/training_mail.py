@@ -25,7 +25,7 @@ def send_mail_to_client(project_data,contact_data,predefined_text):
 	for project in project_data:
 		if project.get("project_name"):
 			project_doc = frappe.get_doc("Project",project.get("project_name"))
-			item_details = project_doc.item +"&nbsp;"+ "(Startdatum:" + str(project_doc.expected_start_date.strftime('%d.%m.%Y')) + "," +"&nbsp;"+ (project_doc.training_center if project_doc.training_center else "") + ")" 
+			item_details = project_doc.item_name +"&nbsp;"+ "(Startdatum:" + str(project_doc.expected_start_date.strftime('%d.%m.%Y')) + "," +"&nbsp;"+ (project_doc.training_center if project_doc.training_center else "") + ")" 
 			project_id = "http://"+frappe.request.host+"/project_participant?training_id="+project.get("training_id")
 			project_bundle += "<a href="+project_id+">"+project.get("project_name")+"</a>"+"&nbsp;&nbsp;"+item_details + "<br><br>"
 			message = predefined_text.replace("<a href=\"%TRAININGSPLAN\" rel=\"nofollow\" target=\"_blank\">diesem Link</a>.", "<br>"+project_bundle)
@@ -45,6 +45,7 @@ def send_mail(email_id,message):
 	try:
 		frappe.sendmail(
 			recipients=(email_id or []),
+			cc = ["operations@newhorizons.ch"],
 			expose_recipients="header",
 			sender = sender,
 			reply_to=None,

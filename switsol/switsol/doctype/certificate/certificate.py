@@ -47,11 +47,24 @@ def add_attachments(certificate,url,print_format):
 		return "True"
 	except frappe.DuplicateEntryError:
 		return frappe.get_doc("File", f.duplicate_entry)
-	# print_html = frappe.render_template("templates/certificate_print_format.html", {
-	# 	"doc": doc
-	# })
-	# attachment = frappe.attach_print("Certificate",reference_name, html=print_html)
-	# save_file(attachment['fname'], attachment['fcontent'],"Certificate", reference_name)
-	#save_file(certificate,url,doc.doctype, doc.name, decode=True)
-	#return "Done"
-	
+
+@frappe.whitelist()
+def get_item_template_name(item):
+	item_doc = frappe.get_doc("Item",item)
+	item_name = frappe.db.get_value("Item",{"name":item_doc.name},"item_name")
+	template_item_name = frappe.db.get_value("Item",{"name":item_doc.variant_of},"item_name")
+
+	return template_item_name if template_item_name else item_name
+
+
+
+
+
+
+# print_html = frappe.render_template("templates/certificate_print_format.html", {
+# 	"doc": doc
+# })
+# attachment = frappe.attach_print("Certificate",reference_name, html=print_html)
+# save_file(attachment['fname'], attachment['fcontent'],"Certificate", reference_name)
+#save_file(certificate,url,doc.doctype, doc.name, decode=True)
+#return "Done"
