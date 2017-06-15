@@ -40,14 +40,12 @@ def send_mail_to_client(project_data,contact_data,predefined_text):
 	return msg
 
 def send_mail(email_id,message):
-	email_account = frappe.get_doc("Email Account", "New Horizons (Schweiz)")
-	sender = email.utils.formataddr(("New Horizons (Schweiz) AG", email_account.get("email_id")))
 	try:
 		frappe.sendmail(
 			recipients=(email_id or []),
 			cc = ["operations@newhorizons.ch"],
 			expose_recipients="header",
-			sender = sender,
+			sender = None,
 			reply_to=None,
 			subject= "Information zu moeglichen Trainings",
 			content=None,
