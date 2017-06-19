@@ -2,13 +2,69 @@ frappe.ui.form.on("Sales Invoice", {
 	refresh : function(frm){
 		if (frm.doc.status == "Unpaid" && cur_frm.doc.reminder_count <= 3){
 			frm.add_custom_button(__('Reminder '+frm.doc.reminder_count),function(){
-				make_reminder_dialog()
+				make_confirm_dialog()
 			})
+		}
+		if (frm.doc.reminder_count == 2) {
+			frm.set_value("reminder_status","1. Zahlungserinnerung")
+			cur_frm.save_or_update()
+		}
+		else if (frm.doc.reminder_count == 3) {
+			frm.set_value("reminder_status","2. Zahlungserinnerung")
+			cur_frm.save_or_update()
+		}
+		else if (frm.doc.reminder_count == 4) {
+			frm.set_value("reminder_status","Betreibungsandrohung")
+			cur_frm.save_or_update()
 		}
 	}	
 })
 
+make_confirm_dialog = function(){
+	var dialog = new frappe.ui.Dialog({
+		title: __("Confirm"),
+		fields: [
+			{
+				"fieldname": "text",
+				"fieldtype": "Data",
+				"default":"Would you like to send reminder by email or post?",
+				"read_only": 1
+			},
+			{
+				"fieldname": "sec_brk",
+				"fieldtype": "Section Break"
+			},
+			{
+				"label": __("Send by Email"), 
+				"fieldname": "send_by_email",
+				"fieldtype": "Button"
+			},
+			{
+				"fieldname": "col_brk",
+				"fieldtype": "Column Break"
+			},
+			{
+				"label": __("Send by Post"), 
+				"fieldname": "send_by_post",
+				"fieldtype": "Button"
+			}
+		]
+	});
 
+	dialog.show();
+	dialog.fields_dict.send_by_email.$input.click(function(){
+		make_reminder_dialog()
+		dialog.hide()
+	})
+	dialog.fields_dict.send_by_post.$input.click(function(){
+		var flag = 'Post'
+		send_payment_reminder(dialog,flag)
+		window.open(frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Sales%20Invoice&name="+cur_frm.doc.name+"&format=Sales%20Invoice%20Switsol%20AG&no_letterhead=0&_lang=de");
+		dialog.hide()
+	})
+	
+
+}
 make_reminder_dialog = function(){
 	var dialog = new frappe.ui.Dialog({
 		title: __("Payment Reminder"),
@@ -39,22 +95,17 @@ make_reminder_dialog = function(){
 				"label": __("Predefined Text"), 
 				"fieldname": "predefined_text",
 				"fieldtype": "Text Editor"
-			},
-			{
-				"label": __("Send Reminder"), 
-				"fieldname": "send_reminder",
-				"fieldtype": "Button"
 			}
 		]
 	});
 
 	dialog.show();
 	cur_frm.doc.customer_address ? get_email_id(dialog) : ""
-	dialog.fields_dict.send_reminder.$input.click(function(){
-		send_payment_reminder(dialog)
-		dialog.hide()
-	})
-
+	dialog.set_primary_action(__("Send Reminder"), function() {
+			var flag = 'Reminder'
+			send_payment_reminder(dialog,flag)
+			dialog.hide()
+		});
 }
 
 content_of_predefined_text = function(dialog){
@@ -93,20 +144,22 @@ get_email_id = function(dialog){
 
 }
 
-send_payment_reminder = function(dialog){
+send_payment_reminder = function(dialog,flag){
 		frappe.call({
 				method: "switsol.custom_scripts.sales_invoice.payment_reminder",
 				freeze: true,
-				freeze_message: __("Sending Mails"),
+				freeze_message: __("Sending "+flag),
 				args: {
 					"customer_address":cur_frm.doc.customer_address,
-					"args" : dialog.get_values()
+					"customer_name" : cur_frm.doc.customer,
+					"args" : dialog.get_values(),
+					"flag" : flag,
+					"reminder_count" : cur_frm.doc.reminder_count
 				},
 				callback: function(r) {
 					if(r.message){
 						cur_frm.set_value("reminder_count",cur_frm.doc.reminder_count+1)
 						cur_frm.save_or_update()
-						// dialog.hide()
 					}
 				}
 			})
