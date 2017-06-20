@@ -27,8 +27,8 @@ doctype_js = {
     "Sales Partner":["custom_scripts/sales_sartner"],
     "Supplier":["custom_scripts/supplier.js"],
     "Timesheet":["custom_scripts/timesheet.js"],
-    "User":["custom_scripts/user.js"],
-    "Sales Invoice":["custom_scripts/sales_invoice.js"]
+    "User":["custom_scripts/user.js"]
+    # "Sales Invoice":["custom_scripts/sales_invoice.js"]
 }
 
 # include js, css files in header of web template

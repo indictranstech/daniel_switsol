@@ -33,7 +33,7 @@ def payment_reminder(customer_address,customer_name,args,flag,reminder_count):
 			print frappe.get_traceback()
 			frappe.throw(_("Mail has not been Sent. Kindly Contact to Administrator"))
 	else:
-		customer_doc.add_comment("Comment", "Reminder "+ reminder_count + " has been sent")
+		customer_doc.add_comment("Comment", _("Reminder")+" "+reminder_count +" "+_("had been sent"))
 		return True
 
 def add_email_communication(message,email_id,doc):
