@@ -3,6 +3,7 @@ import frappe
 from frappe import _
 import json
 from switsol.switsol.doctype.certificate.certificate import add_attachments
+from frappe.utils import nowdate, cstr, flt, cint, now, getdate
 from frappe.desk.form.load import get_attachments
 from frappe.utils.pdf import get_pdf
 from datetime import datetime, timedelta
@@ -204,10 +205,8 @@ def get_events(start=None,end=None,filters=None):
 @frappe.whitelist()
 def get_room(get_args,room=None):
 	data = json.loads(get_args)
-	date = datetime.datetime.strptime(data['start'],'%Y-%m-%d %H:%M:%S').date()
-	week_end_day = datetime.datetime.strptime(data['end'],'%Y-%m-%d %H:%M:%S').date() 
-	week_start_day = date + datetime.timedelta(days=1)
-
+	week_start_day = getdate(data.get('start'))
+	week_end_day = getdate(data.get('end'))
 	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
