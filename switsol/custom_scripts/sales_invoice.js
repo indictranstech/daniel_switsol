@@ -154,7 +154,8 @@ send_payment_reminder = function(dialog,flag){
 					"customer_name" : cur_frm.doc.customer,
 					"args" : dialog.get_values(),
 					"flag" : flag,
-					"reminder_count" : cur_frm.doc.reminder_count
+					"reminder_count" : cur_frm.doc.reminder_count,
+					"si_name": cur_frm.doc.name
 				},
 				callback: function(r) {
 					if(r.message){
