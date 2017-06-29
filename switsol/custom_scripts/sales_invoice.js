@@ -148,9 +148,8 @@ send_payment_reminder = function(dialog,flag){
 		frappe.call({
 				method: "switsol.custom_scripts.sales_invoice.payment_reminder",
 				freeze: true,
-				freeze_message: __("Sending")+' '+flag,
+				freeze_message: __("Sending")+' '+_(flag),
 				args: {
-					"customer_address":cur_frm.doc.customer_address,
 					"customer_name" : cur_frm.doc.customer,
 					"args" : dialog.get_values(),
 					"flag" : flag,

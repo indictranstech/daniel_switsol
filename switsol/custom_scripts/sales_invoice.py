@@ -6,17 +6,18 @@ from frappe.email.email_body import get_message_id
 import json
 
 @frappe.whitelist()
-def payment_reminder(customer_address,customer_name,args,flag,reminder_count,si_name):
+def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 	data = json.loads(args) 
 	customer_doc = frappe.get_doc("Customer",customer_name)
 	if flag == 'Reminder':
+		subject = _("Reminder")
 		try:
 			frappe.sendmail(
 			recipients=data.get('email_id'),
 			expose_recipients="header",
 			sender=None,
 			reply_to=None,
-			subject="Reminder",
+			subject= subject +" "+si_name,
 			content=None,
 			reference_doctype=None,
 			reference_name=None,
@@ -33,7 +34,7 @@ def payment_reminder(customer_address,customer_name,args,flag,reminder_count,si_
 			print frappe.get_traceback()
 			frappe.throw(_("Mail has not been Sent. Kindly Contact to Administrator"))
 	else:
-		customer_doc.add_comment("Comment", _("Reminder")+" "+reminder_count +" "+_("had been sent for Sales Invoice :") 
+		customer_doc.add_comment("Comment", "{0}.".format(reminder_count) +"&nbsp"+_("Reminder")+"&nbsp"+_("had been sent for Sales Invoice :") 
 			+ " " + "<a href='#Form/Sales Invoice/{0}'>{0}</a>".format(si_name))
 		return True
 
