@@ -46,7 +46,7 @@
    "allow_on_submit": 0, 
    "bold": 0, 
    "collapsible": 0, 
-   "columns": 3, 
+   "columns": 2, 
    "fieldname": "student_name", 
    "fieldtype": "Data", 
    "hidden": 0, 
@@ -564,7 +564,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2017-06-29 19:50:37.071024", 
+ "modified": "2017-07-01 00:30:11.494098", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "Certificate", 
@@ -598,6 +598,6 @@
  "read_only_onload": 0, 
  "sort_field": "modified", 
  "sort_order": "DESC", 
- "title_field": "student_name", 
+ "title_field": "", 
  "track_seen": 0
 }
