@@ -20,7 +20,7 @@ def certificate_creation(**kwargs):
 	name_of_certificate = []
 	data = json.loads(kwargs.get('args'))
 	email_id_of_cc = []
-	if kwargs['print_format'] in ["New Horizons Certificate", "New Horizons Zertifikat"]:
+	if kwargs.get('print_format') in ["New Horizons Certificate", "New Horizons Zertifikat"]:
 		if data.get('send_by_mail') == 1 and data.get('cc'):
 			email_id_of_cc = (data.get('cc').encode('utf-8')).split(",")
 		if data.get('send_by_mail') == 1:
@@ -41,11 +41,11 @@ def certificate_creation(**kwargs):
 				for item in get_attachments("Certificate",name):
 					attachments_list.append(item['file_name'])		
 
-			if kwargs['print_format'] not in attachments_list:
-				attach_pdf_as_certificate(name,kwargs['print_format'])
+			if kwargs.get('print_format') not in attachments_list:
+				attach_pdf_as_certificate(name,kwargs.get('print_format'))
 
 			if data.get('send_by_mail') == 1 and certificate_doc:
-				check_student_email_id_and_send_mail(student_data[student_name][0],student_data[student_name][1],kwargs['print_format'],name,predefined_text_content,predefined_text_value,email_id_of_cc)
+				check_student_email_id_and_send_mail(student_data[student_name][0],student_data[student_name][1],kwargs.get('print_format'),name,predefined_text_content,predefined_text_value,email_id_of_cc)
 				frappe.db.set_value("Certificate", certificate_doc.name, "send_by_mail",1)
 			name_of_certificate.append(name)
 		else:
@@ -58,6 +58,7 @@ def certificate_creation(**kwargs):
 			item_doc = frappe.get_doc("Item",kwargs.get('item'))
 			item_name = frappe.db.get_value("Item",{"name":item_doc.variant_of},"item_name")
 		 	certificate = frappe.new_doc("Certificate")
+		 	certificate.start_date = kwargs.get('start_date')
 		 	certificate.student = student
 			certificate.student_email_id = student_data[student][0]
 			certificate.student_name = student_doc.first_name + " " + student_doc.last_name if student_doc.last_name else student_doc.first_name
@@ -69,17 +70,17 @@ def certificate_creation(**kwargs):
 			if data.get('instructor'):
 				certificate.employee = instructor_employee_name[0]['employee']
 				certificate.instructor_name = instructor_employee_name[0]['instructor_name']
-			if kwargs['print_format'] in ["New Horizons Certificate", "New Horizons Zertifikat"]:
+			if kwargs.get('print_format') in ["New Horizons Certificate", "New Horizons Zertifikat"]:
 				if data.get('send_by_mail') == 1:
 					certificate.predefined_text_container = predefined_text_content
 					certificate.predefined_text_container_value = predefined_text_value
 			certificate.make_certificate_from = "From Project"
 			certificate.save(ignore_permissions=True)
 
-			attach_pdf_as_certificate(certificate.name,kwargs['print_format'])
+			attach_pdf_as_certificate(certificate.name,kwargs.get('print_format'))
 
 			if data.get('send_by_mail') == 1:
-				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs['print_format'],certificate.name,predefined_text_content,predefined_text_value,email_id_of_cc)
+				check_student_email_id_and_send_mail(student_data[student][0],student_data[student][1],kwargs.get('print_format'),certificate.name,predefined_text_content,predefined_text_value,email_id_of_cc)
 				frappe.db.set_value("Certificate", certificate.name, "send_by_mail",1)
 			name_of_certificate.append(certificate.name)
 	return name_of_certificate

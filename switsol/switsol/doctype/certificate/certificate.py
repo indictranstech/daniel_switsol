@@ -7,11 +7,16 @@ import frappe
 from frappe.model.document import Document
 import urllib
 from frappe import _
+import datetime
 from frappe.desk.form.load import get_attachments
 # from frappe.utils.file_manager import save_file
 # from frappe.utils.pdf import get_pdf
 
 class Certificate(Document):
+	def autoname(self):
+		date = frappe.utils.get_datetime(self.start_date).strftime("%d.%m.%Y")
+		self.name = self.student_name + " - " + self.item_name + " - " + date
+		
 	def validate(self):
 		if self.make_certificate_from == "From Itself":
 			self.ms_certificate = 1
