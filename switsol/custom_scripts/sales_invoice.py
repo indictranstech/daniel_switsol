@@ -9,6 +9,7 @@ import json
 def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 	data = json.loads(args) 
 	customer_doc = frappe.get_doc("Customer",customer_name)
+	attachments = [frappe.attach_print("Sales Invoice",si_name, file_name=si_name, print_format="Sales Invoice Switsol AG")]
 	if flag == 'Reminder':
 		subject = _("Reminder")
 		try:
@@ -17,11 +18,11 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 			expose_recipients="header",
 			sender=None,
 			reply_to=None,
-			subject= subject +" "+si_name,
+			subject= "{0}.".format(reminder_count) +" "+ subject +" "+si_name,
 			content=None,
 			reference_doctype=None,
 			reference_name=None,
-			attachments=None,
+			attachments=attachments,
 			message = data.get('predefined_text'),
 			message_id=None,
 			unsubscribe_message=None,
