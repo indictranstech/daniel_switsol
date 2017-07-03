@@ -1,7 +1,7 @@
 frappe.ui.form.on("Sales Invoice", {
 	refresh : function(frm){
 		if (frm.doc.status == "Unpaid" && cur_frm.doc.reminder_count <= 3){
-			frm.add_custom_button(__('Reminder ')+' '+frm.doc.reminder_count,function(){
+			frm.add_custom_button(__('Reminder')+' '+frm.doc.reminder_count,function(){
 				make_confirm_dialog()
 			})
 		}
@@ -148,7 +148,7 @@ send_payment_reminder = function(dialog,flag){
 		frappe.call({
 				method: "switsol.custom_scripts.sales_invoice.payment_reminder",
 				freeze: true,
-				freeze_message: __("Sending")+' '+_(flag),
+				freeze_message: __("Sending")+' '+__(flag),
 				args: {
 					"customer_name" : cur_frm.doc.customer,
 					"args" : dialog.get_values(),
