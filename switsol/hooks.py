@@ -36,6 +36,8 @@ doctype_js = {
     "Employee":["custom_script_project/employee.js"],
     "Quotation":["custom_script_project/quotation.js"],
     "Sales Order":["custom_script_project/sales_order.js"],
+    "Sales Invoice":["custom_script_project/sales_invoice.js"],
+    "Journal Entry": ["custom_script_project/journal_entry.js"]
     # "Leave Application":["custom_script_project/leave_application.js"]
 }
 #"Project":["custom_script/project.js"],
@@ -95,6 +97,12 @@ permission_query_conditions = {
 doc_events = {
 		"Leave Application": {
         "on_cancel": "switsol.custom_script_project.leave_application.on_cancel"
+        },
+        "Customer":{
+            "onload": "switsol.custom_script_project.customer.onload"
+        },
+        "GL Entry":{
+            "before_submit": "switsol.custom_script_project.gl_entry.before_submit"
         }
 }
 
