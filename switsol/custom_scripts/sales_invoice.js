@@ -5,20 +5,23 @@ frappe.ui.form.on("Sales Invoice", {
 				make_confirm_dialog()
 			})
 		}
-		if (frm.doc.reminder_count == 2) {
-			frm.set_value("reminder_status","1. Zahlungserinnerung")
-			cur_frm.save_or_update()
-		}
-		else if (frm.doc.reminder_count == 3) {
-			frm.set_value("reminder_status","2. Zahlungserinnerung")
-			cur_frm.save_or_update()
-		}
-		else if (frm.doc.reminder_count == 4) {
-			frm.set_value("reminder_status","Betreibungsandrohung")
-			cur_frm.save_or_update()
-		}
 	}	
 })
+
+reminder_logs = function(reminder_status){
+	frappe.call({
+				method: "switsol.custom_scripts.sales_invoice.reminder_logs",
+				args: {
+					"si_name": cur_frm.doc.name
+				},
+				callback: function(r) {
+					if(r.message){
+						
+					}
+				}
+			})
+	
+}
 
 make_confirm_dialog = function(){
 	var dialog = new frappe.ui.Dialog({
@@ -53,19 +56,19 @@ make_confirm_dialog = function(){
 
 	dialog.show();
 	dialog.fields_dict.send_by_email.$input.click(function(){
-		make_reminder_dialog()
+		var flag = 'Reminder'
+		make_reminder_dialog(flag)
 		dialog.hide()
 	})
 	dialog.fields_dict.send_by_post.$input.click(function(){
 		var flag = 'Post'
-		send_payment_reminder(dialog,flag)
-		window.open(frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Sales%20Invoice&name="+cur_frm.doc.name+"&format=Sales%20Invoice%20Switsol%20AG&no_letterhead=0&_lang=de");
+		make_reminder_dialog(flag)
 		dialog.hide()
 	})
 	
 
 }
-make_reminder_dialog = function(){
+make_reminder_dialog = function(flag){
 	var dialog = new frappe.ui.Dialog({
 		title: __("Payment Reminder"),
 		fields: [
@@ -98,12 +101,21 @@ make_reminder_dialog = function(){
 			}
 		]
 	});
-
 	dialog.show();
-	cur_frm.doc.customer_address ? get_email_id(dialog) : ""
-	dialog.set_primary_action(__("Send Reminder"), function() {
-			var flag = 'Reminder'
+
+	if(flag == "Reminder"){
+		button = 'Send Reminder'
+		cur_frm.doc.customer_address ? get_email_id(dialog) : ""
+	}
+	else {
+		button = 'Send Letter'
+		dialog.fields_dict.email_id.$wrapper.hide()
+		dialog.get_field('email_id').df.reqd = 0
+	}
+
+	dialog.set_primary_action(__(button), function() {
 			send_payment_reminder(dialog,flag)
+			// "http://mag-test.switsol.ch/api/method/frappe.utils.print_format.download_pdf?doctype=Letter&name=LT-00002&format=Letter%20SI%20Switsol%20AG&no_letterhead=0&_lang=de"
 			dialog.hide()
 		});
 }
@@ -158,8 +170,10 @@ send_payment_reminder = function(dialog,flag){
 				},
 				callback: function(r) {
 					if(r.message){
-						cur_frm.set_value("reminder_count",cur_frm.doc.reminder_count+1)
-						cur_frm.save_or_update()
+						cur_frm.reload_doc()
+						if(flag=='Post'){
+							window.open(frappe.urllib.get_base_url()+"/api/method/frappe.utils.print_format.download_pdf?doctype=Letter&name="+r.message+"&format=Letter%20SI%20Switsol%20AG&no_letterhead=0&_lang=de");
+						}
 					}
 				}
 			})
