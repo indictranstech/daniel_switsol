@@ -79,6 +79,11 @@ make_reminder_dialog = function(flag){
 				"reqd": 1
 			},
 			{
+				"label": __("Greeting"),
+				"fieldname":"greeting",
+				"fieldtype":"Data",
+			},
+			{
 				"label": __("Predefined Text Container"), 
 				"fieldname": "predefined_text_container",
 				"fieldtype": "Link", 
@@ -98,24 +103,30 @@ make_reminder_dialog = function(flag){
 				"label": __("Predefined Text"), 
 				"fieldname": "predefined_text",
 				"fieldtype": "Text Editor"
+			},
+			{
+				"label":__("Signed By"),
+				"fieldname": "signed_by",
+				"fieldtype":"Link",
+				"options":"User"
 			}
 		]
 	});
 	dialog.show();
-
+	get_greeting(dialog)
 	if(flag == "Reminder"){
-		button = 'Send Reminder'
+		button = __('Send Reminder')
+		dialog.fields_dict.signed_by.$wrapper.hide()
 		cur_frm.doc.customer_address ? get_email_id(dialog) : ""
 	}
 	else {
-		button = 'Send Letter'
+		button = __('Send Letter')
 		dialog.fields_dict.email_id.$wrapper.hide()
 		dialog.get_field('email_id').df.reqd = 0
 	}
 
-	dialog.set_primary_action(__(button), function() {
+	dialog.set_primary_action(button, function() {
 			send_payment_reminder(dialog,flag)
-			// "http://mag-test.switsol.ch/api/method/frappe.utils.print_format.download_pdf?doctype=Letter&name=LT-00002&format=Letter%20SI%20Switsol%20AG&no_letterhead=0&_lang=de"
 			dialog.hide()
 		});
 }
@@ -150,6 +161,23 @@ get_email_id = function(dialog){
 			callback: function(r) {
 				if(r.message) {
 					dialog.set_value("email_id",r.message.email_id)
+				}
+			}
+		});
+
+}
+get_greeting = function(dialog){
+	customer = cur_frm.doc.customer
+	frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Customer",
+				fieldname: "greeting",
+				filters: {name:customer}
+			},
+			callback: function(r) {
+				if(r.message) {
+					dialog.set_value("greeting",r.message.greeting)
 				}
 			}
 		});
