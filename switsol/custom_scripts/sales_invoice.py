@@ -91,7 +91,7 @@ def make_new_letter(si_doc,reminder_count,data):
 	letter.customer_address = si_doc.company_address_name if si_doc.company_name else si_doc.customer_address
 	letter.contact_person = si_doc.contact_person
 	letter.contact_display = si_doc.contact_display
-	letter.address_display = si_doc.address_display
+	letter.address_display = si_doc.company_address if si_doc.company_name else si_doc.address_display
 	letter.subject =  data.get('predefined_text_container')
 	letter.contact_greeting = data.get('greeting')
 	letter.letter_text = data.get('predefined_text_container')
