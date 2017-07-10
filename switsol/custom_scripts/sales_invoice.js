@@ -177,7 +177,17 @@ get_greeting = function(dialog){
 			},
 			callback: function(r) {
 				if(r.message) {
-					dialog.set_value("greeting",r.message.greeting)
+					if (frappe.boot.user.language =='de') {
+						if (r.message.greeting =='Mrs'){
+							dialog.set_value("greeting",'Frau')
+						}
+						else if (r.message.greeting == 'Mr') {
+							dialog.set_value("greeting",'Herr')
+						}
+					}
+					else{
+						dialog.set_value("greeting",r.message.greeting)
+					}
 				}
 			}
 		});
