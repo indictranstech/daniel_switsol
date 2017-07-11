@@ -14,6 +14,7 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 	si_doc = frappe.get_doc("Sales Invoice",si_name)
 	customer_doc = frappe.get_doc("Customer",customer_name)
 	attachments = [frappe.attach_print("Sales Invoice",si_name, file_name=si_name, print_format="Sales Invoice Switsol AG")]
+	message = _("Dear")+ " "+"{0} {1}".format(data.get('greeting'),customer_name) + ','
 	if flag == 'Reminder':
 		subject = _("Reminder")
 		try:
@@ -27,7 +28,7 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 			reference_doctype=None,
 			reference_name=None,
 			attachments=attachments,
-			message = data.get('greeting')+ "<br>"+ data.get('predefined_text'),
+			message = message + "<br>"+ data.get('predefined_text'),
 			message_id=None,
 			unsubscribe_message=None,
 			delayed=False,
@@ -40,7 +41,7 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 			print frappe.get_traceback()
 			frappe.throw(_("Mail has not been Sent. Kindly Contact to Administrator"))
 	else:
-		letter_name = make_new_letter(si_doc,reminder_count,data)
+		letter_name = make_new_letter(si_doc,reminder_count,data,message)
 		customer_doc.add_comment("Comment", "{0}.".format(reminder_count) +"&nbsp"+_("Reminder")+"&nbsp"+_("had been sent for Sales Invoice :") 
 			+ " " + "<a href='#Form/Sales Invoice/{0}'>{0}</a>".format(si_name))
 		reminder_logs(si_doc,reminder_count)
@@ -79,7 +80,7 @@ def reminder_logs(si_doc,reminder_count):
 	si_doc.reminder_count = si_doc.reminder_count + 1
 	si_doc.save(ignore_permissions=True)
 
-def make_new_letter(si_doc,reminder_count,data):
+def make_new_letter(si_doc,reminder_count,data,message):
 	letter = frappe.new_doc("Letter")
 	letter.name = si_doc.customer
 	letter.customer = si_doc.customer
@@ -95,7 +96,7 @@ def make_new_letter(si_doc,reminder_count,data):
 	letter.subject =  data.get('predefined_text_container')
 	letter.contact_greeting = data.get('greeting')
 	letter.letter_text = data.get('predefined_text_container')
-	letter.body_text = data.get('predefined_text')
+	letter.body_text = message + "<br>" + data.get('predefined_text')
 	letter.chief_signature = si_doc.chief_signature
 	letter.chief_signature_value = frappe.db.get_value("Employee", {"user_id": si_doc.chief_signature}, "signature")
 	letter.employee_signature = data.get('signed_by')
