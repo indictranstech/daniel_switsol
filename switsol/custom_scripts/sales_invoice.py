@@ -14,7 +14,11 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 	si_doc = frappe.get_doc("Sales Invoice",si_name)
 	customer_doc = frappe.get_doc("Customer",customer_name)
 	attachments = [frappe.attach_print("Sales Invoice",si_name, file_name=si_name, print_format="Sales Invoice Switsol AG")]
-	message = _("Dear")+ " "+"{0} {1}".format(data.get('greeting'),customer_name) + ','
+	greeting_message = "geehrter" if data.get('greeting') == 'Herr' else "geehrte"
+	if frappe.local.lang == "de":
+		message = _("Dear")+ " "+"{0} {1} {2}".format(greeting_message,data.get('greeting'),customer_name) + ','
+	else:
+		message = _("Dear")+ " "+"{0} {1}".format(data.get('greeting'),customer_name) + ','
 	if flag == 'Reminder':
 		subject = _("Reminder")
 		try:
@@ -28,7 +32,7 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 			reference_doctype=None,
 			reference_name=None,
 			attachments=attachments,
-			message = message + "<br>"+ data.get('predefined_text'),
+			message = message + "<br><br>"+ data.get('predefined_text'),
 			message_id=None,
 			unsubscribe_message=None,
 			delayed=False,
@@ -96,7 +100,7 @@ def make_new_letter(si_doc,reminder_count,data,message):
 	letter.subject =  data.get('predefined_text_container')
 	letter.contact_greeting = data.get('greeting')
 	letter.letter_text = data.get('predefined_text_container')
-	letter.body_text = message + "<br>" + data.get('predefined_text')
+	letter.body_text = message + "<br><br>" + data.get('predefined_text')
 	letter.chief_signature = si_doc.chief_signature
 	letter.chief_signature_value = frappe.db.get_value("Employee", {"user_id": si_doc.chief_signature}, "signature")
 	letter.employee_signature = data.get('signed_by')
