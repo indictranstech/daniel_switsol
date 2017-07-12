@@ -177,16 +177,28 @@ get_greeting = function(dialog){
 			},
 			callback: function(r) {
 				if(r.message) {
+					var surname = ""
+					var customer_surname = cur_frm.doc.customer_name.split(" ")
+					if (customer_surname.length != 0 && customer_surname.length > 1 ){
+						surname = customer_surname.slice(1).join(" ");
+					}
+					else {
+						surname = cur_frm.doc.customer_name
+					}
+
 					if (frappe.boot.user.language =='de') {
 						if (r.message.greeting =='Mrs'){
-							dialog.set_value("greeting",'Frau')
+							var greeting = 'Sehr geehrte Frau ' + surname
+							dialog.set_value("greeting",greeting)
 						}
-						else if (r.message.greeting == 'Mr') {
-							dialog.set_value("greeting",'Herr')
+						else {
+							var greeting = 'Sehr geehrter Herr ' + surname
+							dialog.set_value("greeting",greeting)
 						}
 					}
 					else{
-						dialog.set_value("greeting",r.message.greeting)
+						var greeting = 'Dear '+ r.message.greeting +' ' + surname
+						dialog.set_value("greeting",greeting)
 					}
 				}
 			}
