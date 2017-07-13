@@ -111,6 +111,11 @@ make_reminder_dialog = function(flag){
 				"fieldtype": "Text Editor"
 			},
 			{
+				"label": __("Subject"),
+				"fieldname":"subject",
+				"fieldtype":"Data",
+			},
+			{
 				"label":__("Signed By"),
 				"fieldname": "signed_by",
 				"fieldtype":"Link",
@@ -143,12 +148,13 @@ content_of_predefined_text = function(dialog){
 			method: "frappe.client.get_value",
 			args: {
 				doctype: "Predefined Text Container",
-				fieldname: "predefined_text_container",
+				fieldname: ["predefined_text_container","subject"],
 				filters: {name:predefined_content}
 			},
 			callback: function(r) {
 				if(r.message) {
 					dialog.set_value("predefined_text",r.message.predefined_text_container)
+					dialog.set_value("subject",r.message.subject)
 				}
 			}
 		});
