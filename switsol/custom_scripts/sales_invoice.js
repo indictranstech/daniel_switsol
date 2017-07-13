@@ -5,7 +5,13 @@ frappe.ui.form.on("Sales Invoice", {
 				make_confirm_dialog()
 			})
 		}
-	}	
+	},
+	onload: function(frm){
+		if(frm.doc.__islocal) {
+			frm.set_value("reminder_count",1)
+			frm.doc.reminder_logs = []		
+		}
+	}
 })
 
 reminder_logs = function(reminder_status){
@@ -185,7 +191,6 @@ get_greeting = function(dialog){
 					else {
 						surname = cur_frm.doc.customer_name
 					}
-
 					if (frappe.boot.user.language =='de') {
 						if (r.message.greeting =='Mrs'){
 							var greeting = 'Sehr geehrte Frau ' + surname
