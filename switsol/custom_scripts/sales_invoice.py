@@ -22,7 +22,7 @@ def payment_reminder(customer_name,args,flag,reminder_count,si_name):
 			expose_recipients="header",
 			sender=None,
 			reply_to=None,
-			subject= data.get('predefined_text_container'),
+			subject= data.get('subject'),
 			content=None,
 			reference_doctype=None,
 			reference_name=None,
@@ -92,7 +92,7 @@ def make_new_letter(si_doc,reminder_count,data,greeting):
 	letter.contact_person = si_doc.contact_person
 	letter.contact_display = si_doc.contact_display
 	letter.address_display = si_doc.company_address if si_doc.company_name else si_doc.address_display
-	letter.subject =  data.get('predefined_text_container')
+	letter.subject =  data.get('subject')
 	letter.contact_greeting = data.get('greeting')
 	letter.letter_text = data.get('predefined_text_container')
 	letter.body_text = greeting + "<br><br>" + data.get('predefined_text')
