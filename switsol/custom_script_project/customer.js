@@ -7,10 +7,6 @@ frappe.ui.form.on("Customer",{
 		frm.add_custom_button(__('Accounting Transactions'),function(){
 			frappe.set_route("query-report","Accounting Transactions")
 			})
-		},
-		onload: function(frm){
-			// erpnext.company.setup_queries(frm);
-			// erpnext.company.set_custom_query(frm, v)
 		}
 });
 
@@ -76,8 +72,7 @@ make_journal_entry = function(dialog){
 			"payment_details":dialog.get_values()
 		},
 		callback: function(r) {
-			if(r.message){
-			}
+				cur_frm.reload_doc();
 		}
 	})
 }
