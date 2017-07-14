@@ -106,14 +106,14 @@ make_reminder_dialog = function(flag){
 					}
 			},
 			{
-				"label": __("Predefined Text"), 
-				"fieldname": "predefined_text",
-				"fieldtype": "Text Editor"
-			},
-			{
 				"label": __("Subject"),
 				"fieldname":"subject",
 				"fieldtype":"Data",
+			},
+			{
+				"label": __("Predefined Text"), 
+				"fieldname": "predefined_text",
+				"fieldtype": "Text Editor"
 			},
 			{
 				"label":__("Signed By"),
