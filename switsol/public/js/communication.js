@@ -6,9 +6,23 @@ frappe.views.CommunicationComposer = frappe.views.CommunicationComposer.extend({
 		this.set_default_value()
 	},
 	set_default_value : function(){
-		if(this.doc.doctype == 'Standard Reply'){
-			this.dialog.set_value("standard_reply",this.doc.name)
+		var me = this
+		if(this.doc.doctype == 'Quotation'){
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Standard Reply",
+					fieldname: "name",
+					filters: {"name":"Angebot"}
+				},
+				callback: function(r) {
+					if(r.message) {
+						me.dialog.set_value("standard_reply",r.message.name)
+					}
+				}
+			});
+		
 		}
 	}
 
-	})
+})
