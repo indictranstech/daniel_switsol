@@ -12,15 +12,20 @@ frappe.views.CommunicationComposer = frappe.views.CommunicationComposer.extend({
 				method: "frappe.client.get_value",
 				args: {
 					doctype: "Standard Reply",
-					fieldname: "name",
+					fieldname: ["name","response"],
 					filters: {"name":"Angebot"}
 				},
 				callback: function(r) {
 					if(r.message) {
 						me.dialog.set_value("standard_reply",r.message.name)
+						me.dialog.set_value("content",r.message.response)
+						me.dialog.fields_dict.standard_reply.$input.change(function(){
+							me.dialog.set_value("content","")
+			 			})
 					}
 				}
 			});
+
 		
 		}
 	}
