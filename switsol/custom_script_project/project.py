@@ -6,6 +6,7 @@ from switsol.switsol.doctype.certificate.certificate import add_attachments
 from frappe.utils import nowdate, cstr, flt, cint, now, getdate
 from frappe.desk.form.load import get_attachments
 from frappe.utils.pdf import get_pdf
+from operator import itemgetter
 from datetime import datetime, timedelta
 import datetime
 
@@ -263,6 +264,8 @@ def get_room(get_args,room=None):
 	room_event_data = []
 	event_index = 1
 
+	rooms_data.sort(key=operator.itemgetter('name'))
+	
 	for event_id,row in enumerate(rooms_data):
 		doc = frappe.get_doc("Project",row['name'])
 		length = len(doc.project_participant_details)
