@@ -264,8 +264,8 @@ def get_room(get_args,room=None):
 	room_event_data = []
 	event_index = 1
 
-	rooms_data.sort(key=operator.itemgetter('name'))
-	
+	rooms_data.sort(key=itemgetter('name'))
+
 	for event_id,row in enumerate(rooms_data):
 		doc = frappe.get_doc("Project",row['name'])
 		length = len(doc.project_participant_details)
