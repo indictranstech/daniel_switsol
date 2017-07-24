@@ -256,7 +256,8 @@ make_certificate = function(student_data,print_format,dialog){
 			"training_center":cur_frm.doc.project_training_details[0]['training_center'],
 			"print_format" : print_format,
 			"start_date" : cur_frm.doc.expected_start_date,
-			"args" : dialog.get_values()
+			"args" : dialog.get_values(),
+			"training_name":cur_frm.doc.additional_information 
 		},
 		async : async_val,
 		callback: function(r) {
