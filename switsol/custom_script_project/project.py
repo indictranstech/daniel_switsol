@@ -231,36 +231,28 @@ def get_room(get_args,room=None):
 
 	
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
-	
+
 	if room_id_list:
 		room_ids = ""
 		if len(room_id_list) == 1:
-			room_ids = "where name = '{0}'".format(room_id_list[0])
+			room_ids = "and r.name = '{0}'".format(room_id_list[0])
 		else:
-			room_ids = "where name in {0}".format(tuple(room_id_list))
+			room_ids = "and r.name in {0}".format(tuple(room_id_list))
 
-		center_name = frappe.db.sql("""select name as room_id ,training_center as center 
-										from `tabRoom` {0}
+		center_name = frappe.db.sql("""select r.name as room_id,r.training_center as center,t.sorting_order as 'order'
+										from `tabRoom` r,`tabTraining Center` t 
+										where t.name = r.training_center {0}
 							""".format(room_ids),as_dict=1)
 
-		center_name = {center['room_id']:center['center'] for center in center_name}
-
+		training_name = {center['room_id']:[center['center'],center['order']] for center in center_name}
 		for row in rooms_data:
-			if row['room_id'] in center_name.keys():
-				row['center'] = center_name[row['room_id']]
-		
-		for row_dict in rooms_data:
-			if row_dict.get('center') == "Glattbrugg (NH)":
-				row_dict['sort_id'] = 1
-			elif row_dict.get('center') == "Aarau (NH)":
-				row_dict['sort_id'] = 2
-			elif row_dict.get('center') == "Extern":
-				row_dict['sort_id'] = 4
-			else:
-				row_dict['sort_id'] = 3
-		import operator
-		rooms_data.sort(key=operator.itemgetter('sort_id'))
+			if row['room_id'] in training_name.keys():
+				room_dict = training_name[row['room_id']]
+				row['center'] = room_dict[0]
+				row['order'] = room_dict[1]
 
+		import operator
+		rooms_data.sort(key=operator.itemgetter('order'))
 	room_data = []
 	room_event_data = []
 	event_index = 1

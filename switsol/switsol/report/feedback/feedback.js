@@ -9,6 +9,11 @@ frappe.query_reports["Feedback"] = {
 		"fieldtype": "Link",
 		"options":"Project",
 		"width": "80"
+		},
+		{
+		"fieldname":"print",
+		"label": __("Print"),
+		"fieldtype": "Button"
 		}
 	]
 }
