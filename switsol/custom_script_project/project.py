@@ -226,7 +226,7 @@ def get_room(get_args,room=None):
 							pt.room != '' and
 							pt.start_date between "{0}" and "{1}"
 							group by pt.start_date,p.name
-							order by r.room_name
+							order by p.name
 							""".format(week_start_day,week_end_day),as_dict=1)
 
 	
@@ -256,8 +256,6 @@ def get_room(get_args,room=None):
 	room_data = []
 	room_event_data = []
 	event_index = 1
-
-	rooms_data.sort(key=itemgetter('name'))
 
 	for event_id,row in enumerate(rooms_data):
 		doc = frappe.get_doc("Project",row['name'])
