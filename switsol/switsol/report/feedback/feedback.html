@@ -1,0 +1,83 @@
+<style type="text/css">
+	.print-format {
+		font-family: DIN-Regular !important;
+	}
+	.page-sizes {
+		margin-right: 5mm;
+		margin-left: 5mm;
+	}
+	.print-format label {
+		margin-bottom: 0;
+		font-family: DIN-Bold !important;
+		font-weight: 400;
+	}
+	.print-format th {
+		background-color: white !important;
+		border: 1px solid black !important;
+	}
+	.print-format td {
+		background-color: white !important;
+		border: 1px solid black !important;
+	}
+</style>
+<div id="header-html" class="hidden-pdf">
+	<div class="row" style="margin-right: 5mm; margin-left: 5mm; margin-top: -25px !important;">
+		<div class="text-left">
+			<img src="/files/NH-Word-Header.png" align="right" height="68">
+			<h2 class="text-right" style="position:absolute; bottom:0; padding:0px; width:100%; text-align: left; color: black !important;
+				line-height: 1 !important; margin-top: -25px !important;"><label>{{ __("Evaluation Seminar") }}</label></h2>
+				<br>
+		</div>
+	</div>
+</div>
+<div class="page-sizes">
+	{{ __("Free Texts Participants") }}
+	<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th style="width: 10%;">
+				<label>{{ __("Seminar/Course") }}</label>
+			</th>
+			<th style="width: 10%">
+				<label>{{ __("Remarks Target") }}</label>
+			</th>
+			<th style="width: 10%">
+				<label>{{ __("Remarks Room") }}</label>
+			</th>
+			<th style="width: 8%">
+				<label>{{ __("Remarks Coach") }}</label>
+			</th>
+			<th style="width: 8%">
+				<label>{{ __("Changes content") }}</label>
+			</th>
+			<th style="width: 8%">
+				<label>{{ __("Comments Contents") }}</label>
+			</th>
+			<th style="width: 17%">
+				<label>{{ __("Are there other subjects that interest you?") }}</label>
+			</th>
+			<th style="width: 17%">
+				<label>{{ __("Any comments or suggestions?") }}</label>
+			</th>
+			<th style="width: 17%">
+				<label>{{ __("Other (please specify)") }}</label>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for i in data %}
+			<tr>
+			<td>{{ i[__("Seminar / Course")] }}</td>
+			<td>{{ i[__("Remarks Target")] }}</td>
+			<td>{{ i[__("Remarks Room")] }}</td>
+			<td>{{ i[__("Remarks Coach")] }}</td>
+			<td>{{ i[__("Changes content")] }}</td>
+			<td>{{ i[__("Comments Contents")] }}</td>
+			<td>{{ i[__("Are there other subjects that interest you?")] }}</td>
+			<td>{{ i[__("Any comments or suggestions?")] }}</td>
+			<td>{{ i[__("Other (please specify)")] }}</td>
+			</tr>
+		{% endif %}
+	</tbody>
+</table>
+</div>
