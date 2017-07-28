@@ -226,7 +226,7 @@ def get_room(get_args,room=None):
 							pt.room != '' and
 							pt.start_date between "{0}" and "{1}"
 							group by pt.start_date,p.name
-							order by p.name
+							order by r.room_name,p.name asc
 							""".format(week_start_day,week_end_day),as_dict=1)
 
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
@@ -291,5 +291,5 @@ def get_room(get_args,room=None):
 						 {0} order by room_name""".format(room_ids),as_dict=1)
 	for row in all_rooms:
 			room_data.append({"title":row['room'],"id":row['room']})
-
+			
 	return {'room_data':room_data,'room_event_data':sorted_room_data}
