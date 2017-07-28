@@ -229,7 +229,6 @@ def get_room(get_args,room=None):
 							order by p.name
 							""".format(week_start_day,week_end_day),as_dict=1)
 
-	
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
 
 	if room_id_list:
