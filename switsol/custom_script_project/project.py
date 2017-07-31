@@ -206,7 +206,7 @@ def get_events(start=None,end=None,filters=None):
 	all_rooms query for dispaying all rooms on calendar
 """
 @frappe.whitelist()
-def get_room(get_args,room=None):
+def get_room(get_args):
 	data = json.loads(get_args)
 	week_start_day = getdate(data.get('start'))
 	week_end_day = getdate(data.get('end'))
@@ -224,7 +224,7 @@ def get_room(get_args,room=None):
 							pt.room = r.name and 
 							pt.start_date is not null and 
 							pt.room != '' and
-							pt.start_date between "{0}" and "{1}"
+							pt.start_date > "{0}" and pt.start_date <= "{1}"
 							group by pt.start_date,p.name
 							order by r.room_name,p.name
 							""".format(week_start_day,week_end_day),as_dict=1)
