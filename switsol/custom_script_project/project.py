@@ -226,35 +226,12 @@ def get_room(get_args,room=None):
 							pt.room != '' and
 							pt.start_date between "{0}" and "{1}"
 							group by pt.start_date,p.name
-							order by r.room_name,p.name asc
+							order by r.room_name,p.name
 							""".format(week_start_day,week_end_day),as_dict=1)
 
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
-
-	if room_id_list:
-		room_ids = ""
-		if len(room_id_list) == 1:
-			room_ids = "and r.name = '{0}'".format(room_id_list[0])
-		else:
-			room_ids = "and r.name in {0}".format(tuple(room_id_list))
-
-		center_name = frappe.db.sql("""select r.name as room_id,r.training_center as center,t.sorting_order as 'order'
-										from `tabRoom` r,`tabTraining Center` t 
-										where t.name = r.training_center {0}
-							""".format(room_ids),as_dict=1)
-
-		training_name = {center['room_id']:[center['center'],center['order']] for center in center_name}
-		for row in rooms_data:
-			if row['room_id'] in training_name.keys():
-				room_dict = training_name[row['room_id']]
-				row['center'] = room_dict[0]
-				row['order'] = room_dict[1]
-
-		import operator
-		rooms_data.sort(key=operator.itemgetter('order'))
 	room_data = []
 	room_event_data = []
-	event_index = 1
 
 	for event_id,row in enumerate(rooms_data):
 		doc = frappe.get_doc("Project",row['name'])
