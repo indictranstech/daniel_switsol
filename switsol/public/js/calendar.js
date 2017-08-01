@@ -189,7 +189,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 				method: "switsol.custom_script_project.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
-					 "render_counter":me.render_counter
+					   "timezone":frappe.datetime.is_timezone_same()
 				},
 				callback: function(r) {
 					var rooms = r.message;
@@ -202,7 +202,8 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 				method: "switsol.custom_script_project.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
-					 "render_counter":me.render_counter},
+					 "timezone":frappe.datetime.is_timezone_same()
+					},
 				callback: function(r) {
 					var events = r.message;
 					callback(events['room_event_data']);
