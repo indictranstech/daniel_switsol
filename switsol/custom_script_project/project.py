@@ -182,9 +182,9 @@ def download_pdf(doctype, name, format=None, doc=None,print_format=None):
 		frappe.local.response.type = "download"
 	
 @frappe.whitelist()
-def get_events(start=None,end=None,filters=None):
-	data = frappe.db.sql("""select p.name as name,timestamp(pt.start_date, pt.start_time) as start_date,timestamp(pt.start_date, pt.end_time) as end_date from `tabProject` p, `tabProject Training Details` pt where pt.parent = p.name and timestamp(pt.start_date, pt.start_time) between '2017-01-10' and '2017-02-17' or timestamp(pt.start_date, pt.end_time) between '2017-01-10' and '2017-02-17' """,as_dict=True)
-	return data
+def get_events(start,end,filters):
+	# data = frappe.db.sql("""select p.name as name,timestamp(pt.start_date, pt.start_time) as start_date,timestamp(pt.start_date, pt.end_time) as end_date from `tabProject` p, `tabProject Training Details` pt where pt.parent = p.name and timestamp(pt.start_date, pt.start_time) between '2017-01-10' and '2017-02-17' or timestamp(pt.start_date, pt.end_time) between '2017-01-10' and '2017-02-17' """,as_dict=True)
+	filters = json.loads(filters)
 
 """Returns room data for showing rooms on left side of calendar and room event data for showing event on calendar.
    
@@ -206,10 +206,15 @@ def get_events(start=None,end=None,filters=None):
 	all_rooms query for dispaying all rooms on calendar
 """
 @frappe.whitelist()
-def get_room(get_args):
+def get_room(get_args,timezone):
 	data = json.loads(get_args)
 	week_start_day = getdate(data.get('start'))
 	week_end_day = getdate(data.get('end'))
+	conditions = ""
+	if timezone == False:
+		conditions = "pt.start_date > '{0}' and pt.start_date <= '{1}'".format(week_start_day,week_end_day)
+	else:
+		conditions = "pt.start_date >= '{0}' and pt.start_date < '{1}'".format(week_start_day,week_end_day)
 	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
@@ -223,11 +228,10 @@ def get_room(get_args):
 							pt.parent = p.name and 
 							pt.room = r.name and 
 							pt.start_date is not null and 
-							pt.room != '' and
-							pt.start_date > "{0}" and pt.start_date <= "{1}"
+							pt.room != '' and {0}
 							group by pt.start_date,p.name
 							order by r.room_name,p.name
-							""".format(week_start_day,week_end_day),as_dict=1)
+							""".format(conditions),as_dict=1,debug=1)
 
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
 	room_data = []
@@ -256,7 +260,6 @@ def get_room(get_args):
 		for i in room_event_data:
 			for j in i:
 				sorted_room_data.append(j)
- 
 	room_ids = ""
 	if room_id_list:
 		if len(room_id_list) == 1:
