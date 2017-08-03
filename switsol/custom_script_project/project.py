@@ -215,61 +215,60 @@ def get_room(get_args,timezone):
 		conditions = "pt.start_date > '{0}' and pt.start_date <= '{1}'".format(week_start_day,week_end_day)
 	else:
 		conditions = "pt.start_date >= '{0}' and pt.start_date < '{1}'".format(week_start_day,week_end_day)
-	rooms_data = frappe.db.sql("""select p.name as name,
-							CONVERT(p.max_number_participant, CHAR(50)) as participant,
-							ifnull (p.learning_solution_name,"") as solution_name,
-							ifnull (pt.training_instructor_name,"") as instructor,
-							r.room_name as room,
-							r.name as room_id,
-							pt.start_date as date,
-							min(pt.start_time) as time
-							from `tabProject` p, `tabProject Training Details` pt, `tabRoom` r
-							where 
-							pt.parent = p.name and 
-							pt.room = r.name and 
-							pt.start_date is not null and 
-							pt.room != '' and {0}
-							group by pt.start_date,p.name
-							order by r.room_name,p.name
+	rooms_data = frappe.db.sql("""select 
+										distinct r.room_name as room, 
+										m.proj_name, 
+										m.participant,
+										m.solution_name,
+										m.instructor, 
+										m.date, 
+										m.room_name 
+									from 
+										`tabRoom` r left join
+										(select 
+										p.name as proj_name,
+										CONVERT(p.max_number_participant, CHAR(50)) as participant,
+										p.learning_solution_name as solution_name,
+										pt.training_instructor_name as instructor,
+										pt.start_date as date,
+										pt.room as room_name
+									from 
+										`tabProject` p, `tabProject Training Details` pt 
+									where 
+										pt.parent = p.name
+									and {0}) as m 
+									on 	r.name = m.room_name
+									order by r.room_name,m.proj_name
 							""".format(conditions),as_dict=1,debug=1)
 
-	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
+
 	room_data = []
 	room_event_data = []
+ 	sorted_room_data = []
 
 	for event_id,row in enumerate(rooms_data):
-		doc = frappe.get_doc("Project",row['name'])
-		length = len(doc.project_participant_details)
-		room_description = [
-							(row['name']) + "**" +
-							(str(length)+'/'+row['participant']+' ('+row['solution_name'] + ')' if row['solution_name'] else  _("No Learning Solution")) + "**" +
-							(row['instructor'] if row['instructor'] else _("No trainer added"))
-							]	
-		room_data.append({"title":row['room'],"id":row['room']})
-		room_event_data.append([{
-							"project":row['name'],
-							"id":event_id,
-							"resourceId":row['room'],
-							"start":row['date'],
-							"title":room_description
-							}])
-
-
- 	sorted_room_data = []
+		if row.get('proj_name'):
+			doc = frappe.get_doc("Project",row.get('proj_name'))
+			length = len(doc.project_participant_details)
+			room_description = [
+								(row.get('proj_name')) + "**" +
+								(str(length)+'/'+row.get('participant')+' ('+row.get('solution_name') + ')' if row.get('solution_name') else  _("No Learning Solution")) + "**" +
+								(row.get('instructor') if row.get('instructor') else _("No trainer added"))
+								]	
+			room_data.append({"title":row.get('room'),"id":row.get('room')})
+			room_event_data.append([{
+								"project":row.get('proj_name'),
+								"id":event_id,
+								"resourceId":row.get('room'),
+								"start":row.get('date'),
+								"title":room_description
+								}])
+		else:
+			room_data.append({"title":row.get('room'),"id":row.get('room')})
+	
 	if room_event_data:
 		for i in room_event_data:
 			for j in i:
 				sorted_room_data.append(j)
-	room_ids = ""
-	if room_id_list:
-		if len(room_id_list) == 1:
-			room_ids = "where name != '{0}'".format(room_id_list[0])
-		else:
-			room_ids = "where name not in {0}".format(tuple(room_id_list))
-
-	all_rooms = frappe.db.sql("""select name as id,room_name as room from `tabRoom` 
-						 {0} order by room_name""".format(room_ids),as_dict=1)
-	for row in all_rooms:
-			room_data.append({"title":row['room'],"id":row['room']})
 			
 	return {'room_data':room_data,'room_event_data':sorted_room_data}
