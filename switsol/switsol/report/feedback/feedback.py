@@ -13,14 +13,23 @@ def execute(filters=None):
 
 def get_data(filters):
 	if filters:
-		print "\n\n\n\n\n\n","filters",filters
 		result = frappe.db.sql("""select seminar_course,remarks_target,remarks_room, 
 								remarks_coach,changes_content,comments_contents,subjects_interest,comments_suggestions,other_please_specify
 								from `tabFeedback` where seminar_course = "{0}" """ .format(filters.get('project')),as_list=1)
 	else:
-		result = frappe.db.sql("""select seminar_course,remarks_target,remarks_room, 
-								remarks_coach,changes_content,comments_contents,subjects_interest,comments_suggestions,other_please_specify
-								from `tabFeedback` """,as_list=1)	
+		result = frappe.db.sql("""select seminar_course,
+										remarks_target,
+										remarks_room, 
+										remarks_coach,
+										changes_content,
+										comments_contents,
+										subjects_interest,
+										comments_suggestions,
+										other_please_specify
+								from `tabFeedback` 
+								where
+									remarks_target != ''
+								""",as_list=1)	
 	return result
 
 
