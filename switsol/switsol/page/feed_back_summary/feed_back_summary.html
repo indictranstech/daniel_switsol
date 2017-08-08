@@ -1,5 +1,20 @@
+<div class="row">
+	<div class="col-xs-3"></div>
+	<div class="col-xs-9" style="margin-left: -2mm; margin-top: -50px !important; padding-bottom: 30px">
+		<img src="/files/NH-Word-Header.png" align="right" height="68">
+	</div>
+</div>
 
-<div class="row report">
+<div class="row">
+	<div class="col-xs-3" style="padding-left: 25px;font-size: 20px;font-weight: bold;color: #A9A9A9;">{%= __("Evaluation Seminar") %}</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12 project" style="padding-left: 25px;padding-bottom: 38px;margin-top: 19px;">
+	<b>{%= __("Project") %} :</b></div>
+</div>
+
+<div class="row report test_">
 	{% if (Object.keys(data.main_goal).length > 0) { %}
 	<div class="col-xs-6">
 		<div class="row">
@@ -40,7 +55,7 @@
 	</div>
 	{% } %}
 	{% if (Object.keys(data.quality_training_room).length > 0) { %}
-	<div class="col-xs-6">
+	<div class="col-xs-6" >
 		<div class="row">
 			<div class="col-xs-12 c3" align="center">
 				<b>{%= __("Quality training room") %}</b>
