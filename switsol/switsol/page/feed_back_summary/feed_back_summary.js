@@ -48,27 +48,16 @@ feed_back_summary = Class.extend({
 			render_input: true
 		});
 		me.seminar_course.refresh();
-		me.seminar_course_change();
+		me.seminar_course_change();				
 	},
 	seminar_course_change:function(){
-		console.log("seminar_course_change")
 		var me =this;
 		$(me.page).find(".seminar_course").change(function(){
-			console.log("change 11212")
 			me.get_column_data();
 		})
 	},
-	/*onload:function(){
-		var me = this;
-		console.log("inside onload")
-		if(!frappe.route_options){
-			me.get_column_data();
-		}
-	},*/
 	refresh: function() {
-		console.log("refresh")
 		var me = this;
-		console.log(frappe.route_options,"frappe.route_options")
 		if (frappe.route_options){
 			var value = frappe.route_options['project']
 			me.seminar_course.$input.val(value)
@@ -85,12 +74,15 @@ feed_back_summary = Class.extend({
 			},
 			callback: function(r) {
 				if (r.message){
-					console.log(r.message,"dddddddddddddddd")
 					me.data = r.message;
 					var __html = frappe.render_template("feed_back_summary",{"data":r.message})
 					$(me.page).find(".pie-chart").empty();
 					me.page.find(".pie-chart").append(__html)
 					me.set_chart();
+					project = $(".project").append('&nbsp;'+ me.seminar_course.$input.val())
+					if (r.message['project_count']){
+						project.append(' / '+'<b>'+__('Number of Reviews')+'</b>'+'&nbsp;'+':'+'&nbsp;'+ r.message['project_count'][0])
+					}
 				}
 				else{
 					$(me.page).find(".pie-chart").empty();

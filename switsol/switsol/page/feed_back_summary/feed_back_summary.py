@@ -11,7 +11,9 @@ def get_data(seminar_course):
 	feedback_data = frappe.db.sql("""select quality_training_room,total_of_leader,comprehensan_t_content,advancement_opportunities,
 							main_goal,other_please_specify,how_satisfied_training as how_satisfied
 							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
-	print feedback_data,"feedback_data","\n\n\n\n\n"
+	count =  frappe.db.sql("""select count(seminar_course) as count
+							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
+
 	data_dict = {'quality_training_room':{},
 				'total_of_leader':{},
 				'comprehensan_t_content':{},
@@ -55,8 +57,12 @@ def get_data(seminar_course):
 				data_dict['advancement_opportunities'][j['advancement_opportunities']] = data_dict['advancement_opportunities'][j['advancement_opportunities']] + (float(j['advancement_opportunities'])/float(j['advancement_opportunities']))
 			else:
 				data_dict['advancement_opportunities'][j['advancement_opportunities']] = 1
-
-		return data_dict
+		if seminar_course:
+			project_count = [data.get('count') for data in count]
+			data_dict["project_count"] = project_count
+			return data_dict
+		else:
+			return data_dict
 	else:
 		return ""
 		
