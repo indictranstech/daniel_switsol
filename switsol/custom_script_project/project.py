@@ -201,6 +201,7 @@ def get_room(get_args,timezone):
 	data = json.loads(get_args)
 	week_start_day = getdate(data.get('start'))
 	week_end_day = getdate(data.get('end'))
+	timezone = json.loads(timezone)
 	conditions = ""
 	if timezone == False:
 		conditions = "pt.start_date > '{0}' and pt.start_date <= '{1}'".format(week_start_day,week_end_day)
@@ -222,7 +223,7 @@ def get_room(get_args,timezone):
 							pt.room != '' and {0}
 							group by pt.start_date,p.name
 							order by r.room_name,p.name asc
-							""".format(conditions),as_dict=1)
+							""".format(conditions),as_dict=1,debug=1)
 
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
 
