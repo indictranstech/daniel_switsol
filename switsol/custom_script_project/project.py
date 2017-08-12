@@ -182,7 +182,7 @@ def download_pdf(doctype, name, format=None, doc=None,print_format=None):
 		frappe.local.response.type = "download"
 	
 @frappe.whitelist()
-def get_events(start=None,end=None,filters=None):
+def get_events(start,end):
 	data = frappe.db.sql("""select p.name as name,timestamp(pt.start_date, pt.start_time) as start_date,timestamp(pt.start_date, pt.end_time) as end_date from `tabProject` p, `tabProject Training Details` pt where pt.parent = p.name and timestamp(pt.start_date, pt.start_time) between '2017-01-10' and '2017-02-17' or timestamp(pt.start_date, pt.end_time) between '2017-01-10' and '2017-02-17' """,as_dict=True)
 	return data
 
@@ -197,16 +197,22 @@ def get_events(start=None,end=None,filters=None):
 		group by pt.start_date,p.name
 """
 @frappe.whitelist()
-def get_room(get_args,timezone):
+def get_room(get_args,timezone,filters,walkin_room):
+	walkin_room = json.loads(walkin_room)
+	filters = json.loads(filters)
 	data = json.loads(get_args)
+	timezone = json.loads(timezone)
 	week_start_day = getdate(data.get('start'))
 	week_end_day = getdate(data.get('end'))
-	timezone = json.loads(timezone)
 	conditions = ""
+	walkin_room_condition = ""
 	if timezone == False:
 		conditions = "pt.start_date > '{0}' and pt.start_date <= '{1}'".format(week_start_day,week_end_day)
 	else:
 		conditions = "pt.start_date >= '{0}' and pt.start_date < '{1}'".format(week_start_day,week_end_day)
+	if walkin_room == True:
+		walkin_room_condition = "and r.walkin_room = 1"
+
 	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
 							ifnull (p.learning_solution_name,"") as solution_name,
@@ -220,10 +226,10 @@ def get_room(get_args,timezone):
 							pt.parent = p.name and 
 							pt.room = r.name and 
 							pt.start_date is not null and 
-							pt.room != '' and {0}
+							pt.room != '' and {0} {1}
 							group by pt.start_date,p.name
 							order by r.room_name,p.name asc
-							""".format(conditions),as_dict=1,debug=1)
+							""".format(conditions,walkin_room_condition),as_dict=1)
 
 	room_id_list = [data['room_id'].encode('utf-8') for data in rooms_data]
 
@@ -266,5 +272,5 @@ def get_room(get_args,timezone):
 						 {0} order by room_name""".format(room_ids),as_dict=1)
 	for row in all_rooms:
 			room_data.append({"title":row['room'],"id":row['room']})
-			
+	
 	return {'room_data':room_data,'room_event_data':sorted_room_data}
