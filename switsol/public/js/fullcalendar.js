@@ -10576,6 +10576,7 @@ function Calendar_constructor(element, overrides) {
 	t.nextYear = nextYear;
 	t.today = today;
 	t.gotoDate = gotoDate;
+	t.gotoWalkinRoom = gotoWalkinRoom;
 	t.incrementDate = incrementDate;
 	t.zoomTo = zoomTo;
 	t.getDate = getDate;
@@ -10983,6 +10984,62 @@ function Calendar_constructor(element, overrides) {
 		ignoreWindowResize--;
 	}
 
+	function renderView_for_room(viewType, forcedScroll) {
+		ignoreWindowResize++;
+
+		var needsClearView = currentView && viewType && currentView.type !== viewType;
+
+		// if viewType is changing, remove the old view's rendering
+		if (needsClearView) {
+			freezeContentHeight(); // prevent a scroll jump when view element is removed
+			clearView();
+		}
+
+		// if viewType changed, or the view was never created, create a fresh view
+		if (!currentView && viewType) {
+			currentView = t.view =
+				viewsByType[viewType] ||
+				(viewsByType[viewType] = t.instantiateView(viewType));
+
+			currentView.setElement(
+				$("<div class='fc-view fc-" + viewType + "-view' />").appendTo(content)
+			);
+			toolbarsManager.proxyCall('activateButton', viewType);
+		}
+
+		if (currentView) {
+
+			// in case the view should render a period of time that is completely hidden
+			date = currentView.massageCurrentDate(date);
+
+			// render or rerender the view
+			 
+				if (elementVisible()) {
+
+					if (forcedScroll) {
+						currentView.captureInitialScroll(forcedScroll);
+					}
+
+					currentView.setDate(date, forcedScroll);
+
+					if (forcedScroll) {
+						currentView.releaseScroll();
+					}
+
+					// need to do this after View::render, so dates are calculated
+					// NOTE: view updates title text proactively
+					updateToolbarsTodayButton();
+				}
+			
+		}
+
+		if (needsClearView) {
+			thawContentHeight();
+		}
+
+		ignoreWindowResize--;
+	}
+
 
 	// Unrenders the current view and reflects this change in the Header.
 	// Unregsiters the `currentView`, but does not remove from viewByType hash.
@@ -11233,6 +11290,10 @@ function Calendar_constructor(element, overrides) {
 	function gotoDate(zonedDateInput) {
 		date = t.moment(zonedDateInput).stripZone();
 		renderView();
+	}
+
+	function gotoWalkinRoom() {
+		renderView_for_room();
 	}
 
 

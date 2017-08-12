@@ -63,7 +63,7 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 				}
 			}
 		});
-		
+
 		this.page.set_primary_action(__("New"), function() {
 			var doc = frappe.model.get_new_doc(me.doctype);
 			frappe.set_route("Form", me.doctype, doc.name);
@@ -155,6 +155,22 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
 	//------------------------------------------------------------------------------------------
 		var me = this;
 		if (this.doctype=='Project'){
+
+		this.page.add_field({fieldtype:"Button", label:"Course Schedule",
+			fieldname:"course_schedule",
+			input_css: {"z-index": 2},
+			click: function() {
+				frappe.set_route("Calendar","Course Schedule")			
+			}
+		});
+		this.page.add_field({fieldtype:"Check", label:"WalkIn-Room",
+			fieldname:"walkin_room",
+			input_css: {"z-index": 3},
+			change: function() {
+				me.walkin_room = this.checked
+				me.$cal.fullCalendar("gotoWalkinRoom");				
+			}
+		});
 		var res_list=[];
 		var res_dict={};
         this.cal_options = {
@@ -185,30 +201,44 @@ frappe.views.Calendar = frappe.views.CalendarBase.extend({
     		},
     		resourceLabelText: 'Rooms',
             resources: function(callback, start, end, timezone) {
-			   return frappe.call({
-				method: "switsol.custom_script_project.project.get_room",
-				type: "GET",
-				args:{"get_args":me.get_args(start, end),
-					   "timezone":frappe.datetime.is_timezone_same()
-				},
-				callback: function(r) {
-					var rooms = r.message;
-					callback(rooms['room_data']);
-					}
-				})
+		 		walkin_room = me.walkin_room;
+            	if(!me.page.fields_dict.walkin_room.get_value()) {
+            		walkin_room = false	
+            	}
+			  return frappe.call({
+					method: "switsol.custom_script_project.project.get_room",
+					type: "GET",
+					args:{"get_args":me.get_args(start, end),
+						   "timezone":frappe.datetime.is_timezone_same(),
+						   "filters": me.get_filters(),
+						   "walkin_room":walkin_room
+					},
+					callback: function(r) {
+							var rooms = r.message;
+							callback(rooms['room_data']);
+						}
+					})
+			 
 			},
             events: function(start, end, timezone, callback) {
-			   return frappe.call({
+				walkin_room = me.walkin_room;
+            	if(!me.page.fields_dict.walkin_room.get_value()) {
+            		walkin_room = false	
+            	}
+				return frappe.call({
 				method: "switsol.custom_script_project.project.get_room",
 				type: "GET",
 				args:{"get_args":me.get_args(start, end),
-					 "timezone":frappe.datetime.is_timezone_same()
+					 "timezone":frappe.datetime.is_timezone_same(),
+					 "filters": me.get_filters(),
+					 "walkin_room":walkin_room
 					},
 				callback: function(r) {
-					var events = r.message;
-					callback(events['room_event_data']);
+						var events = r.message;	
+						callback(events['room_event_data']);	
 					}
 				})
+			   
 				
 			},
     		eventRender: function(event, element){
