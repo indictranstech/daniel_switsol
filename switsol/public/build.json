@@ -3,7 +3,12 @@
 	"js/switsol.desk.min.css": [
 		"public/css/jquery.signature.css"
 	],
-
+	"js/switsol-web.min.js": [
+		"public/js/jquery.rateyo.js"
+	],
+	"js/switsol-web.min.css": [
+		"public/css/jquery.rateyo.min.css"
+	],
 	"js/switsol.desk.min.js": [
 		"public/html/signature.html",		
 		"public/js/jquery.signature.min.js",
@@ -18,5 +23,6 @@
 		"public/js/make_new_call_logs_from_contact.js",
 		"public/html/contact_list.html",
 		"public/html/training_mail.html"
+		
 	]
 }

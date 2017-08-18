@@ -8,9 +8,12 @@ def get_data(seminar_course):
 	seminar_course = "where seminar_course = '{0}' ".format(seminar_course) if seminar_course else ""
 	# data1 = frappe.db.sql("""select main_goal,how_satisfied_training
 	# 						from `tabFeed Back` {0} """.format(seminar_course),as_list=1)
-	feedback_data = frappe.db.sql("""select quality_training_room,total_of_leader,comprehensan_t_content,advancement_opportunities,
-							main_goal,other_please_specify,how_satisfied_training as how_satisfied
-							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
+	feedback_data = frappe.db.sql("""select quality_training_room_star as quality_training_room,
+											total_of_leader_star as total_of_leader,
+											comprehensan_t_content_star as comprehensan_t_content,
+											advancement_opportunities_star as advancement_opportunities,
+											main_goal,other_please_specify,how_satisfied_training_star as how_satisfied
+							from `tabFeedback` {0} """.format(seminar_course),as_dict=1	)
 	count =  frappe.db.sql("""select count(seminar_course) as count
 							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
 

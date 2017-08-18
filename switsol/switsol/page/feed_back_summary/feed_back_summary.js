@@ -48,7 +48,14 @@ feed_back_summary = Class.extend({
 			render_input: true
 		});
 		me.seminar_course.refresh();
-		me.seminar_course_change();				
+		me.seminar_course_change();	
+		/*me.wrapper_page.set_primary_action(__("Print"),function() { 
+			console.log(me.wrapper_page.add_view("printaaaaa"))
+
+		// this.print_preview = new frappe.ui.form.PrintPreview({
+		// 		frm: this
+		// 	});
+		});*/		
 	},
 	seminar_course_change:function(){
 		var me =this;
@@ -94,31 +101,33 @@ feed_back_summary = Class.extend({
 	},
 	set_chart: function(){
 		var me = this;
-		//console.log(me.data['total_of_leader'],"total_of_leader")
+		console.log(me.data,"inside chart")
 		me.color_codes = {
-            		1: '#8B0000',
-            		2: '#FF0000',
-            		3: '#FFA500',
-            		4: '#A52A2A',
-            		5: '#EE82EE',
-            		6: '#800080', 
-            		7: '#90EE90',
-            		8: '#008000',
-            		9: '#0000FF',
+					0.5:'#08285b',
+            		1.0:'#8B0000',
+            		1.5:'#FF0000',
+            		2.0:'#FFA500',
+            		2.5:'#A52A2A',
+            		3.0:'#EE82EE',
+            		3.5:'#800080', 
+            		4.0:'#90EE90',
+            		4.5:'#008000',
+            		5.0:'#0000FF'
         		}
 		var chart1 = c3.generate({
 	        bindto:'#total_of_leader',
 	        data: {
 				columns:[
-						["1", me.data['total_of_leader']['1'] ? me.data['total_of_leader']['1']:0],
-						["2",me.data['total_of_leader']['2'] ? me.data['total_of_leader']['2']:0],
-						["3",me.data['total_of_leader']['3'] ? me.data['total_of_leader']['3']:0],
-						["4",me.data['total_of_leader']['4'] ? me.data['total_of_leader']['4']:0],
-						["5",me.data['total_of_leader']['5'] ? me.data['total_of_leader']['5']:0],
-						["6",me.data['total_of_leader']['6'] ? me.data['total_of_leader']['6']:0],
-						["7",me.data['total_of_leader']['7'] ? me.data['total_of_leader']['7']:0],
-						["8",me.data['total_of_leader']['8'] ? me.data['total_of_leader']['8']:0],
-						["9",me.data['total_of_leader']['9'] ? me.data['total_of_leader']['9']:0],
+						["0.5", me.data['total_of_leader']['0.5'] ? me.data['total_of_leader']['0.5']:0],
+						["1.0", me.data['total_of_leader']['1.0'] ? me.data['total_of_leader']['1.0']:0],
+						["1.5", me.data['total_of_leader']['1.5'] ? me.data['total_of_leader']['1.5']:0],
+						["2.0",me.data['total_of_leader']['2.0'] ? me.data['total_of_leader']['2.0']:0],
+						["2.5", me.data['total_of_leader']['2.5'] ? me.data['total_of_leader']['2.5']:0],
+						["3.0",me.data['total_of_leader']['3.0'] ? me.data['total_of_leader']['3.0']:0],
+						["3.5", me.data['total_of_leader']['3.5'] ? me.data['total_of_leader']['3.5']:0],
+						["4.0",me.data['total_of_leader']['4.0'] ? me.data['total_of_leader']['4.0']:0],
+						["4.5", me.data['total_of_leader']['4.5'] ? me.data['total_of_leader']['4.5']:0],
+						["5.0",me.data['total_of_leader']['5.0'] ? me.data['total_of_leader']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -129,35 +138,36 @@ feed_back_summary = Class.extend({
 	        bindto:'#comprehensan_content',
 	        data: {
 				columns:[
-						["1", me.data['comprehensan_t_content']['1'] ? me.data['comprehensan_t_content']['1']:0],
-						["2",me.data['comprehensan_t_content']['2'] ? me.data['comprehensan_t_content']['2']:0],
-						["3",me.data['comprehensan_t_content']['3'] ? me.data['comprehensan_t_content']['3']:0],
-						["4",me.data['comprehensan_t_content']['4'] ? me.data['comprehensan_t_content']['4']:0],
-						["5",me.data['comprehensan_t_content']['5'] ? me.data['comprehensan_t_content']['5']:0],
-						["6",me.data['comprehensan_t_content']['6'] ? me.data['comprehensan_t_content']['6']:0],
-						["7",me.data['comprehensan_t_content']['7'] ? me.data['comprehensan_t_content']['7']:0],
-						["8",me.data['comprehensan_t_content']['8'] ? me.data['comprehensan_t_content']['8']:0],
-						["9",me.data['comprehensan_t_content']['9'] ? me.data['comprehensan_t_content']['9']:0],
+						["0.5", me.data['comprehensan_t_content']['0.5'] ? me.data['comprehensan_t_content']['0.5']:0],
+						["1.0", me.data['comprehensan_t_content']['1.0'] ? me.data['comprehensan_t_content']['1.0']:0],
+						["1.5", me.data['comprehensan_t_content']['1.5'] ? me.data['comprehensan_t_content']['1.5']:0],
+						["2.0",me.data['comprehensan_t_content']['2.0'] ? me.data['comprehensan_t_content']['2.0']:0],
+						["2.5", me.data['comprehensan_t_content']['2.5'] ? me.data['comprehensan_t_content']['2.5']:0],
+						["3.0",me.data['comprehensan_t_content']['3.0'] ? me.data['comprehensan_t_content']['3.0']:0],
+						["3.5", me.data['comprehensan_t_content']['3.5'] ? me.data['comprehensan_t_content']['3.5']:0],
+						["4.0",me.data['comprehensan_t_content']['4.0'] ? me.data['comprehensan_t_content']['4.0']:0],
+						["4.5", me.data['comprehensan_t_content']['4.5'] ? me.data['comprehensan_t_content']['4.5']:0],
+						["5.0",me.data['comprehensan_t_content']['5.0'] ? me.data['comprehensan_t_content']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
         		labels: true
 	        },
       	});
-		var chart2 = c3.generate({
-			//bindto:d3.select('#training_satisfaction_charts'),
+		var chart3 = c3.generate({
 	        bindto:'#advancement_opportunities',
 	        data: {
 				columns:[
-						["1", me.data['advancement_opportunities']['1'] ? me.data['advancement_opportunities']['1']:0],
-						["2",me.data['advancement_opportunities']['2'] ? me.data['advancement_opportunities']['2']:0],
-						["3",me.data['advancement_opportunities']['3'] ? me.data['advancement_opportunities']['3']:0],
-						["4",me.data['advancement_opportunities']['4'] ? me.data['advancement_opportunities']['4']:0],
-						["5",me.data['advancement_opportunities']['5'] ? me.data['advancement_opportunities']['5']:0],
-						["6",me.data['advancement_opportunities']['6'] ? me.data['advancement_opportunities']['6']:0],
-						["7",me.data['advancement_opportunities']['7'] ? me.data['advancement_opportunities']['7']:0],
-						["8",me.data['advancement_opportunities']['8'] ? me.data['advancement_opportunities']['8']:0],
-						["9",me.data['advancement_opportunities']['9'] ? me.data['advancement_opportunities']['9']:0],
+						["0.5", me.data['advancement_opportunities']['0.5'] ? me.data['advancement_opportunities']['0.5']:0],
+						["1.0", me.data['advancement_opportunities']['1.0'] ? me.data['advancement_opportunities']['1.0']:0],
+						["1.5", me.data['advancement_opportunities']['1.5'] ? me.data['advancement_opportunities']['1.5']:0],
+						["2.0",me.data['advancement_opportunities']['2.0'] ? me.data['advancement_opportunities']['2.0']:0],
+						["2.5",me.data['advancement_opportunities']['2.5'] ? me.data['advancement_opportunities']['2.5']:0],
+						["3.0",me.data['advancement_opportunities']['3.0'] ? me.data['advancement_opportunities']['3.0']:0],
+						["3.5",me.data['advancement_opportunities']['3.5'] ? me.data['advancement_opportunities']['3.5']:0],
+						["4.0",me.data['advancement_opportunities']['4.0'] ? me.data['advancement_opportunities']['4.0']:0],
+						["4.5",me.data['advancement_opportunities']['4.5'] ? me.data['advancement_opportunities']['4.5']:0],
+						["5.0",me.data['advancement_opportunities']['5.0'] ? me.data['advancement_opportunities']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -168,12 +178,21 @@ feed_back_summary = Class.extend({
 	        bindto:'#training_satisfaction_chart',
 	        data: {
 				columns: [
-					[__("Very satisfied"), me.data["how_satisfied"]["Very satisfied"] ? me.data["how_satisfied"]["Very satisfied"]: 0],
-					[__("To some extent satisfied"), me.data["how_satisfied"]["To some extent satisfied"] ? me.data["how_satisfied"]["To some extent satisfied"]:0],
-					[__("Rather dissatisfied"), me.data["how_satisfied"]["Rather dissatisfied"] ? me.data["how_satisfied"]["Rather dissatisfied"]:0],
-					[__("Very dissatisfied"), me.data["how_satisfied"]["Very dissatisfied"] ? me.data["how_satisfied"]["Very dissatisfied"]:0]
+						["0.5", me.data["how_satisfied"]["0.5"] ? me.data["how_satisfied"]["0.5"]: 0],
+						["1.0", me.data["how_satisfied"]["1.0"] ? me.data["how_satisfied"]["1.0"]: 0],
+						["1.5", me.data["how_satisfied"]["1.5"] ? me.data["how_satisfied"]["1.5"]: 0],
+						["2.0", me.data["how_satisfied"]["2.0"] ? me.data["how_satisfied"]["2.0"]:0],
+						["2.5", me.data["how_satisfied"]["2.5"] ? me.data["how_satisfied"]["2.5"]: 0],
+						["3.0", me.data["how_satisfied"]["3.0"] ? me.data["how_satisfied"]["3.0"]:0],
+						["3.5", me.data["how_satisfied"]["3.5"] ? me.data["how_satisfied"]["3.5"]: 0],
+						["4.0", me.data["how_satisfied"]["4.0"] ? me.data["how_satisfied"]["4.0"]:0],
+						["4.5", me.data["how_satisfied"]["4.5"] ? me.data["how_satisfied"]["4.5"]: 0],
+						["5.0", me.data["how_satisfied"]["5.0"] ? me.data["how_satisfied"]["5.0"]:0]
+
 				],
 				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
 	        },
       	});
 		var chart5 = c3.generate({
@@ -192,19 +211,19 @@ feed_back_summary = Class.extend({
 	        },
       	});
 		var chart6 = c3.generate({
-			//bindto:d3.select('#training_satisfaction_charts'),
 	        bindto:'#quality',
 	        data: {
 				columns:[
-						["1", me.data['quality_training_room']['1'] ? me.data['quality_training_room']['1']:0],
-						["2",me.data['quality_training_room']['2'] ? me.data['quality_training_room']['2']:0],
-						["3",me.data['quality_training_room']['3'] ? me.data['quality_training_room']['3']:0],
-						["4",me.data['quality_training_room']['4'] ? me.data['quality_training_room']['4']:0],
-						["5",me.data['quality_training_room']['5'] ? me.data['quality_training_room']['5']:0],
-						["6",me.data['quality_training_room']['6'] ? me.data['quality_training_room']['6']:0],
-						["7",me.data['quality_training_room']['7'] ? me.data['quality_training_room']['7']:0],
-						["8",me.data['quality_training_room']['8'] ? me.data['quality_training_room']['8']:0],
-						["9",me.data['quality_training_room']['9'] ? me.data['quality_training_room']['9']:0],
+						["0.5", me.data['quality_training_room']['0.5'] ? me.data['quality_training_room']['0.5']:0],
+						["1.0", me.data['quality_training_room']['1.0'] ? me.data['quality_training_room']['1.0']:0],
+						["1.5", me.data['quality_training_room']['1.5'] ? me.data['quality_training_room']['1.5']:0],
+						["2.0",me.data['quality_training_room']['2.0'] ? me.data['quality_training_room']['2.0']:0],
+						["2.5", me.data['quality_training_room']['2.5'] ? me.data['quality_training_room']['2.5']:0],
+						["3.0",me.data['quality_training_room']['3.0'] ? me.data['quality_training_room']['3.0']:0],
+						["3.5", me.data['quality_training_room']['3.5'] ? me.data['quality_training_room']['3.5']:0],
+						["4.0",me.data['quality_training_room']['4.0'] ? me.data['quality_training_room']['4.0']:0],
+						["4.5", me.data['quality_training_room']['4.5'] ? me.data['quality_training_room']['4.5']:0],
+						["5.0",me.data['quality_training_room']['5.0'] ? me.data['quality_training_room']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,

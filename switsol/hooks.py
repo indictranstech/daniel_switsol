@@ -23,8 +23,8 @@ app_include_js = "/assets/js/switsol.desk.min.js"
 fixtures = ['Custom Field', 'Property Setter', "Print Format","Workflow","Workflow State","Workflow Action"]
 
 # include js, css files in header of web template
-# web_include_css = "/assets/switsol/css/switsol.css"
-# web_include_js = "/assets/switsol/js/switsol.js"
+web_include_css = "/assets/js/switsol-web.min.css"
+web_include_js = "/assets/js/switsol-web.min.js"
 
 doctype_js = {
     "Contact":["custom_script_voip/contact.js"],
