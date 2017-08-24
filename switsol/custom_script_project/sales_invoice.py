@@ -24,8 +24,9 @@ def get_advance_entries(doc, include_unallocated=True):
 		order_field = "sales_order"
 		order_doctype = "Sales Order"
 
-	order_list = list(set([d.get(order_field)
-		for d in doc.get("items") if d.get(order_field)]))
+	# order_list = list(set([d.get(order_field)
+	# 	for d in doc.get("items") if d.get(order_field)]))
+	order_list = []
 
 	journal_entries = get_advance_journal_entries(party_type, party, party_account,
 		amount_field, order_doctype, order_list, include_unallocated)
