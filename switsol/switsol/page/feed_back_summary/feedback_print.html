@@ -1,0 +1,76 @@
+<div class="row">
+	<div class="col-xs-3"></div>
+	<div class="col-xs-9" style="margin-left: -2mm; margin-top: -10px !important;padding-bottom: 15px;">
+		<img src="/files/NH-Word-Header.png" align="right" height="68">
+	</div>
+</div>
+<div class="row">
+	<div class="col-xs-12 seminar" style="padding-left: 25px;font-size: 18px;font-weight: bold;color: #A9A9A9;">{%= __("Evaluation Seminar") %}</div>
+</div>
+<div class="row">
+	<div class="col-xs-12 project" style="padding-left: 25px;margin-top: 19px;padding-bottom: 15px;">
+	<b>{%= __("Project") %} : </b>{%= Object(project.pro) %} / <b>{%= __("Number of Reviews") %} :</b> {%= Object(project.val) %}</div>
+</div>
+<div class = "row">
+	<div class="col-md-12">
+		<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<th style="text-align: center;">
+						<b>{%= __("Main Goal") %}</b>
+					</th>
+					<th style="text-align: center;">
+						<b>{%= __("Comprehensibility of the training content") %}</b>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<div class="ch" id="c3_graph_maingoal" style="text-align: center;"></div>
+						
+					</td>
+					<td>
+						<div id="c3_graph_comprehensan" style="text-align: center;"></div>
+						<div align="center"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.comprehensan_t_content) %}</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="text-align: center;">
+						<b>{%= __("Influence of this training with regard to your career advancement opportunities") %}</b>
+					</th>
+					<th style="text-align: center;">
+						<b>{%= __("Quality training room") %}</b>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<div id="c3_graph_advancement" style="text-align: center;"></div>
+						<div align="center"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.advancement_opportunities) %}</div>
+					</td>
+					<td>
+						<div id="c3_graph_quality" style="text-align: center;"></div>
+						<div align="center"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.quality_training_room) %}</div>
+					</td>
+				</tr>
+				<tr>
+					<th style="text-align: center;">
+						<b>{%= __("How satisfied are you with this training?") %}</b>
+					</th>
+					<th style="text-align: center;">
+						<b>{%= __("Total performance of the course leader") %}</b>
+					</th>
+				</tr>
+
+				<tr>
+					<td>
+						<div id="c3_graph_training" style="text-align: center;"></div>
+						<div align="center"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.how_satisfied) %}</div>
+					</td>
+					<td>
+						<div id="c3_graph_leader" style="text-align: center;"></div>
+						<div align="center"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.total_of_leader) %}</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>	
+	</div>
+</div>
