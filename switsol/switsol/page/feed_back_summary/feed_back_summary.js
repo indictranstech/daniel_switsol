@@ -24,8 +24,6 @@ feed_back_summary = Class.extend({
 		if(!frappe.route_options) {
 			me.get_column_data();
 		}
-		//this.onload();
-		//this.refresh();
 	},
 	set_fields:function(){
 		var me = this;
@@ -49,13 +47,61 @@ feed_back_summary = Class.extend({
 		});
 		me.seminar_course.refresh();
 		me.seminar_course_change();	
-		/*me.wrapper_page.set_primary_action(__("Print"),function() { 
-			console.log(me.wrapper_page.add_view("printaaaaa"))
+		me.wrapper_page.set_primary_action(__("Preview"),function() { 
+			$('.modal').remove()
+			me.open_print_modal()
+		});		
+	},
+	open_print_modal: function() {
+		var me = this;
+		this.dialog = new frappe.ui.Dialog({
+			title: __("Print Preview"),
+			fields: [
+				{
+					"fieldtype": "HTML",
+					"fieldname": "graph_print"
+				}
+			]
+		})
 
-		// this.print_preview = new frappe.ui.form.PrintPreview({
-		// 		frm: this
-		// 	});
-		});*/		
+		this.dialog.show()
+		this.$body = this.dialog.body;
+		var val = ""
+		me.data.feedback_data.project_count ? val = me.data.feedback_data.project_count[0] : ""
+		project = {"pro":me.seminar_course.$input.val(), "val":val}
+		$(this.$body).html(frappe.render_template("feedback_print",{"data":me.data,"project":project}))
+		$(this.$body).parents(':eq(1)').css({"width":"70%"})
+		me.set_print_chart()
+		
+      	this.dialog.set_primary_action(__("Print"), function(){
+      		var html = me.dialog.body.innerHTML;
+       		me.print_document(html)
+       		me.dialog.hide()
+      	})
+
+	},
+	print_document: function(html){
+		var w = window.open();
+	 	var htmlToPrint = 
+        `<style type="text/css">
+        table th,td {
+        	border:1px solid #d1d8dd;
+       		padding;0.5em;
+        }
+	 	tr{ page-break-inside:avoid; page-break-after:auto }
+	 	.table {
+      	 border-collapse: collapse !important;
+     	}
+     	
+        </style>`;
+        htmlToPrint += html;
+		w.document.write(htmlToPrint);
+		w.document.close();
+		setTimeout(function(){
+			w.document.title = 'Feed Back Summary';
+			w.print();
+			w.close();
+		}, 50)
 	},
 	seminar_course_change:function(){
 		var me =this;
@@ -74,6 +120,7 @@ feed_back_summary = Class.extend({
 	},	
 	get_column_data:function(){
 		var me =this;
+		var test;
 		frappe.call({
 			method: "switsol.switsol.page.feed_back_summary.feed_back_summary.get_data",
 			args: {
@@ -82,14 +129,15 @@ feed_back_summary = Class.extend({
 			callback: function(r) {
 				if (r.message){
 					me.data = r.message;
-					var __html = frappe.render_template("feed_back_summary",{"data":r.message})
+					var val = ""
+					me.data.feedback_data.project_count ? val = me.data.feedback_data.project_count[0] : ""
+					project = {"pro":me.seminar_course.$input.val(), "val":val}
+					var __html = frappe.render_template("feed_back_summary",{"data":r.message,"project":project})
 					$(me.page).find(".pie-chart").empty();
 					me.page.find(".pie-chart").append(__html)
-					me.set_chart();
-					project = $(".project").append('&nbsp;'+ me.seminar_course.$input.val())
-					if (r.message['project_count']){
-						project.append(' / '+'<b>'+__('Number of Reviews')+'</b>'+'&nbsp;'+':'+'&nbsp;'+ r.message['project_count'][0])
-					}
+					setTimeout(function(){
+						me.set_chart();
+					},50)	
 				}
 				else{
 					$(me.page).find(".pie-chart").empty();
@@ -101,7 +149,6 @@ feed_back_summary = Class.extend({
 	},
 	set_chart: function(){
 		var me = this;
-		console.log(me.data,"inside chart")
 		me.color_codes = {
 					0.5:'#08285b',
             		1.0:'#8B0000',
@@ -118,16 +165,16 @@ feed_back_summary = Class.extend({
 	        bindto:'#total_of_leader',
 	        data: {
 				columns:[
-						["0.5", me.data['total_of_leader']['0.5'] ? me.data['total_of_leader']['0.5']:0],
-						["1.0", me.data['total_of_leader']['1.0'] ? me.data['total_of_leader']['1.0']:0],
-						["1.5", me.data['total_of_leader']['1.5'] ? me.data['total_of_leader']['1.5']:0],
-						["2.0",me.data['total_of_leader']['2.0'] ? me.data['total_of_leader']['2.0']:0],
-						["2.5", me.data['total_of_leader']['2.5'] ? me.data['total_of_leader']['2.5']:0],
-						["3.0",me.data['total_of_leader']['3.0'] ? me.data['total_of_leader']['3.0']:0],
-						["3.5", me.data['total_of_leader']['3.5'] ? me.data['total_of_leader']['3.5']:0],
-						["4.0",me.data['total_of_leader']['4.0'] ? me.data['total_of_leader']['4.0']:0],
-						["4.5", me.data['total_of_leader']['4.5'] ? me.data['total_of_leader']['4.5']:0],
-						["5.0",me.data['total_of_leader']['5.0'] ? me.data['total_of_leader']['5.0']:0]
+						["0.5", me.data['feedback_data']['total_of_leader']['0.5'] ? me.data['feedback_data']['total_of_leader']['0.5']:0],
+						["1.0", me.data['feedback_data']['total_of_leader']['1.0'] ? me.data['feedback_data']['total_of_leader']['1.0']:0],
+						["1.5", me.data['feedback_data']['total_of_leader']['1.5'] ? me.data['feedback_data']['total_of_leader']['1.5']:0],
+						["2.0",me.data['feedback_data']['total_of_leader']['2.0'] ? me.data['feedback_data']['total_of_leader']['2.0']:0],
+						["2.5", me.data['feedback_data']['total_of_leader']['2.5'] ? me.data['feedback_data']['total_of_leader']['2.5']:0],
+						["3.0",me.data['feedback_data']['total_of_leader']['3.0'] ? me.data['feedback_data']['total_of_leader']['3.0']:0],
+						["3.5", me.data['feedback_data']['total_of_leader']['3.5'] ? me.data['feedback_data']['total_of_leader']['3.5']:0],
+						["4.0",me.data['feedback_data']['total_of_leader']['4.0'] ? me.data['feedback_data']['total_of_leader']['4.0']:0],
+						["4.5", me.data['feedback_data']['total_of_leader']['4.5'] ? me.data['feedback_data']['total_of_leader']['4.5']:0],
+						["5.0",me.data['feedback_data']['total_of_leader']['5.0'] ? me.data['feedback_data']['total_of_leader']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -138,16 +185,16 @@ feed_back_summary = Class.extend({
 	        bindto:'#comprehensan_content',
 	        data: {
 				columns:[
-						["0.5", me.data['comprehensan_t_content']['0.5'] ? me.data['comprehensan_t_content']['0.5']:0],
-						["1.0", me.data['comprehensan_t_content']['1.0'] ? me.data['comprehensan_t_content']['1.0']:0],
-						["1.5", me.data['comprehensan_t_content']['1.5'] ? me.data['comprehensan_t_content']['1.5']:0],
-						["2.0",me.data['comprehensan_t_content']['2.0'] ? me.data['comprehensan_t_content']['2.0']:0],
-						["2.5", me.data['comprehensan_t_content']['2.5'] ? me.data['comprehensan_t_content']['2.5']:0],
-						["3.0",me.data['comprehensan_t_content']['3.0'] ? me.data['comprehensan_t_content']['3.0']:0],
-						["3.5", me.data['comprehensan_t_content']['3.5'] ? me.data['comprehensan_t_content']['3.5']:0],
-						["4.0",me.data['comprehensan_t_content']['4.0'] ? me.data['comprehensan_t_content']['4.0']:0],
-						["4.5", me.data['comprehensan_t_content']['4.5'] ? me.data['comprehensan_t_content']['4.5']:0],
-						["5.0",me.data['comprehensan_t_content']['5.0'] ? me.data['comprehensan_t_content']['5.0']:0]
+						["0.5", me.data['feedback_data']['comprehensan_t_content']['0.5'] ? me.data['feedback_data']['comprehensan_t_content']['0.5']:0],
+						["1.0", me.data['feedback_data']['comprehensan_t_content']['1.0'] ? me.data['feedback_data']['comprehensan_t_content']['1.0']:0],
+						["1.5", me.data['feedback_data']['comprehensan_t_content']['1.5'] ? me.data['feedback_data']['comprehensan_t_content']['1.5']:0],
+						["2.0",me.data['feedback_data']['comprehensan_t_content']['2.0'] ? me.data['feedback_data']['comprehensan_t_content']['2.0']:0],
+						["2.5", me.data['feedback_data']['comprehensan_t_content']['2.5'] ? me.data['feedback_data']['comprehensan_t_content']['2.5']:0],
+						["3.0",me.data['feedback_data']['comprehensan_t_content']['3.0'] ? me.data['feedback_data']['comprehensan_t_content']['3.0']:0],
+						["3.5", me.data['feedback_data']['comprehensan_t_content']['3.5'] ? me.data['feedback_data']['comprehensan_t_content']['3.5']:0],
+						["4.0",me.data['feedback_data']['comprehensan_t_content']['4.0'] ? me.data['feedback_data']['comprehensan_t_content']['4.0']:0],
+						["4.5", me.data['feedback_data']['comprehensan_t_content']['4.5'] ? me.data['feedback_data']['comprehensan_t_content']['4.5']:0],
+						["5.0",me.data['feedback_data']['comprehensan_t_content']['5.0'] ? me.data['feedback_data']['comprehensan_t_content']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -158,16 +205,16 @@ feed_back_summary = Class.extend({
 	        bindto:'#advancement_opportunities',
 	        data: {
 				columns:[
-						["0.5", me.data['advancement_opportunities']['0.5'] ? me.data['advancement_opportunities']['0.5']:0],
-						["1.0", me.data['advancement_opportunities']['1.0'] ? me.data['advancement_opportunities']['1.0']:0],
-						["1.5", me.data['advancement_opportunities']['1.5'] ? me.data['advancement_opportunities']['1.5']:0],
-						["2.0",me.data['advancement_opportunities']['2.0'] ? me.data['advancement_opportunities']['2.0']:0],
-						["2.5",me.data['advancement_opportunities']['2.5'] ? me.data['advancement_opportunities']['2.5']:0],
-						["3.0",me.data['advancement_opportunities']['3.0'] ? me.data['advancement_opportunities']['3.0']:0],
-						["3.5",me.data['advancement_opportunities']['3.5'] ? me.data['advancement_opportunities']['3.5']:0],
-						["4.0",me.data['advancement_opportunities']['4.0'] ? me.data['advancement_opportunities']['4.0']:0],
-						["4.5",me.data['advancement_opportunities']['4.5'] ? me.data['advancement_opportunities']['4.5']:0],
-						["5.0",me.data['advancement_opportunities']['5.0'] ? me.data['advancement_opportunities']['5.0']:0]
+						["0.5", me.data['feedback_data']['advancement_opportunities']['0.5'] ? me.data['feedback_data']['advancement_opportunities']['0.5']:0],
+						["1.0", me.data['feedback_data']['advancement_opportunities']['1.0'] ? me.data['feedback_data']['advancement_opportunities']['1.0']:0],
+						["1.5", me.data['feedback_data']['advancement_opportunities']['1.5'] ? me.data['feedback_data']['advancement_opportunities']['1.5']:0],
+						["2.0",me.data['feedback_data']['advancement_opportunities']['2.0'] ? me.data['feedback_data']['advancement_opportunities']['2.0']:0],
+						["2.5",me.data['feedback_data']['advancement_opportunities']['2.5'] ? me.data['feedback_data']['advancement_opportunities']['2.5']:0],
+						["3.0",me.data['feedback_data']['advancement_opportunities']['3.0'] ? me.data['feedback_data']['advancement_opportunities']['3.0']:0],
+						["3.5",me.data['feedback_data']['advancement_opportunities']['3.5'] ? me.data['feedback_data']['advancement_opportunities']['3.5']:0],
+						["4.0",me.data['feedback_data']['advancement_opportunities']['4.0'] ? me.data['feedback_data']['advancement_opportunities']['4.0']:0],
+						["4.5",me.data['feedback_data']['advancement_opportunities']['4.5'] ? me.data['feedback_data']['advancement_opportunities']['4.5']:0],
+						["5.0",me.data['feedback_data']['advancement_opportunities']['5.0'] ? me.data['feedback_data']['advancement_opportunities']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -178,16 +225,16 @@ feed_back_summary = Class.extend({
 	        bindto:'#training_satisfaction_chart',
 	        data: {
 				columns: [
-						["0.5", me.data["how_satisfied"]["0.5"] ? me.data["how_satisfied"]["0.5"]: 0],
-						["1.0", me.data["how_satisfied"]["1.0"] ? me.data["how_satisfied"]["1.0"]: 0],
-						["1.5", me.data["how_satisfied"]["1.5"] ? me.data["how_satisfied"]["1.5"]: 0],
-						["2.0", me.data["how_satisfied"]["2.0"] ? me.data["how_satisfied"]["2.0"]:0],
-						["2.5", me.data["how_satisfied"]["2.5"] ? me.data["how_satisfied"]["2.5"]: 0],
-						["3.0", me.data["how_satisfied"]["3.0"] ? me.data["how_satisfied"]["3.0"]:0],
-						["3.5", me.data["how_satisfied"]["3.5"] ? me.data["how_satisfied"]["3.5"]: 0],
-						["4.0", me.data["how_satisfied"]["4.0"] ? me.data["how_satisfied"]["4.0"]:0],
-						["4.5", me.data["how_satisfied"]["4.5"] ? me.data["how_satisfied"]["4.5"]: 0],
-						["5.0", me.data["how_satisfied"]["5.0"] ? me.data["how_satisfied"]["5.0"]:0]
+						["0.5", me.data['feedback_data']["how_satisfied"]["0.5"] ? me.data['feedback_data']["how_satisfied"]["0.5"]: 0],
+						["1.0", me.data['feedback_data']["how_satisfied"]["1.0"] ? me.data['feedback_data']["how_satisfied"]["1.0"]: 0],
+						["1.5", me.data['feedback_data']["how_satisfied"]["1.5"] ? me.data['feedback_data']["how_satisfied"]["1.5"]: 0],
+						["2.0", me.data['feedback_data']["how_satisfied"]["2.0"] ? me.data['feedback_data']["how_satisfied"]["2.0"]:0],
+						["2.5", me.data['feedback_data']["how_satisfied"]["2.5"] ? me.data['feedback_data']["how_satisfied"]["2.5"]: 0],
+						["3.0", me.data['feedback_data']["how_satisfied"]["3.0"] ? me.data['feedback_data']["how_satisfied"]["3.0"]:0],
+						["3.5", me.data['feedback_data']["how_satisfied"]["3.5"] ? me.data['feedback_data']["how_satisfied"]["3.5"]: 0],
+						["4.0", me.data['feedback_data']["how_satisfied"]["4.0"] ? me.data['feedback_data']["how_satisfied"]["4.0"]:0],
+						["4.5", me.data['feedback_data']["how_satisfied"]["4.5"] ? me.data['feedback_data']["how_satisfied"]["4.5"]: 0],
+						["5.0", me.data['feedback_data']["how_satisfied"]["5.0"] ? me.data['feedback_data']["how_satisfied"]["5.0"]:0]
 
 				],
 				type : 'pie',
@@ -199,13 +246,13 @@ feed_back_summary = Class.extend({
 	        bindto:'#main_goal',
 	        data: {
 				columns:[
-						[__("Solution of a specific problem"), me.data['main_goal']['Solution of a specific problem'] ? me.data['main_goal']['Solution of a specific problem']:0],
-						[__("Preparation for the use of a new product or software upgrade"),me.data['main_goal']['Preparation for the use of a new product or software upgrade'] ? me.data['main_goal']['Preparation for the use of a new product or software upgrade']:0],
-						[__("Building new skills and new knowledge (not related to new software)"),me.data['main_goal']['Building new skills and new knowledge (not related to new software)'] ? me.data['main_goal']['Building new skills and new knowledge (not related to new software)']:0],
-						[__("Preparation for a certification test"),me.data['main_goal']['Preparation for a certification test'] ? me.data['main_goal']['Preparation for a certification test']:0],
-						[__("Better understanding of a product before buying new software"),me.data['main_goal']['Better understanding of a product before buying new software'] ? me.data['main_goal']['Better understanding of a product before buying new software']:0],
-						[__("Preparing for a career change"),me.data['main_goal']['Preparing for a career change'] ? me.data['main_goal']['Preparing for a career change']:0],
-						[__("Other"),me.data['main_goal']['Other'] ? me.data['main_goal']['Other']:0],
+						[__("Solution of a specific problem"), me.data['feedback_data']['main_goal']['Solution of a specific problem'] ? me.data['feedback_data']['main_goal']['Solution of a specific problem']:0],
+						[__("Preparation for the use of a new product or software upgrade"),me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade'] ? me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade']:0],
+						[__("Building new skills and new knowledge (not related to new software)"),me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)'] ? me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)']:0],
+						[__("Preparation for a certification test"),me.data['feedback_data']['main_goal']['Preparation for a certification test'] ? me.data['feedback_data']['main_goal']['Preparation for a certification test']:0],
+						[__("Better understanding of a product before buying new software"),me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software'] ? me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software']:0],
+						[__("Preparing for a career change"),me.data['feedback_data']['main_goal']['Preparing for a career change'] ? me.data['feedback_data']['main_goal']['Preparing for a career change']:0],
+						[__("Other"),me.data['feedback_data']['main_goal']['Other'] ? me.data['feedback_data']['main_goal']['Other']:0],
 				],
 				type : 'pie',
 	        },
@@ -214,21 +261,169 @@ feed_back_summary = Class.extend({
 	        bindto:'#quality',
 	        data: {
 				columns:[
-						["0.5", me.data['quality_training_room']['0.5'] ? me.data['quality_training_room']['0.5']:0],
-						["1.0", me.data['quality_training_room']['1.0'] ? me.data['quality_training_room']['1.0']:0],
-						["1.5", me.data['quality_training_room']['1.5'] ? me.data['quality_training_room']['1.5']:0],
-						["2.0",me.data['quality_training_room']['2.0'] ? me.data['quality_training_room']['2.0']:0],
-						["2.5", me.data['quality_training_room']['2.5'] ? me.data['quality_training_room']['2.5']:0],
-						["3.0",me.data['quality_training_room']['3.0'] ? me.data['quality_training_room']['3.0']:0],
-						["3.5", me.data['quality_training_room']['3.5'] ? me.data['quality_training_room']['3.5']:0],
-						["4.0",me.data['quality_training_room']['4.0'] ? me.data['quality_training_room']['4.0']:0],
-						["4.5", me.data['quality_training_room']['4.5'] ? me.data['quality_training_room']['4.5']:0],
-						["5.0",me.data['quality_training_room']['5.0'] ? me.data['quality_training_room']['5.0']:0]
+						["0.5", me.data['feedback_data']['quality_training_room']['0.5'] ? me.data['feedback_data']['quality_training_room']['0.5']:0],
+						["1.0", me.data['feedback_data']['quality_training_room']['1.0'] ? me.data['feedback_data']['quality_training_room']['1.0']:0],
+						["1.5", me.data['feedback_data']['quality_training_room']['1.5'] ? me.data['feedback_data']['quality_training_room']['1.5']:0],
+						["2.0",me.data['feedback_data']['quality_training_room']['2.0'] ? me.data['feedback_data']['quality_training_room']['2.0']:0],
+						["2.5", me.data['feedback_data']['quality_training_room']['2.5'] ? me.data['feedback_data']['quality_training_room']['2.5']:0],
+						["3.0",me.data['feedback_data']['quality_training_room']['3.0'] ? me.data['feedback_data']['quality_training_room']['3.0']:0],
+						["3.5", me.data['feedback_data']['quality_training_room']['3.5'] ? me.data['feedback_data']['quality_training_room']['3.5']:0],
+						["4.0",me.data['feedback_data']['quality_training_room']['4.0'] ? me.data['feedback_data']['quality_training_room']['4.0']:0],
+						["4.5", me.data['feedback_data']['quality_training_room']['4.5'] ? me.data['feedback_data']['quality_training_room']['4.5']:0],
+						["5.0",me.data['feedback_data']['quality_training_room']['5.0'] ? me.data['feedback_data']['quality_training_room']['5.0']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
         		labels: true
 	        },
       	});
+	},
+	set_print_chart : function(){
+		var me = this;
+		var chart1 = c3.generate({
+	        bindto: "#c3_graph_leader",
+	        size: {
+	        	"height": 225,
+	        	"width": 275
+	        },
+	        data: {
+				columns:[
+						["0.5", me.data['feedback_data']['total_of_leader']['0.5'] ? me.data['feedback_data']['total_of_leader']['0.5']:0],
+						["1.0", me.data['feedback_data']['total_of_leader']['1.0'] ? me.data['feedback_data']['total_of_leader']['1.0']:0],
+						["1.5", me.data['feedback_data']['total_of_leader']['1.5'] ? me.data['feedback_data']['total_of_leader']['1.5']:0],
+						["2.0",me.data['feedback_data']['total_of_leader']['2.0'] ? me.data['feedback_data']['total_of_leader']['2.0']:0],
+						["2.5", me.data['feedback_data']['total_of_leader']['2.5'] ? me.data['feedback_data']['total_of_leader']['2.5']:0],
+						["3.0",me.data['feedback_data']['total_of_leader']['3.0'] ? me.data['feedback_data']['total_of_leader']['3.0']:0],
+						["3.5", me.data['feedback_data']['total_of_leader']['3.5'] ? me.data['feedback_data']['total_of_leader']['3.5']:0],
+						["4.0",me.data['feedback_data']['total_of_leader']['4.0'] ? me.data['feedback_data']['total_of_leader']['4.0']:0],
+						["4.5", me.data['feedback_data']['total_of_leader']['4.5'] ? me.data['feedback_data']['total_of_leader']['4.5']:0],
+						["5.0",me.data['feedback_data']['total_of_leader']['5.0'] ? me.data['feedback_data']['total_of_leader']['5.0']:0]
+				],
+				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
+	        },
+      	});
+
+      	var chart2 = c3.generate({
+	        bindto:'#c3_graph_comprehensan',
+	        size: {
+	        	"height": 225,
+	        	"width": 275
+	        },
+	        data: {
+				columns:[
+						["0.5", me.data['feedback_data']['comprehensan_t_content']['0.5'] ? me.data['feedback_data']['comprehensan_t_content']['0.5']:0],
+						["1.0", me.data['feedback_data']['comprehensan_t_content']['1.0'] ? me.data['feedback_data']['comprehensan_t_content']['1.0']:0],
+						["1.5", me.data['feedback_data']['comprehensan_t_content']['1.5'] ? me.data['feedback_data']['comprehensan_t_content']['1.5']:0],
+						["2.0",me.data['feedback_data']['comprehensan_t_content']['2.0'] ? me.data['feedback_data']['comprehensan_t_content']['2.0']:0],
+						["2.5", me.data['feedback_data']['comprehensan_t_content']['2.5'] ? me.data['feedback_data']['comprehensan_t_content']['2.5']:0],
+						["3.0",me.data['feedback_data']['comprehensan_t_content']['3.0'] ? me.data['feedback_data']['comprehensan_t_content']['3.0']:0],
+						["3.5", me.data['feedback_data']['comprehensan_t_content']['3.5'] ? me.data['feedback_data']['comprehensan_t_content']['3.5']:0],
+						["4.0",me.data['feedback_data']['comprehensan_t_content']['4.0'] ? me.data['feedback_data']['comprehensan_t_content']['4.0']:0],
+						["4.5", me.data['feedback_data']['comprehensan_t_content']['4.5'] ? me.data['feedback_data']['comprehensan_t_content']['4.5']:0],
+						["5.0",me.data['feedback_data']['comprehensan_t_content']['5.0'] ? me.data['feedback_data']['comprehensan_t_content']['5.0']:0]
+				],
+				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
+	        },
+      	});
+
+      	var chart3 = c3.generate({
+	        bindto:'#c3_graph_advancement',
+	        size: {
+	        	"height": 225,
+	        	"width": 275
+	        },
+	        data: {
+				columns:[
+						["0.5", me.data['feedback_data']['advancement_opportunities']['0.5'] ? me.data['feedback_data']['advancement_opportunities']['0.5']:0],
+						["1.0", me.data['feedback_data']['advancement_opportunities']['1.0'] ? me.data['feedback_data']['advancement_opportunities']['1.0']:0],
+						["1.5", me.data['feedback_data']['advancement_opportunities']['1.5'] ? me.data['feedback_data']['advancement_opportunities']['1.5']:0],
+						["2.0",me.data['feedback_data']['advancement_opportunities']['2.0'] ? me.data['feedback_data']['advancement_opportunities']['2.0']:0],
+						["2.5",me.data['feedback_data']['advancement_opportunities']['2.5'] ? me.data['feedback_data']['advancement_opportunities']['2.5']:0],
+						["3.0",me.data['feedback_data']['advancement_opportunities']['3.0'] ? me.data['feedback_data']['advancement_opportunities']['3.0']:0],
+						["3.5",me.data['feedback_data']['advancement_opportunities']['3.5'] ? me.data['feedback_data']['advancement_opportunities']['3.5']:0],
+						["4.0",me.data['feedback_data']['advancement_opportunities']['4.0'] ? me.data['feedback_data']['advancement_opportunities']['4.0']:0],
+						["4.5",me.data['feedback_data']['advancement_opportunities']['4.5'] ? me.data['feedback_data']['advancement_opportunities']['4.5']:0],
+						["5.0",me.data['feedback_data']['advancement_opportunities']['5.0'] ? me.data['feedback_data']['advancement_opportunities']['5.0']:0]
+				],
+				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
+	        },
+      	});
+		var chart4 = c3.generate({
+	        bindto:'#c3_graph_training',
+	        size: {
+	        	"height": 225,
+	        	"width": 275
+	        },
+	        data: {
+				columns: [
+						["0.5", me.data['feedback_data']["how_satisfied"]["0.5"] ? me.data['feedback_data']["how_satisfied"]["0.5"]: 0],
+						["1.0", me.data['feedback_data']["how_satisfied"]["1.0"] ? me.data['feedback_data']["how_satisfied"]["1.0"]: 0],
+						["1.5", me.data['feedback_data']["how_satisfied"]["1.5"] ? me.data['feedback_data']["how_satisfied"]["1.5"]: 0],
+						["2.0", me.data['feedback_data']["how_satisfied"]["2.0"] ? me.data['feedback_data']["how_satisfied"]["2.0"]:0],
+						["2.5", me.data['feedback_data']["how_satisfied"]["2.5"] ? me.data['feedback_data']["how_satisfied"]["2.5"]: 0],
+						["3.0", me.data['feedback_data']["how_satisfied"]["3.0"] ? me.data['feedback_data']["how_satisfied"]["3.0"]:0],
+						["3.5", me.data['feedback_data']["how_satisfied"]["3.5"] ? me.data['feedback_data']["how_satisfied"]["3.5"]: 0],
+						["4.0", me.data['feedback_data']["how_satisfied"]["4.0"] ? me.data['feedback_data']["how_satisfied"]["4.0"]:0],
+						["4.5", me.data['feedback_data']["how_satisfied"]["4.5"] ? me.data['feedback_data']["how_satisfied"]["4.5"]: 0],
+						["5.0", me.data['feedback_data']["how_satisfied"]["5.0"] ? me.data['feedback_data']["how_satisfied"]["5.0"]:0]
+
+				],
+				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
+	        },
+      	});
+
+      	var chart5 = c3.generate({
+	        bindto:'#c3_graph_maingoal',
+	        size: {
+	        	"height": 300,
+	        	"width": 390
+	        },
+	        data: {
+				columns:[
+						[__("Solution of a specific problem"), me.data['feedback_data']['main_goal']['Solution of a specific problem'] ? me.data['feedback_data']['main_goal']['Solution of a specific problem']:0],
+						[__("Preparation for the use of a new product or software upgrade"),me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade'] ? me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade']:0],
+						[__("Building new skills and new knowledge (not related to new software)"),me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)'] ? me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)']:0],
+						[__("Preparation for a certification test"),me.data['feedback_data']['main_goal']['Preparation for a certification test'] ? me.data['feedback_data']['main_goal']['Preparation for a certification test']:0],
+						[__("Better understanding of a product before buying new software"),me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software'] ? me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software']:0],
+						[__("Preparing for a career change"),me.data['feedback_data']['main_goal']['Preparing for a career change'] ? me.data['feedback_data']['main_goal']['Preparing for a career change']:0],
+						[__("Other"),me.data['feedback_data']['main_goal']['Other'] ? me.data['feedback_data']['main_goal']['Other']:0],
+				],
+				type : 'pie',
+	        },
+      	});
+		var chart6 = c3.generate({
+	        bindto:'#c3_graph_quality',
+	        size: {
+	        	"height": 225,
+	        	"width": 275
+	        },
+	        data: {
+				columns:[
+						["0.5", me.data['feedback_data']['quality_training_room']['0.5'] ? me.data['feedback_data']['quality_training_room']['0.5']:0],
+						["1.0", me.data['feedback_data']['quality_training_room']['1.0'] ? me.data['feedback_data']['quality_training_room']['1.0']:0],
+						["1.5", me.data['feedback_data']['quality_training_room']['1.5'] ? me.data['feedback_data']['quality_training_room']['1.5']:0],
+						["2.0",me.data['feedback_data']['quality_training_room']['2.0'] ? me.data['feedback_data']['quality_training_room']['2.0']:0],
+						["2.5", me.data['feedback_data']['quality_training_room']['2.5'] ? me.data['feedback_data']['quality_training_room']['2.5']:0],
+						["3.0",me.data['feedback_data']['quality_training_room']['3.0'] ? me.data['feedback_data']['quality_training_room']['3.0']:0],
+						["3.5", me.data['feedback_data']['quality_training_room']['3.5'] ? me.data['feedback_data']['quality_training_room']['3.5']:0],
+						["4.0",me.data['feedback_data']['quality_training_room']['4.0'] ? me.data['feedback_data']['quality_training_room']['4.0']:0],
+						["4.5", me.data['feedback_data']['quality_training_room']['4.5'] ? me.data['feedback_data']['quality_training_room']['4.5']:0],
+						["5.0",me.data['feedback_data']['quality_training_room']['5.0'] ? me.data['feedback_data']['quality_training_room']['5.0']:0]
+				],
+				type : 'pie',
+				colors: me.color_codes,
+        		labels: true
+	        },
+      	});
+
+
 	}
 })
