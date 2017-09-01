@@ -98,7 +98,7 @@ feed_back_summary = Class.extend({
 		w.document.write(htmlToPrint);
 		w.document.close();
 		setTimeout(function(){
-			w.document.title = 'Feed Back Summary';
+			w.document.title = __('Feed Back Summary');
 			w.print();
 			w.close();
 		}, 50)
@@ -165,16 +165,15 @@ feed_back_summary = Class.extend({
 	        bindto:'#total_of_leader',
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['total_of_leader']['0.5'] ? me.data['feedback_data']['total_of_leader']['0.5']:0],
-						["1.0", me.data['feedback_data']['total_of_leader']['1.0'] ? me.data['feedback_data']['total_of_leader']['1.0']:0],
-						["1.5", me.data['feedback_data']['total_of_leader']['1.5'] ? me.data['feedback_data']['total_of_leader']['1.5']:0],
-						["2.0",me.data['feedback_data']['total_of_leader']['2.0'] ? me.data['feedback_data']['total_of_leader']['2.0']:0],
-						["2.5", me.data['feedback_data']['total_of_leader']['2.5'] ? me.data['feedback_data']['total_of_leader']['2.5']:0],
-						["3.0",me.data['feedback_data']['total_of_leader']['3.0'] ? me.data['feedback_data']['total_of_leader']['3.0']:0],
-						["3.5", me.data['feedback_data']['total_of_leader']['3.5'] ? me.data['feedback_data']['total_of_leader']['3.5']:0],
-						["4.0",me.data['feedback_data']['total_of_leader']['4.0'] ? me.data['feedback_data']['total_of_leader']['4.0']:0],
-						["4.5", me.data['feedback_data']['total_of_leader']['4.5'] ? me.data['feedback_data']['total_of_leader']['4.5']:0],
-						["5.0",me.data['feedback_data']['total_of_leader']['5.0'] ? me.data['feedback_data']['total_of_leader']['5.0']:0]
+						["1", me.data['feedback_data']['total_of_leader']['1'] ? me.data['feedback_data']['total_of_leader']['1']:0],
+						["2", me.data['feedback_data']['total_of_leader']['2'] ? me.data['feedback_data']['total_of_leader']['2']:0],
+						["3",me.data['feedback_data']['total_of_leader']['3'] ? me.data['feedback_data']['total_of_leader']['3']:0],
+						["4", me.data['feedback_data']['total_of_leader']['4'] ? me.data['feedback_data']['total_of_leader']['4']:0],
+						["5",me.data['feedback_data']['total_of_leader']['5'] ? me.data['feedback_data']['total_of_leader']['5']:0],
+						["6", me.data['feedback_data']['total_of_leader']['6'] ? me.data['feedback_data']['total_of_leader']['6']:0],
+						["7",me.data['feedback_data']['total_of_leader']['7'] ? me.data['feedback_data']['total_of_leader']['7']:0],
+						["8", me.data['feedback_data']['total_of_leader']['8'] ? me.data['feedback_data']['total_of_leader']['8']:0],
+						["9",me.data['feedback_data']['total_of_leader']['9'] ? me.data['feedback_data']['total_of_leader']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -185,16 +184,15 @@ feed_back_summary = Class.extend({
 	        bindto:'#comprehensan_content',
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['comprehensan_t_content']['0.5'] ? me.data['feedback_data']['comprehensan_t_content']['0.5']:0],
-						["1.0", me.data['feedback_data']['comprehensan_t_content']['1.0'] ? me.data['feedback_data']['comprehensan_t_content']['1.0']:0],
-						["1.5", me.data['feedback_data']['comprehensan_t_content']['1.5'] ? me.data['feedback_data']['comprehensan_t_content']['1.5']:0],
-						["2.0",me.data['feedback_data']['comprehensan_t_content']['2.0'] ? me.data['feedback_data']['comprehensan_t_content']['2.0']:0],
-						["2.5", me.data['feedback_data']['comprehensan_t_content']['2.5'] ? me.data['feedback_data']['comprehensan_t_content']['2.5']:0],
-						["3.0",me.data['feedback_data']['comprehensan_t_content']['3.0'] ? me.data['feedback_data']['comprehensan_t_content']['3.0']:0],
-						["3.5", me.data['feedback_data']['comprehensan_t_content']['3.5'] ? me.data['feedback_data']['comprehensan_t_content']['3.5']:0],
-						["4.0",me.data['feedback_data']['comprehensan_t_content']['4.0'] ? me.data['feedback_data']['comprehensan_t_content']['4.0']:0],
-						["4.5", me.data['feedback_data']['comprehensan_t_content']['4.5'] ? me.data['feedback_data']['comprehensan_t_content']['4.5']:0],
-						["5.0",me.data['feedback_data']['comprehensan_t_content']['5.0'] ? me.data['feedback_data']['comprehensan_t_content']['5.0']:0]
+						["1", me.data['feedback_data']['comprehensan_t_content']['1'] ? me.data['feedback_data']['comprehensan_t_content']['1']:0],
+						["2", me.data['feedback_data']['comprehensan_t_content']['2'] ? me.data['feedback_data']['comprehensan_t_content']['2']:0],
+						["3",me.data['feedback_data']['comprehensan_t_content']['3'] ? me.data['feedback_data']['comprehensan_t_content']['3']:0],
+						["4", me.data['feedback_data']['comprehensan_t_content']['4'] ? me.data['feedback_data']['comprehensan_t_content']['4']:0],
+						["5",me.data['feedback_data']['comprehensan_t_content']['5'] ? me.data['feedback_data']['comprehensan_t_content']['5']:0],
+						["6", me.data['feedback_data']['comprehensan_t_content']['6'] ? me.data['feedback_data']['comprehensan_t_content']['6']:0],
+						["7",me.data['feedback_data']['comprehensan_t_content']['7'] ? me.data['feedback_data']['comprehensan_t_content']['7']:0],
+						["8", me.data['feedback_data']['comprehensan_t_content']['8'] ? me.data['feedback_data']['comprehensan_t_content']['8']:0],
+						["9",me.data['feedback_data']['comprehensan_t_content']['9'] ? me.data['feedback_data']['comprehensan_t_content']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -205,16 +203,15 @@ feed_back_summary = Class.extend({
 	        bindto:'#advancement_opportunities',
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['advancement_opportunities']['0.5'] ? me.data['feedback_data']['advancement_opportunities']['0.5']:0],
-						["1.0", me.data['feedback_data']['advancement_opportunities']['1.0'] ? me.data['feedback_data']['advancement_opportunities']['1.0']:0],
-						["1.5", me.data['feedback_data']['advancement_opportunities']['1.5'] ? me.data['feedback_data']['advancement_opportunities']['1.5']:0],
-						["2.0",me.data['feedback_data']['advancement_opportunities']['2.0'] ? me.data['feedback_data']['advancement_opportunities']['2.0']:0],
-						["2.5",me.data['feedback_data']['advancement_opportunities']['2.5'] ? me.data['feedback_data']['advancement_opportunities']['2.5']:0],
-						["3.0",me.data['feedback_data']['advancement_opportunities']['3.0'] ? me.data['feedback_data']['advancement_opportunities']['3.0']:0],
-						["3.5",me.data['feedback_data']['advancement_opportunities']['3.5'] ? me.data['feedback_data']['advancement_opportunities']['3.5']:0],
-						["4.0",me.data['feedback_data']['advancement_opportunities']['4.0'] ? me.data['feedback_data']['advancement_opportunities']['4.0']:0],
-						["4.5",me.data['feedback_data']['advancement_opportunities']['4.5'] ? me.data['feedback_data']['advancement_opportunities']['4.5']:0],
-						["5.0",me.data['feedback_data']['advancement_opportunities']['5.0'] ? me.data['feedback_data']['advancement_opportunities']['5.0']:0]
+						["1", me.data['feedback_data']['advancement_opportunities']['1'] ? me.data['feedback_data']['advancement_opportunities']['1']:0],
+						["2", me.data['feedback_data']['advancement_opportunities']['2'] ? me.data['feedback_data']['advancement_opportunities']['2']:0],
+						["3",me.data['feedback_data']['advancement_opportunities']['3'] ? me.data['feedback_data']['advancement_opportunities']['3']:0],
+						["4",me.data['feedback_data']['advancement_opportunities']['4'] ? me.data['feedback_data']['advancement_opportunities']['4']:0],
+						["5",me.data['feedback_data']['advancement_opportunities']['5'] ? me.data['feedback_data']['advancement_opportunities']['5']:0],
+						["6",me.data['feedback_data']['advancement_opportunities']['6'] ? me.data['feedback_data']['advancement_opportunities']['6']:0],
+						["7",me.data['feedback_data']['advancement_opportunities']['7'] ? me.data['feedback_data']['advancement_opportunities']['7']:0],
+						["8",me.data['feedback_data']['advancement_opportunities']['8'] ? me.data['feedback_data']['advancement_opportunities']['8']:0],
+						["9",me.data['feedback_data']['advancement_opportunities']['9'] ? me.data['feedback_data']['advancement_opportunities']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -261,16 +258,15 @@ feed_back_summary = Class.extend({
 	        bindto:'#quality',
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['quality_training_room']['0.5'] ? me.data['feedback_data']['quality_training_room']['0.5']:0],
-						["1.0", me.data['feedback_data']['quality_training_room']['1.0'] ? me.data['feedback_data']['quality_training_room']['1.0']:0],
-						["1.5", me.data['feedback_data']['quality_training_room']['1.5'] ? me.data['feedback_data']['quality_training_room']['1.5']:0],
-						["2.0",me.data['feedback_data']['quality_training_room']['2.0'] ? me.data['feedback_data']['quality_training_room']['2.0']:0],
-						["2.5", me.data['feedback_data']['quality_training_room']['2.5'] ? me.data['feedback_data']['quality_training_room']['2.5']:0],
-						["3.0",me.data['feedback_data']['quality_training_room']['3.0'] ? me.data['feedback_data']['quality_training_room']['3.0']:0],
-						["3.5", me.data['feedback_data']['quality_training_room']['3.5'] ? me.data['feedback_data']['quality_training_room']['3.5']:0],
-						["4.0",me.data['feedback_data']['quality_training_room']['4.0'] ? me.data['feedback_data']['quality_training_room']['4.0']:0],
-						["4.5", me.data['feedback_data']['quality_training_room']['4.5'] ? me.data['feedback_data']['quality_training_room']['4.5']:0],
-						["5.0",me.data['feedback_data']['quality_training_room']['5.0'] ? me.data['feedback_data']['quality_training_room']['5.0']:0]
+						["1", me.data['feedback_data']['quality_training_room']['1'] ? me.data['feedback_data']['quality_training_room']['1']:0],
+						["2", me.data['feedback_data']['quality_training_room']['2'] ? me.data['feedback_data']['quality_training_room']['2']:0],
+						["3",me.data['feedback_data']['quality_training_room']['3'] ? me.data['feedback_data']['quality_training_room']['3']:0],
+						["4", me.data['feedback_data']['quality_training_room']['4'] ? me.data['feedback_data']['quality_training_room']['4']:0],
+						["5",me.data['feedback_data']['quality_training_room']['5'] ? me.data['feedback_data']['quality_training_room']['5']:0],
+						["6", me.data['feedback_data']['quality_training_room']['6'] ? me.data['feedback_data']['quality_training_room']['6']:0],
+						["7",me.data['feedback_data']['quality_training_room']['7'] ? me.data['feedback_data']['quality_training_room']['7']:0],
+						["8", me.data['feedback_data']['quality_training_room']['8'] ? me.data['feedback_data']['quality_training_room']['8']:0],
+						["9",me.data['feedback_data']['quality_training_room']['9'] ? me.data['feedback_data']['quality_training_room']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -288,16 +284,15 @@ feed_back_summary = Class.extend({
 	        },
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['total_of_leader']['0.5'] ? me.data['feedback_data']['total_of_leader']['0.5']:0],
-						["1.0", me.data['feedback_data']['total_of_leader']['1.0'] ? me.data['feedback_data']['total_of_leader']['1.0']:0],
-						["1.5", me.data['feedback_data']['total_of_leader']['1.5'] ? me.data['feedback_data']['total_of_leader']['1.5']:0],
-						["2.0",me.data['feedback_data']['total_of_leader']['2.0'] ? me.data['feedback_data']['total_of_leader']['2.0']:0],
-						["2.5", me.data['feedback_data']['total_of_leader']['2.5'] ? me.data['feedback_data']['total_of_leader']['2.5']:0],
-						["3.0",me.data['feedback_data']['total_of_leader']['3.0'] ? me.data['feedback_data']['total_of_leader']['3.0']:0],
-						["3.5", me.data['feedback_data']['total_of_leader']['3.5'] ? me.data['feedback_data']['total_of_leader']['3.5']:0],
-						["4.0",me.data['feedback_data']['total_of_leader']['4.0'] ? me.data['feedback_data']['total_of_leader']['4.0']:0],
-						["4.5", me.data['feedback_data']['total_of_leader']['4.5'] ? me.data['feedback_data']['total_of_leader']['4.5']:0],
-						["5.0",me.data['feedback_data']['total_of_leader']['5.0'] ? me.data['feedback_data']['total_of_leader']['5.0']:0]
+						["1", me.data['feedback_data']['total_of_leader']['1'] ? me.data['feedback_data']['total_of_leader']['1']:0],
+						["2", me.data['feedback_data']['total_of_leader']['2'] ? me.data['feedback_data']['total_of_leader']['2']:0],
+						["3",me.data['feedback_data']['total_of_leader']['3'] ? me.data['feedback_data']['total_of_leader']['3']:0],
+						["4", me.data['feedback_data']['total_of_leader']['4'] ? me.data['feedback_data']['total_of_leader']['4']:0],
+						["5",me.data['feedback_data']['total_of_leader']['5'] ? me.data['feedback_data']['total_of_leader']['5']:0],
+						["6", me.data['feedback_data']['total_of_leader']['6'] ? me.data['feedback_data']['total_of_leader']['6']:0],
+						["7",me.data['feedback_data']['total_of_leader']['7'] ? me.data['feedback_data']['total_of_leader']['7']:0],
+						["8", me.data['feedback_data']['total_of_leader']['8'] ? me.data['feedback_data']['total_of_leader']['8']:0],
+						["9",me.data['feedback_data']['total_of_leader']['9'] ? me.data['feedback_data']['total_of_leader']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -313,16 +308,15 @@ feed_back_summary = Class.extend({
 	        },
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['comprehensan_t_content']['0.5'] ? me.data['feedback_data']['comprehensan_t_content']['0.5']:0],
-						["1.0", me.data['feedback_data']['comprehensan_t_content']['1.0'] ? me.data['feedback_data']['comprehensan_t_content']['1.0']:0],
-						["1.5", me.data['feedback_data']['comprehensan_t_content']['1.5'] ? me.data['feedback_data']['comprehensan_t_content']['1.5']:0],
-						["2.0",me.data['feedback_data']['comprehensan_t_content']['2.0'] ? me.data['feedback_data']['comprehensan_t_content']['2.0']:0],
-						["2.5", me.data['feedback_data']['comprehensan_t_content']['2.5'] ? me.data['feedback_data']['comprehensan_t_content']['2.5']:0],
-						["3.0",me.data['feedback_data']['comprehensan_t_content']['3.0'] ? me.data['feedback_data']['comprehensan_t_content']['3.0']:0],
-						["3.5", me.data['feedback_data']['comprehensan_t_content']['3.5'] ? me.data['feedback_data']['comprehensan_t_content']['3.5']:0],
-						["4.0",me.data['feedback_data']['comprehensan_t_content']['4.0'] ? me.data['feedback_data']['comprehensan_t_content']['4.0']:0],
-						["4.5", me.data['feedback_data']['comprehensan_t_content']['4.5'] ? me.data['feedback_data']['comprehensan_t_content']['4.5']:0],
-						["5.0",me.data['feedback_data']['comprehensan_t_content']['5.0'] ? me.data['feedback_data']['comprehensan_t_content']['5.0']:0]
+						["1", me.data['feedback_data']['comprehensan_t_content']['1'] ? me.data['feedback_data']['comprehensan_t_content']['1']:0],
+						["2", me.data['feedback_data']['comprehensan_t_content']['2'] ? me.data['feedback_data']['comprehensan_t_content']['2']:0],
+						["3",me.data['feedback_data']['comprehensan_t_content']['3'] ? me.data['feedback_data']['comprehensan_t_content']['3']:0],
+						["4", me.data['feedback_data']['comprehensan_t_content']['4'] ? me.data['feedback_data']['comprehensan_t_content']['4']:0],
+						["5",me.data['feedback_data']['comprehensan_t_content']['5'] ? me.data['feedback_data']['comprehensan_t_content']['5']:0],
+						["6", me.data['feedback_data']['comprehensan_t_content']['6'] ? me.data['feedback_data']['comprehensan_t_content']['6']:0],
+						["7",me.data['feedback_data']['comprehensan_t_content']['7'] ? me.data['feedback_data']['comprehensan_t_content']['7']:0],
+						["8", me.data['feedback_data']['comprehensan_t_content']['8'] ? me.data['feedback_data']['comprehensan_t_content']['8']:0],
+						["9",me.data['feedback_data']['comprehensan_t_content']['9'] ? me.data['feedback_data']['comprehensan_t_content']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -338,16 +332,15 @@ feed_back_summary = Class.extend({
 	        },
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['advancement_opportunities']['0.5'] ? me.data['feedback_data']['advancement_opportunities']['0.5']:0],
-						["1.0", me.data['feedback_data']['advancement_opportunities']['1.0'] ? me.data['feedback_data']['advancement_opportunities']['1.0']:0],
-						["1.5", me.data['feedback_data']['advancement_opportunities']['1.5'] ? me.data['feedback_data']['advancement_opportunities']['1.5']:0],
-						["2.0",me.data['feedback_data']['advancement_opportunities']['2.0'] ? me.data['feedback_data']['advancement_opportunities']['2.0']:0],
-						["2.5",me.data['feedback_data']['advancement_opportunities']['2.5'] ? me.data['feedback_data']['advancement_opportunities']['2.5']:0],
-						["3.0",me.data['feedback_data']['advancement_opportunities']['3.0'] ? me.data['feedback_data']['advancement_opportunities']['3.0']:0],
-						["3.5",me.data['feedback_data']['advancement_opportunities']['3.5'] ? me.data['feedback_data']['advancement_opportunities']['3.5']:0],
-						["4.0",me.data['feedback_data']['advancement_opportunities']['4.0'] ? me.data['feedback_data']['advancement_opportunities']['4.0']:0],
-						["4.5",me.data['feedback_data']['advancement_opportunities']['4.5'] ? me.data['feedback_data']['advancement_opportunities']['4.5']:0],
-						["5.0",me.data['feedback_data']['advancement_opportunities']['5.0'] ? me.data['feedback_data']['advancement_opportunities']['5.0']:0]
+						["1", me.data['feedback_data']['advancement_opportunities']['1'] ? me.data['feedback_data']['advancement_opportunities']['1']:0],
+						["2", me.data['feedback_data']['advancement_opportunities']['2'] ? me.data['feedback_data']['advancement_opportunities']['2']:0],
+						["3",me.data['feedback_data']['advancement_opportunities']['3'] ? me.data['feedback_data']['advancement_opportunities']['3']:0],
+						["4",me.data['feedback_data']['advancement_opportunities']['4'] ? me.data['feedback_data']['advancement_opportunities']['4']:0],
+						["5",me.data['feedback_data']['advancement_opportunities']['5'] ? me.data['feedback_data']['advancement_opportunities']['5']:0],
+						["6",me.data['feedback_data']['advancement_opportunities']['6'] ? me.data['feedback_data']['advancement_opportunities']['6']:0],
+						["7",me.data['feedback_data']['advancement_opportunities']['7'] ? me.data['feedback_data']['advancement_opportunities']['7']:0],
+						["8",me.data['feedback_data']['advancement_opportunities']['8'] ? me.data['feedback_data']['advancement_opportunities']['8']:0],
+						["9",me.data['feedback_data']['advancement_opportunities']['9'] ? me.data['feedback_data']['advancement_opportunities']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
@@ -407,23 +400,20 @@ feed_back_summary = Class.extend({
 	        },
 	        data: {
 				columns:[
-						["0.5", me.data['feedback_data']['quality_training_room']['0.5'] ? me.data['feedback_data']['quality_training_room']['0.5']:0],
-						["1.0", me.data['feedback_data']['quality_training_room']['1.0'] ? me.data['feedback_data']['quality_training_room']['1.0']:0],
-						["1.5", me.data['feedback_data']['quality_training_room']['1.5'] ? me.data['feedback_data']['quality_training_room']['1.5']:0],
-						["2.0",me.data['feedback_data']['quality_training_room']['2.0'] ? me.data['feedback_data']['quality_training_room']['2.0']:0],
-						["2.5", me.data['feedback_data']['quality_training_room']['2.5'] ? me.data['feedback_data']['quality_training_room']['2.5']:0],
-						["3.0",me.data['feedback_data']['quality_training_room']['3.0'] ? me.data['feedback_data']['quality_training_room']['3.0']:0],
-						["3.5", me.data['feedback_data']['quality_training_room']['3.5'] ? me.data['feedback_data']['quality_training_room']['3.5']:0],
-						["4.0",me.data['feedback_data']['quality_training_room']['4.0'] ? me.data['feedback_data']['quality_training_room']['4.0']:0],
-						["4.5", me.data['feedback_data']['quality_training_room']['4.5'] ? me.data['feedback_data']['quality_training_room']['4.5']:0],
-						["5.0",me.data['feedback_data']['quality_training_room']['5.0'] ? me.data['feedback_data']['quality_training_room']['5.0']:0]
+						["1", me.data['feedback_data']['quality_training_room']['1'] ? me.data['feedback_data']['quality_training_room']['1']:0],
+						["2", me.data['feedback_data']['quality_training_room']['2'] ? me.data['feedback_data']['quality_training_room']['2']:0],
+						["3",me.data['feedback_data']['quality_training_room']['3'] ? me.data['feedback_data']['quality_training_room']['3']:0],
+						["4", me.data['feedback_data']['quality_training_room']['4'] ? me.data['feedback_data']['quality_training_room']['4']:0],
+						["5",me.data['feedback_data']['quality_training_room']['5'] ? me.data['feedback_data']['quality_training_room']['5']:0],
+						["6", me.data['feedback_data']['quality_training_room']['6'] ? me.data['feedback_data']['quality_training_room']['6']:0],
+						["7",me.data['feedback_data']['quality_training_room']['7'] ? me.data['feedback_data']['quality_training_room']['7']:0],
+						["8", me.data['feedback_data']['quality_training_room']['8'] ? me.data['feedback_data']['quality_training_room']['8']:0],
+						["9",me.data['feedback_data']['quality_training_room']['9'] ? me.data['feedback_data']['quality_training_room']['9']:0]
 				],
 				type : 'pie',
 				colors: me.color_codes,
         		labels: true
 	        },
       	});
-
-
 	}
 })

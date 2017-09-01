@@ -51,51 +51,21 @@ Fieldevent = Class.extend({
 		var me = this;
 		html = "<div class='rateyo' style='padding: 0px 50px;margin-left: -50px;padding-bottom:15px'>\
 	 			</div>"
-	 	var section_name = {}
-	 	section_name = {
-	 						'quality_training_room':'quality_training_room_star',
-	 						'performance_hardware': 'performance_hard_soft_star',
-	 						'knowledge_of_leader':'knowledge_leader_star',
-	 						'answering_by_instructor':'answering_instructor_star',
-							'practical_examples':'ability_examples_star',
-							'presentation_ability_of_leader':'presentation_leader_star',
-							'total_performance_of_leader':'total_of_leader_star',
-							'comprehensibility_of_training_content':'comprehensan_t_content_star',
-							'context_of_training_content':'context_t_content_star',
-							'verbosity_of_training':'verbosity_t_content_star',
-							'benefits_of_exercises':'benefits_of_practice_star',
-							'suitability_of_exercises':'suitability_knowledge_skills_star',
-							'time_spent_with_discussions':'pure_lecture_time_star',
-							'language_quality_of_course_materials':'course_materials_star',
-							'knowledge_skills_acquired':'knowledge_skills_training_star',
-							'influence_of_training':'advancement_opportunities_star',
-							'accomplishment_of_your_professional_tasks':'professional_tasks_star',
-							'training_expectations':'t_meet_expectations_star',
-							'satisfied_with_this_training':'how_satisfied_training_star'
-						}
-
-		$.each(section_name,function(i,d){
-			var select_field = $('[name='+ i + ']')
-			select_field.addClass("control-label text-muted small");
-			select_field.append(html)
-			me.rate(d)
-
-		})	
-
-	},
-	rate: function(field){
+		var select_field = $('[name=satisfied_with_this_training]')
+		select_field.addClass("control-label text-muted small");
+		select_field.append(html)
 		$(".rateyo").each(function (e) {
 		    $(this).rateYo({
 		        onSet: function (rating, rateYoInstance) {
 		            $(this).next().val(rating);
-		            $('input[name='+field+']').val(rating)
+		            $('input[name=how_satisfied_training_star]').val(rating)
 		        },
 		        rating: 0,
 		        starWidth: "25px",
 		        numStars: 5,
 		        halfStar: true
-		    });
-		});
+	    });
+	});
 	}
 })
 
