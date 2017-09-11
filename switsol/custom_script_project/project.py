@@ -212,6 +212,8 @@ def get_room(get_args,timezone,filters,walkin_room):
 		conditions = "pt.start_date >= '{0}' and pt.start_date < '{1}'".format(week_start_day,week_end_day)
 	if walkin_room == True:
 		walkin_room_condition = "and r.walkin_room = 1"
+	else:
+		walkin_room_condition = "and r.walkin_room = 0"
 
 	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
@@ -267,9 +269,13 @@ def get_room(get_args,timezone,filters,walkin_room):
 			room_ids = "where name != '{0}'".format(room_id_list[0])
 		else:
 			room_ids = "where name not in {0}".format(tuple(room_id_list))
+		if walkin_room == True:
+			walkin_room_condition = "and walkin_room = 1"
+		else:
+			walkin_room_condition = "and walkin_room = 0"
 
 	all_rooms = frappe.db.sql("""select name as id,room_name as room from `tabRoom` 
-						 {0} order by room_name""".format(room_ids),as_dict=1)
+						 {0}{1} order by room_name""".format(room_ids,walkin_room_condition),as_dict=1)
 	for row in all_rooms:
 			room_data.append({"title":row['room'],"id":row['room']})
 	
