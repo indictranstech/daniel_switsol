@@ -264,18 +264,19 @@ def get_room(get_args,timezone,filters,walkin_room):
 				sorted_room_data.append(j)
  
 	room_ids = ""
+	walkin_room_display = ""
 	if room_id_list:
 		if len(room_id_list) == 1:
 			room_ids = "where name != '{0}'".format(room_id_list[0])
 		else:
 			room_ids = "where name not in {0}".format(tuple(room_id_list))
 		if walkin_room == True:
-			walkin_room_condition = "and walkin_room = 1"
+			walkin_room_display = "and walkin_room = 1"
 		else:
-			walkin_room_condition = "and walkin_room = 0"
+			walkin_room_display = "and walkin_room = 0"
 
 	all_rooms = frappe.db.sql("""select name as id,room_name as room from `tabRoom` 
-						 {0}{1} order by room_name""".format(room_ids,walkin_room_condition),as_dict=1)
+						 {0}{1} order by room_name""".format(room_ids,walkin_room_display),as_dict=1)
 	for row in all_rooms:
 			room_data.append({"title":row['room'],"id":row['room']})
 	
