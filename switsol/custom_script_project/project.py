@@ -210,10 +210,8 @@ def get_room(get_args,timezone,filters,walkin_room):
 		conditions = "pt.start_date > '{0}' and pt.start_date <= '{1}'".format(week_start_day,week_end_day)
 	else:
 		conditions = "pt.start_date >= '{0}' and pt.start_date < '{1}'".format(week_start_day,week_end_day)
-	if walkin_room == True:
-		walkin_room_condition = "and r.walkin_room = 1"
-	else:
-		walkin_room_condition = "and r.walkin_room = 0"
+	
+	walkin_room_condition = "and r.walkin_room = 1" if walkin_room == True else "and r.walkin_room = 0"
 
 	rooms_data = frappe.db.sql("""select p.name as name,
 							CONVERT(p.max_number_participant, CHAR(50)) as participant,
@@ -266,14 +264,10 @@ def get_room(get_args,timezone,filters,walkin_room):
 	room_ids = ""
 	walkin_room_display = ""
 	if room_id_list:
-		if len(room_id_list) == 1:
-			room_ids = "where name != '{0}'".format(room_id_list[0])
-		else:
-			room_ids = "where name not in {0}".format(tuple(room_id_list))
-		if walkin_room == True:
-			walkin_room_display = "and walkin_room = 1"
-		else:
-			walkin_room_display = "and walkin_room = 0"
+		room_ids = "where name != '{0}'".format(room_id_list[0]) if len(room_id_list) == 1 else "where name not in {0}".format(tuple(room_id_list))
+		walkin_room_display = "and walkin_room = 1" if walkin_room == True else "and walkin_room = 0"
+	else:
+		walkin_room_display = "where walkin_room = 1" if walkin_room == True else "where walkin_room = 0"
 
 	all_rooms = frappe.db.sql("""select name as id,room_name as room from `tabRoom` 
 						 {0}{1} order by room_name""".format(room_ids,walkin_room_display),as_dict=1)
