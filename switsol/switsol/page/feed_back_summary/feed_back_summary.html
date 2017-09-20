@@ -15,47 +15,6 @@
 </div>
 
 <div class="row report">
-	{% if (Object.keys(data.feedback_data.main_goal).length > 0) { %}
-	<div class="col-xs-6">
-		<div class="row">
-			<div class="col-xs-12 c3" align="center">
-				<b>{%= __("Main Goal") %}</b>
-			</div>
-		</div>
-		<div>
-			<div class="col-xs-12 c3" id="main_goal" style="height:350px"></div>
-		</div>
-	</div>
-	{% } %}
-	{% if (Object.keys(data.feedback_data.comprehensan_t_content).length > 0) { %}
-	<div class="col-xs-6">
-		<div class="row">
-			<div class="col-xs-12 c3" align="center">
-				<b>{%= __("Comprehensibility of the training content") %}</b>
-			</div>
-		</div>
-		<div>
-			<div class="col-xs-12 c3" id="comprehensan_content" style="height:270px"></div>
-			<div class="col-xs-12" align="center" style="padding-bottom: 20px;padding-top: 20px;"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.comprehensan_t_content) %}</div>
-		</div>
-	</div>
-	{% } %}
-</div>
-
-<div class="row report">
-	{% if (Object.keys(data.feedback_data.advancement_opportunities).length > 0) { %}
-	<div class="col-xs-6">
-		<div class="row">
-			<div class="col-xs-12 c3" align="center">
-				<b>{%= __("Influence of this training with regard to your career advancement opportunities") %}</b>
-			</div>
-		</div>
-		<div>
-			<div class="col-xs-12 c3" id="advancement_opportunities" style="height:270px"></div>
-			<div class="col-xs-12" align="center" style="padding-bottom: 20px;padding-top: 20px;"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.advancement_opportunities) %}</div>
-		</div>
-	</div>
-	{% } %}
 	{% if (Object.keys(data.feedback_data.quality_training_room).length > 0) { %}
 	<div class="col-xs-6" >
 		<div class="row">
@@ -66,23 +25,6 @@
 		<div>
 			<div class="col-xs-12 c3" id="quality" style="height:270px"></div>
 			<div class="col-xs-12" align="center" style="padding-bottom: 20px; padding-top: 20px;"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.quality_training_room) %}</div>
-		</div>
-	</div>
-	{% } %}
-</div>
-
-
-<div class="row report">
-	{% if (Object.keys(data.feedback_data.how_satisfied).length > 0) { %}
-	<div class="col-xs-6">
-		<div class="row">
-			<div class="col-xs-12 c3" align="center">
-				<b>{%= __("How satisfied are you with this training?") %}</b>
-			</div>
-		</div>
-		<div>
-			<div class="col-xs-12 c3" id="training_satisfaction_chart" style="height:270px"></div>
-			<div class="col-xs-12" align="center" style="padding-bottom: 20px;padding-top: 20px;"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.how_satisfied) %}</div>
 		</div>
 	</div>
 	{% } %}
@@ -99,4 +41,83 @@
 		</div>
 	</div>
 	{% } %}
+</div>
+
+<div class="row report">
+	{% if (Object.keys(data.feedback_data.comprehensan_t_content).length > 0) { %}
+	<div class="col-xs-12">
+		<div class="row">
+			<div class="col-xs-12 c3" align="center">
+				<b>{%= __("Comprehensibility of the training content") %}</b>
+			</div>
+		</div>
+		<div>
+			<div class="col-xs-12 c3" id="comprehensan_content" style="height:270px"></div>
+			<div class="col-xs-12" align="center" style="padding-bottom: 20px;padding-top: 20px;"> <b>{%= __("Average Rating") %} :</b> {%= Object(data.rating.comprehensan_t_content) %}</div>
+		</div>
+	</div>
+	{% } %}
+</div>
+
+<div class = "row">
+	<div class="col-xs-1"></div>
+		<div class="col-xs-10">
+			<table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+				<tbody>
+					<tr>
+						<th style="text-align: center;">
+							<b>{%= __("Main Goal") %}</b>
+						</th>
+						<th style="text-align: center;">
+							<b>{%= __("Number of Votes") %}</b>
+						</th>
+					</tr>
+					{% for(var i=0, l=Object.keys(data.feedback_data.main_goal).length; i<l; i++) { %}
+						{% if (Object.keys(data.feedback_data.main_goal)[i]) { %}
+						<tr>
+						<td style="text-align: center;">{%= __(Object.keys(data.feedback_data.main_goal)[i]) %}</td>
+						<td style="text-align: center;">{%= data.feedback_data.main_goal[Object.keys(data.feedback_data.main_goal)[i]] %}</td>
+					</tr>
+					{% } %}
+					{% } %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col-xs-1"></div>
+</div>
+
+<div class = "row">
+	<div class="col-xs-1"></div>
+		<div class="col-xs-10">
+			<table class="table table-bordered" style="table-layout: fixed; width: 100%;">
+				<tbody>
+					<tr>
+						<th style="text-align: center;">
+							<b>{%= __("How satisfied are you with this training?") %}</b>
+						</th>
+						<th style="text-align: center;">
+							<b>{%= __("Number of Votes") %}</b>
+						</th>
+						
+					</tr>
+					{% for(var i=0, l=Object.keys(data.feedback_data.how_satisfied).length; i<l; i++) { %}
+						{% if (Object.keys(data.feedback_data.how_satisfied)[i]) { %}
+					<tr>
+						<td style="text-align: center;">
+							<img src="{%= data.config[i]%}" class="img-responsive attach-image-display" style="margin: 0 auto;width: 100px;height: 20px;">
+						</td>
+						<td style="text-align: center;">{%= data.feedback_data.how_satisfied[Object.keys(data.feedback_data.how_satisfied)[i]] %}</td>	
+					</tr>
+					{% } %}
+					{% } %}
+					<tr>
+						<td style="text-align: center;">
+							{%= __("Average Rating") %}
+						</td>
+						<td style="text-align: center;">{%= data.rating.how_satisfied %}</td>	
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	<div class="col-xs-1"></div>	
 </div>

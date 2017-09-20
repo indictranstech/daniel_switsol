@@ -70,7 +70,7 @@ feed_back_summary = Class.extend({
 		me.data.feedback_data.project_count ? val = me.data.feedback_data.project_count[0] : ""
 		project = {"pro":me.seminar_course.$input.val(), "val":val}
 		$(this.$body).html(frappe.render_template("feedback_print",{"data":me.data,"project":project}))
-		$(this.$body).parents(':eq(1)').css({"width":"70%"})
+		$(this.$body).parents(':eq(1)').css({"width":"60%"})
 		me.set_print_chart()
 		
       	this.dialog.set_primary_action(__("Print"), function(){
@@ -86,19 +86,40 @@ feed_back_summary = Class.extend({
         `<style type="text/css">
         table th,td {
         	border:1px solid #d1d8dd;
-       		padding;0.5em;
+       		padding:0.32em;
+       		font-size:13px;
         }
-	 	tr{ page-break-inside:avoid; page-break-after:auto }
 	 	.table {
       	 border-collapse: collapse !important;
      	}
-     	
+     	.main_goal{
+     		padding-top:16px;
+     	}
+     	@page { size: auto;  margin: 5mm; }
+     	.logo{
+     		margin-top: -10px !important;
+     	}
+     	.footer_date{
+     		margin-top: 40px !important;
+     		font-size: 10px;
+     		font-color: #d1d8dd;
+     		position: fixed;
+    		bottom: 0;
+     	}
+     	.break-table{
+     		padding-top:30px;
+     	}
+     	.align_table_8{
+     		width:80%;
+     	}
+     	.align_table_4{
+     		width:20%
+     	}    	
         </style>`;
         htmlToPrint += html;
 		w.document.write(htmlToPrint);
 		w.document.close();
 		setTimeout(function(){
-			w.document.title = __('Feed Back Summary');
 			w.print();
 			w.close();
 		}, 50)
@@ -150,16 +171,15 @@ feed_back_summary = Class.extend({
 	set_chart: function(){
 		var me = this;
 		me.color_codes = {
-					0.5:'#08285b',
-            		1.0:'#8B0000',
-            		1.5:'#FF0000',
-            		2.0:'#FFA500',
-            		2.5:'#A52A2A',
-            		3.0:'#EE82EE',
-            		3.5:'#800080', 
-            		4.0:'#90EE90',
-            		4.5:'#008000',
-            		5.0:'#0000FF'
+					1: '#f20e0e',
+            		2: '#f20e0e',
+            		3: '#f20e0e',
+            		4: '#ffe83a',
+            		5: '#ffe83a',
+            		6: '#ffe83a', 
+            		7: '#3bf42e',
+            		8: '#3bf42e',
+            		9: '#3bf42e'
         		}
 		var chart1 = c3.generate({
 	        bindto:'#total_of_leader',
@@ -200,61 +220,6 @@ feed_back_summary = Class.extend({
 	        },
       	});
 		var chart3 = c3.generate({
-	        bindto:'#advancement_opportunities',
-	        data: {
-				columns:[
-						["1", me.data['feedback_data']['advancement_opportunities']['1'] ? me.data['feedback_data']['advancement_opportunities']['1']:0],
-						["2", me.data['feedback_data']['advancement_opportunities']['2'] ? me.data['feedback_data']['advancement_opportunities']['2']:0],
-						["3",me.data['feedback_data']['advancement_opportunities']['3'] ? me.data['feedback_data']['advancement_opportunities']['3']:0],
-						["4",me.data['feedback_data']['advancement_opportunities']['4'] ? me.data['feedback_data']['advancement_opportunities']['4']:0],
-						["5",me.data['feedback_data']['advancement_opportunities']['5'] ? me.data['feedback_data']['advancement_opportunities']['5']:0],
-						["6",me.data['feedback_data']['advancement_opportunities']['6'] ? me.data['feedback_data']['advancement_opportunities']['6']:0],
-						["7",me.data['feedback_data']['advancement_opportunities']['7'] ? me.data['feedback_data']['advancement_opportunities']['7']:0],
-						["8",me.data['feedback_data']['advancement_opportunities']['8'] ? me.data['feedback_data']['advancement_opportunities']['8']:0],
-						["9",me.data['feedback_data']['advancement_opportunities']['9'] ? me.data['feedback_data']['advancement_opportunities']['9']:0]
-				],
-				type : 'pie',
-				colors: me.color_codes,
-        		labels: true
-	        },
-      	});
-		var chart4 = c3.generate({
-	        bindto:'#training_satisfaction_chart',
-	        data: {
-				columns: [
-						["0.5", me.data['feedback_data']["how_satisfied"]["0.5"] ? me.data['feedback_data']["how_satisfied"]["0.5"]: 0],
-						["1.0", me.data['feedback_data']["how_satisfied"]["1.0"] ? me.data['feedback_data']["how_satisfied"]["1.0"]: 0],
-						["1.5", me.data['feedback_data']["how_satisfied"]["1.5"] ? me.data['feedback_data']["how_satisfied"]["1.5"]: 0],
-						["2.0", me.data['feedback_data']["how_satisfied"]["2.0"] ? me.data['feedback_data']["how_satisfied"]["2.0"]:0],
-						["2.5", me.data['feedback_data']["how_satisfied"]["2.5"] ? me.data['feedback_data']["how_satisfied"]["2.5"]: 0],
-						["3.0", me.data['feedback_data']["how_satisfied"]["3.0"] ? me.data['feedback_data']["how_satisfied"]["3.0"]:0],
-						["3.5", me.data['feedback_data']["how_satisfied"]["3.5"] ? me.data['feedback_data']["how_satisfied"]["3.5"]: 0],
-						["4.0", me.data['feedback_data']["how_satisfied"]["4.0"] ? me.data['feedback_data']["how_satisfied"]["4.0"]:0],
-						["4.5", me.data['feedback_data']["how_satisfied"]["4.5"] ? me.data['feedback_data']["how_satisfied"]["4.5"]: 0],
-						["5.0", me.data['feedback_data']["how_satisfied"]["5.0"] ? me.data['feedback_data']["how_satisfied"]["5.0"]:0]
-
-				],
-				type : 'pie',
-				colors: me.color_codes,
-        		labels: true
-	        },
-      	});
-		var chart5 = c3.generate({
-	        bindto:'#main_goal',
-	        data: {
-				columns:[
-						[__("Solution of a specific problem"), me.data['feedback_data']['main_goal']['Solution of a specific problem'] ? me.data['feedback_data']['main_goal']['Solution of a specific problem']:0],
-						[__("Preparation for the use of a new product or software upgrade"),me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade'] ? me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade']:0],
-						[__("Building new skills and new knowledge (not related to new software)"),me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)'] ? me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)']:0],
-						[__("Preparation for a certification test"),me.data['feedback_data']['main_goal']['Preparation for a certification test'] ? me.data['feedback_data']['main_goal']['Preparation for a certification test']:0],
-						[__("Better understanding of a product before buying new software"),me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software'] ? me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software']:0],
-						[__("Preparing for a career change"),me.data['feedback_data']['main_goal']['Preparing for a career change'] ? me.data['feedback_data']['main_goal']['Preparing for a career change']:0],
-						[__("Other"),me.data['feedback_data']['main_goal']['Other'] ? me.data['feedback_data']['main_goal']['Other']:0],
-				],
-				type : 'pie',
-	        },
-      	});
-		var chart6 = c3.generate({
 	        bindto:'#quality',
 	        data: {
 				columns:[
@@ -279,8 +244,8 @@ feed_back_summary = Class.extend({
 		var chart1 = c3.generate({
 	        bindto: "#c3_graph_leader",
 	        size: {
-	        	"height": 225,
-	        	"width": 275
+	        	"height": 175,
+	        	"width": 250
 	        },
 	        data: {
 				columns:[
@@ -303,8 +268,8 @@ feed_back_summary = Class.extend({
       	var chart2 = c3.generate({
 	        bindto:'#c3_graph_comprehensan',
 	        size: {
-	        	"height": 225,
-	        	"width": 275
+	        	"height": 175,
+	        	"width": 250
 	        },
 	        data: {
 				columns:[
@@ -323,80 +288,11 @@ feed_back_summary = Class.extend({
         		labels: true
 	        },
       	});
-
-      	var chart3 = c3.generate({
-	        bindto:'#c3_graph_advancement',
-	        size: {
-	        	"height": 225,
-	        	"width": 275
-	        },
-	        data: {
-				columns:[
-						["1", me.data['feedback_data']['advancement_opportunities']['1'] ? me.data['feedback_data']['advancement_opportunities']['1']:0],
-						["2", me.data['feedback_data']['advancement_opportunities']['2'] ? me.data['feedback_data']['advancement_opportunities']['2']:0],
-						["3",me.data['feedback_data']['advancement_opportunities']['3'] ? me.data['feedback_data']['advancement_opportunities']['3']:0],
-						["4",me.data['feedback_data']['advancement_opportunities']['4'] ? me.data['feedback_data']['advancement_opportunities']['4']:0],
-						["5",me.data['feedback_data']['advancement_opportunities']['5'] ? me.data['feedback_data']['advancement_opportunities']['5']:0],
-						["6",me.data['feedback_data']['advancement_opportunities']['6'] ? me.data['feedback_data']['advancement_opportunities']['6']:0],
-						["7",me.data['feedback_data']['advancement_opportunities']['7'] ? me.data['feedback_data']['advancement_opportunities']['7']:0],
-						["8",me.data['feedback_data']['advancement_opportunities']['8'] ? me.data['feedback_data']['advancement_opportunities']['8']:0],
-						["9",me.data['feedback_data']['advancement_opportunities']['9'] ? me.data['feedback_data']['advancement_opportunities']['9']:0]
-				],
-				type : 'pie',
-				colors: me.color_codes,
-        		labels: true
-	        },
-      	});
-		var chart4 = c3.generate({
-	        bindto:'#c3_graph_training',
-	        size: {
-	        	"height": 225,
-	        	"width": 275
-	        },
-	        data: {
-				columns: [
-						["0.5", me.data['feedback_data']["how_satisfied"]["0.5"] ? me.data['feedback_data']["how_satisfied"]["0.5"]: 0],
-						["1.0", me.data['feedback_data']["how_satisfied"]["1.0"] ? me.data['feedback_data']["how_satisfied"]["1.0"]: 0],
-						["1.5", me.data['feedback_data']["how_satisfied"]["1.5"] ? me.data['feedback_data']["how_satisfied"]["1.5"]: 0],
-						["2.0", me.data['feedback_data']["how_satisfied"]["2.0"] ? me.data['feedback_data']["how_satisfied"]["2.0"]:0],
-						["2.5", me.data['feedback_data']["how_satisfied"]["2.5"] ? me.data['feedback_data']["how_satisfied"]["2.5"]: 0],
-						["3.0", me.data['feedback_data']["how_satisfied"]["3.0"] ? me.data['feedback_data']["how_satisfied"]["3.0"]:0],
-						["3.5", me.data['feedback_data']["how_satisfied"]["3.5"] ? me.data['feedback_data']["how_satisfied"]["3.5"]: 0],
-						["4.0", me.data['feedback_data']["how_satisfied"]["4.0"] ? me.data['feedback_data']["how_satisfied"]["4.0"]:0],
-						["4.5", me.data['feedback_data']["how_satisfied"]["4.5"] ? me.data['feedback_data']["how_satisfied"]["4.5"]: 0],
-						["5.0", me.data['feedback_data']["how_satisfied"]["5.0"] ? me.data['feedback_data']["how_satisfied"]["5.0"]:0]
-
-				],
-				type : 'pie',
-				colors: me.color_codes,
-        		labels: true
-	        },
-      	});
-
-      	var chart5 = c3.generate({
-	        bindto:'#c3_graph_maingoal',
-	        size: {
-	        	"height": 300,
-	        	"width": 390
-	        },
-	        data: {
-				columns:[
-						[__("Solution of a specific problem"), me.data['feedback_data']['main_goal']['Solution of a specific problem'] ? me.data['feedback_data']['main_goal']['Solution of a specific problem']:0],
-						[__("Preparation for the use of a new product or software upgrade"),me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade'] ? me.data['feedback_data']['main_goal']['Preparation for the use of a new product or software upgrade']:0],
-						[__("Building new skills and new knowledge (not related to new software)"),me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)'] ? me.data['feedback_data']['main_goal']['Building new skills and new knowledge (not related to new software)']:0],
-						[__("Preparation for a certification test"),me.data['feedback_data']['main_goal']['Preparation for a certification test'] ? me.data['feedback_data']['main_goal']['Preparation for a certification test']:0],
-						[__("Better understanding of a product before buying new software"),me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software'] ? me.data['feedback_data']['main_goal']['Better understanding of a product before buying new software']:0],
-						[__("Preparing for a career change"),me.data['feedback_data']['main_goal']['Preparing for a career change'] ? me.data['feedback_data']['main_goal']['Preparing for a career change']:0],
-						[__("Other"),me.data['feedback_data']['main_goal']['Other'] ? me.data['feedback_data']['main_goal']['Other']:0],
-				],
-				type : 'pie',
-	        },
-      	});
-		var chart6 = c3.generate({
+		var chart3 = c3.generate({
 	        bindto:'#c3_graph_quality',
 	        size: {
-	        	"height": 225,
-	        	"width": 275
+	        	"height": 175,
+	        	"width": 250
 	        },
 	        data: {
 				columns:[
