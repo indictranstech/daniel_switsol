@@ -17,7 +17,7 @@
  "is_standard": 1, 
  "login_required": 0, 
  "max_attachment_size": 0, 
- "modified": "2017-09-01 12:48:48.976655", 
+ "modified": "2017-09-20 08:26:09.496063", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "feedback", 
@@ -525,7 +525,7 @@
   }, 
   {
    "fieldname": "how_satisfied_training_star", 
-   "fieldtype": "Float", 
+   "fieldtype": "Int", 
    "hidden": 1, 
    "label": "How satisfied are you with this training?", 
    "max_length": 0, 

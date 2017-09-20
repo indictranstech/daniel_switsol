@@ -63,7 +63,7 @@ Fieldevent = Class.extend({
 		        rating: 0,
 		        starWidth: "25px",
 		        numStars: 5,
-		        halfStar: true
+		        fullStar: true
 	    });
 	});
 	}
@@ -79,12 +79,10 @@ filter_options_of_seminar = function(filter_list,seminar_course,training_id){
 			fields: ["name"]
 		},	
 		callback: function(r) {
-			console.log(r.message)
 			if (r.message) {
 				if(r.message.length > 1){
 					var options= "<option value='' selected='selected'></option>"
 					$.each(r.message,function(i,d){
-						console.log(d)
 						options += "<option value='"+d['name']+"'"+">"+d['name']+"</option>"
 					})
 					$(seminar_course).empty().append('"'+options+'"')
@@ -115,7 +113,6 @@ email_id_of_student = function(filter_list){
 		},
 		callback: function(r) {
 			if(r.message) {
-				console.log(r.message)
 				$('form[data-web-form="feedback"]').find('input[name="student_email_id"]').val(r.message[0]['student_email_id'])
 				$('form[data-web-form="feedback"]').find('input[name="student_email_id"]').prop("disabled", true );
 			}
