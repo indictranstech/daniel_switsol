@@ -76,12 +76,12 @@ def get_data(seminar_course):
 			project_count = [data.get('count') for data in count]
 			data_dict["project_count"] = project_count
 			rating = set_average_rating(data_dict)
-			config = configuration_setting()
+			config = configuration_setting(data_dict.get('how_satisfied'))
 			date = frappe.utils.get_datetime(nowdate()).strftime("%d.%m.%Y")
 			return {"feedback_data":data_dict,"rating":rating,"config":config,"date":date}
 		else:
 			rating = set_average_rating(data_dict)
-			config = configuration_setting()
+			config = configuration_setting(data_dict.get('how_satisfied'))
 			date = frappe.utils.get_datetime(nowdate()).strftime("%d.%m.%Y")
 			return {"feedback_data":data_dict,"rating":rating,"config":config,"date":date}
 	else:
@@ -100,15 +100,20 @@ def set_average_rating(data_dict):
 		if key in summary_data:
 			count,average = 0.0,0.0
 			for rating,rating_cnt in value.iteritems():
-				temp=float(rating)*float(rating_cnt)
-				average+=float(temp)
-				count+=float(rating_cnt)
+				if rating != 0:
+					temp=float(rating)*float(rating_cnt)
+					average+=float(temp)
+					count+=float(rating_cnt)
 			average_rating[key] = round(average/count,2)
 	return average_rating
 
-def configuration_setting():
-	config_list = []
+def configuration_setting(how_satisfied):
 	config_setting = frappe.get_doc("Configuration")
-	config_list.extend((config_setting.rating_1,config_setting.rating_2,config_setting.rating_3,config_setting.rating_4,config_setting.rating_5))
-	return config_list
-
+	config_dict = {
+		"1":[config_setting.rating_1,how_satisfied.get(1,0)],
+		"2":[config_setting.rating_2,how_satisfied.get(2,0)],
+		"3":[config_setting.rating_3,how_satisfied.get(3,0)],
+		"4":[config_setting.rating_4,how_satisfied.get(4,0)],
+		"5":[config_setting.rating_5,how_satisfied.get(5,0)]
+	}
+	return config_dict

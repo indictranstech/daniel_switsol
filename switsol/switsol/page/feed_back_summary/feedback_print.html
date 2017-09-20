@@ -94,22 +94,20 @@
 					</th>
 					
 				</tr>
-				{% for(var i=0, l=Object.keys(data.feedback_data.how_satisfied).length; i<l; i++) { %}
-					{% if (Object.keys(data.feedback_data.how_satisfied)[i]) { %}
+				{% for(var i=0, l=Object.keys(data.config).length; i<l; i++) { %}				
 				<tr>
 					<td class= "col-xs-8 align_table_8">
 						<div align="center" class="row">
 							<div class="col-xs-4"></div>
 							<div class="col-xs-4">
-								<img src="{%= data.config[i]%}" class="img-responsive attach-image-display" style="margin: 0 auto;width: 100px;height: 20px;">
+								<img src="{%= data.config[Object.keys(data.config)[i]][0] %}" class="img-responsive attach-image-display" style="margin: 0 auto;width: 100px;height: 20px;">
 							</div>
 							<div class="col-xs-4"></div>
 						</div>
 
 					</td>
-					<td  class= "col-xs-4 align_table_4" style="text-align: center;">{%= data.feedback_data.how_satisfied[Object.keys(data.feedback_data.how_satisfied)[i]] %}</td>	
+					<td  class= "col-xs-4 align_table_4" style="text-align: center;">{%= data.config[Object.keys(data.config)[i]][1] %}</td>	
 				</tr>
-				{% } %}
 				{% } %}
 				<tr>
 					<td style="text-align: center;">
