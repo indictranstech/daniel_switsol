@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _, msgprint
+from frappe.utils import cstr, nowdate, getdate, flt
 
 
 @frappe.whitelist()
@@ -35,16 +36,16 @@ def get_data(seminar_course):
 					data_dict['main_goal']['other_please_specify'] = 1
 			#patch for existing data on production(how satisfied converted from words to rating)	
 			if j['how_satisfied_training'] == 'Very satisfied':
-				j['how_satisfied'] = 5.0
+				j['how_satisfied'] = 5
 				set_feedback_value(j['name'],j['how_satisfied'])
 			elif j['how_satisfied_training'] == 'To some extent satisfied':
-				j['how_satisfied'] = 3.0 
+				j['how_satisfied'] = 3
 				set_feedback_value(j['name'],j['how_satisfied'])
 			elif j['how_satisfied_training'] == 'Rather dissatisfied':
-				j['how_satisfied'] = 1.0
+				j['how_satisfied'] = 2
 				set_feedback_value(j['name'],j['how_satisfied']) 
 			elif j['how_satisfied_training'] == 'Very dissatisfied':
-				j['how_satisfied'] = 0.5
+				j['how_satisfied'] = 1
 				set_feedback_value(j['name'],j['how_satisfied']) 
 			#-----------------------------------------------------------------------------------
 			if j['how_satisfied'] in data_dict['how_satisfied'].keys():
@@ -75,10 +76,14 @@ def get_data(seminar_course):
 			project_count = [data.get('count') for data in count]
 			data_dict["project_count"] = project_count
 			rating = set_average_rating(data_dict)
-			return {"feedback_data":data_dict,"rating":rating}
+			config = configuration_setting()
+			date = frappe.utils.get_datetime(nowdate()).strftime("%d.%m.%Y")
+			return {"feedback_data":data_dict,"rating":rating,"config":config,"date":date}
 		else:
 			rating = set_average_rating(data_dict)
-			return {"feedback_data":data_dict,"rating":rating}
+			config = configuration_setting()
+			date = frappe.utils.get_datetime(nowdate()).strftime("%d.%m.%Y")
+			return {"feedback_data":data_dict,"rating":rating,"config":config,"date":date}
 	else:
 		return ""
 
@@ -100,3 +105,10 @@ def set_average_rating(data_dict):
 				count+=float(rating_cnt)
 			average_rating[key] = round(average/count,2)
 	return average_rating
+
+def configuration_setting():
+	config_list = []
+	config_setting = frappe.get_doc("Configuration")
+	config_list.extend((config_setting.rating_1,config_setting.rating_2,config_setting.rating_3,config_setting.rating_4,config_setting.rating_5))
+	return config_list
+
