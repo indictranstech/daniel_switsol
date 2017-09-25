@@ -6,13 +6,15 @@ from frappe.utils import cstr, nowdate, getdate, flt
 
 @frappe.whitelist()
 def get_data(seminar_course):
-	seminar_course = "where seminar_course = '{0}' ".format(seminar_course) if seminar_course else ""
+	seminar_course_name = "and seminar_course = '{0}' ".format(seminar_course) if seminar_course else ""
+
 	feedback_data = frappe.db.sql("""select name,quality_training_room,total_of_leader,
 											comprehensan_t_content,advancement_opportunities,
 											main_goal,other_please_specify,how_satisfied_training,how_satisfied_training_star as how_satisfied
-							from `tabFeedback` {0} and main_goal is not null """.format(seminar_course),as_dict=1)
+							from `tabFeedback` where main_goal is not null {0}""".format(seminar_course_name),as_dict=1)
+	course_name = "where seminar_course = '{0}' ".format(seminar_course) if seminar_course else ""
 	count =  frappe.db.sql("""select count(seminar_course) as count
-							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
+							from `tabFeedback` {0} """.format(course_name),as_dict=1)
 
 	data_dict = {'quality_training_room':{},
 				'total_of_leader':{},
