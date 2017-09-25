@@ -6,11 +6,11 @@ from frappe.utils import cstr, nowdate, getdate, flt
 
 @frappe.whitelist()
 def get_data(seminar_course):
-	seminar_course = "where seminar_course = '{0}' ".format(seminar_course) if seminar_course else ""
+	seminar_course = "and seminar_course = '{0}' ".format(seminar_course) if seminar_course else ""
 	feedback_data = frappe.db.sql("""select name,quality_training_room,total_of_leader,
 											comprehensan_t_content,advancement_opportunities,
 											main_goal,other_please_specify,how_satisfied_training,how_satisfied_training_star as how_satisfied
-							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
+							from `tabFeedback` where main_goal is not null {0} """.format(seminar_course),as_dict=1)
 	count =  frappe.db.sql("""select count(seminar_course) as count
 							from `tabFeedback` {0} """.format(seminar_course),as_dict=1)
 
@@ -49,7 +49,8 @@ def get_data(seminar_course):
 				set_feedback_value(j['name'],j['how_satisfied']) 
 			#-----------------------------------------------------------------------------------
 			if j['how_satisfied'] in data_dict['how_satisfied'].keys():
-				data_dict['how_satisfied'][j['how_satisfied']] = data_dict['how_satisfied'][j['how_satisfied']] + (float(j['how_satisfied'])/float(j['how_satisfied']))
+				if j['how_satisfied'] != 0 : 
+					data_dict['how_satisfied'][j['how_satisfied']] = data_dict['how_satisfied'][j['how_satisfied']] + (float(j['how_satisfied'])/float(j['how_satisfied']))
 			else:
 				data_dict['how_satisfied'][j['how_satisfied']] = 1
 
