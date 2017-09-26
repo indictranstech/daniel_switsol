@@ -27,9 +27,9 @@ def get_data(seminar_course):
 	if feedback_data:
 		for j in feedback_data:
 			if j['main_goal'] in data_dict['main_goal'].keys():
-				data_dict['main_goal'][j['main_goal']] = data_dict['main_goal'][j['main_goal']] + 1
+				data_dict['main_goal'][_(j['main_goal'])] = data_dict['main_goal'][j['main_goal']] + 1
 			else:
-				data_dict['main_goal'][j['main_goal']] = 1
+				data_dict['main_goal'][_(j['main_goal'])] = 1
 			
 			if j['other_please_specify']:
 				if 'other_please_specify' in data_dict['main_goal'].keys():
