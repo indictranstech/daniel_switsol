@@ -75,7 +75,7 @@
 					{% for(var i=0, l=Object.keys(data.feedback_data.main_goal).length; i<l; i++) { %}
 						{% if (Object.keys(data.feedback_data.main_goal)[i]) { %}
 						<tr>
-						<td style="text-align: center;">{%= __(Object.keys(data.feedback_data.main_goal)[i]) %}</td>
+						<td style="text-align: center;">{%= Object.keys(data.feedback_data.main_goal)[i] %}</td>
 						<td style="text-align: center;">{%= data.feedback_data.main_goal[Object.keys(data.feedback_data.main_goal)[i]] %}</td>
 					</tr>
 					{% } %}
