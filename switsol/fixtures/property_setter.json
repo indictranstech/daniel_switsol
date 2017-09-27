@@ -2611,11 +2611,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "description", 
-  "modified": "2016-08-22 14:00:59.541767", 
+  "modified": "2016-08-23 14:00:59.541767", 
   "name": "Item-description-default", 
   "property": "default", 
   "property_type": null, 
-  "value": "Beschreibung des Produkts"
+  "value": "leer"
  }, 
  {
   "_assign": null, 
@@ -4838,11 +4838,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "supplier", 
-  "modified": "2017-05-27 06:08:29.015353", 
+  "modified": "2017-05-27 08:08:29.015353", 
   "name": "Address-supplier-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:!doc.is_your_company_address && frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:!doc.is_your_company_address && frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4855,11 +4855,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "supplier_name", 
-  "modified": "2017-05-27 06:08:29.020978", 
+  "modified": "2017-05-27 08:08:29.020978", 
   "name": "Address-supplier_name-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:!doc.is_your_company_address && frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:!doc.is_your_company_address && frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4872,11 +4872,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "sales_partner", 
-  "modified": "2017-05-27 06:08:29.028609", 
+  "modified": "2017-05-27 08:08:29.028609", 
   "name": "Address-sales_partner-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval: !doc.is_your_company_address && frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval: !doc.is_your_company_address && frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4889,11 +4889,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "lead", 
-  "modified": "2017-05-27 06:08:29.042667", 
+  "modified": "2017-05-27 08:08:29.042667", 
   "name": "Address-lead-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:!doc.supplier && !doc.sales_partner && !doc.is_your_company_address && frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:!doc.supplier && !doc.sales_partner && !doc.is_your_company_address && frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4906,11 +4906,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "lead_name", 
-  "modified": "2017-05-27 06:08:29.048011", 
+  "modified": "2017-05-27 08:08:29.048011", 
   "name": "Address-lead_name-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:!doc.supplier && !doc.sales_partner && !doc.is_your_company_address && frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:!doc.supplier && !doc.sales_partner && !doc.is_your_company_address && frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4923,11 +4923,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "credit_limit_section", 
-  "modified": "2017-05-27 06:15:59.383046", 
+  "modified": "2017-05-27 08:15:59.383046", 
   "name": "Customer-credit_limit_section-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4940,11 +4940,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "sales_team_section_break", 
-  "modified": "2017-05-27 06:15:59.391322", 
+  "modified": "2017-05-27 08:15:59.391322", 
   "name": "Customer-sales_team_section_break-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -4957,11 +4957,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "sales_team_section", 
-  "modified": "2017-05-27 06:15:59.397654", 
+  "modified": "2017-05-27 08:15:59.397654", 
   "name": "Customer-sales_team_section-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -5008,11 +5008,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "default_receivable_accounts", 
-  "modified": "2017-05-27 07:57:57.178694", 
+  "modified": "2017-05-27 08:57:57.178694", 
   "name": "Customer-default_receivable_accounts-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -5042,11 +5042,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "delivery_date", 
-  "modified": "2017-06-27 09:25:16.705032", 
+  "modified": "2017-06-27 10:25:16.705032", 
   "name": "Sales Order-delivery_date-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "(eval:doc.order_type == 'Sales') && (eval:frappe.sys_defaults.company!=\"MAG Gilgen\")"
+  "value": "(eval:doc.order_type == 'Sales') && (eval:frappe.sys_defaults.company!=\"Gilgen Storen AG\")"
  }, 
  {
   "_assign": null, 
@@ -5161,11 +5161,11 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "territory", 
-  "modified": "2017-07-27 22:44:37.733730", 
+  "modified": "2017-07-27 23:00:37.733730", 
   "name": "Customer-territory-depends_on", 
   "property": "depends_on", 
   "property_type": "Data", 
-  "value": "eval:frappe.sys_defaults.company!=\"MAG Gilgen\""
+  "value": "eval:frappe.sys_defaults.company!=\"Gilgen Storen AG\""
  }, 
  {
   "_assign": null, 
@@ -5309,6 +5309,23 @@
   "_liked_by": null, 
   "_user_tags": null, 
   "default_value": null, 
+  "doc_type": "Payment Entry", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2017-09-04 18:08:51.142212", 
+  "name": "Payment Entry-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
   "doc_type": "Sales Invoice", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
@@ -5319,5 +5336,124 @@
   "property": "options", 
   "property_type": "Text", 
   "value": "RG-"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Payment Entry", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "reference_no", 
+  "modified": "2017-09-04 18:08:51.377252", 
+  "name": "Payment Entry-reference_no-default", 
+  "property": "default", 
+  "property_type": "Text", 
+  "value": "leer"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Quotation Item", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2017-09-04 21:23:06.783184", 
+  "name": "Quotation Item-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Quotation Item", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "description", 
+  "modified": "2017-09-04 21:23:06.875650", 
+  "name": "Quotation Item-description-description", 
+  "property": "description", 
+  "property_type": "Text", 
+  "value": "If the description is the word \"empty\", the product is not shown on the detail page"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Sales Order Item", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2017-09-04 21:23:56.742829", 
+  "name": "Sales Order Item-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Sales Order Item", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "description", 
+  "modified": "2017-09-04 21:23:56.820878", 
+  "name": "Sales Order Item-description-description", 
+  "property": "description", 
+  "property_type": "Text", 
+  "value": "If the description is the word \"empty\", the product is not shown on the detail page"
+ },
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "mobile_no", 
+  "modified": "2017-09-12 11:55:18.365130", 
+  "name": "Contact-mobile_no-hidden", 
+  "property": "hidden", 
+  "property_type": "Check", 
+  "value": "1"
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Sales Invoice", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "status", 
+  "modified": "2017-09-18 07:44:48.227351", 
+  "name": "Sales Invoice-status-in_standard_filter", 
+  "property": "in_standard_filter", 
+  "property_type": "Check", 
+  "value": "1"
  }
 ]
