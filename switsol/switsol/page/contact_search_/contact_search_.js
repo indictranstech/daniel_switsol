@@ -28,11 +28,9 @@ render_contact = Class.extend({
 			freeze: true,
 			freeze_message: __("Please Wait..."),
 			callback: function(r) {
-				console.log(r.message,"r.message")
 				if(r.message){
 					$.each(r.message,function(i,d){
 						if(d["field"] == "contact_person_list" && d["value"] != "ABCD"){ 
-							console.log(d["value"],"d[]")	
 							$.each(d["value"].split(","),function(i,d){
 								if(d.split("-")[0] == "supplier"){
 									$(me.page).find("input[data-fieldname='supplier']").val(d.split("-")[1])			
@@ -89,6 +87,7 @@ render_contact = Class.extend({
   				</div>\
   				<div>"
 		me.page.html(html)
+
 		me.customer_link = frappe.ui.form.make_control({
 			parent: me.page.find("#customer"),
 			df: {
@@ -96,7 +95,10 @@ render_contact = Class.extend({
 			options: "Customer",
 			label:"Customer",
 			fieldname: "customer",
-			placeholder: __("Customer")
+			placeholder: __("Customer"),
+			onchange: () => {
+					me.show_contacts("customer");
+				}
 			},
 			render_input: true
 		});
@@ -108,7 +110,10 @@ render_contact = Class.extend({
 			options: "Sales Partner",
 			label:"Sales Partner",
 			fieldname: "sales_partner",
-			placeholder: __("Sales Partner")
+			placeholder: __("Sales Partner"),
+			onchange: () => {
+					me.show_contacts("sales_partner");
+				}
 			},
 			render_input: true
 		});
@@ -121,21 +126,13 @@ render_contact = Class.extend({
 				options:"Supplier",
 				label:"Supplier",
 				placeholder: __("Supplier"),
+				onchange: () => {
+					me.show_contacts("supplier");
+				}
 			},
 			render_input: true
 		});
 		me.supplier_link.refresh();
-		/*me.user_link = frappe.ui.form.make_control({
-			parent: me.page.find("#user"),
-			df: {
-				fieldtype: "Link",
-				fieldname: "user",
-				options:"User",
-				placeholder: "User"
-			},
-			render_input: true
-		});
-		me.user_link.refresh();*/
 		me.mobile_no = frappe.ui.form.make_control({
 			parent: me.page.find("#mobile_no"),
 			df: {
@@ -147,13 +144,11 @@ render_contact = Class.extend({
 		});
 		me.mobile_no.refresh();
 		me.onload();
-		me.show_contacts();
 	},
-	show_contacts: function(){
+	show_contacts: function(id){
 		var me = this;
-		$(me.page).find(".reference_contact").change(function(){
-			me.active = $(this).attr("id")
-			me.contact_name = String($(".reference_contact").find('input[data-fieldname='+$(this).attr("id")+']').val())
+		 	me.active = id
+			me.contact_name = String($(".reference_contact").find('input[data-fieldname='+ id+']').val())
 			$.each($(me.page).find(".reference_contact"),function(i,d){
 				if($(d).find("input").attr("data-fieldname") != me.active){
 					$(d).find("input").val("")
@@ -162,14 +157,11 @@ render_contact = Class.extend({
 			frappe.call({
 				method: "switsol.switsol.page.contact_search_.contact_search_.get_contacts",
 				args: {
-					"reference_contact": String($(this).attr("id")),
-					"reference_contact_name": String($(".reference_contact").find('input[data-fieldname='+$(this).attr("id")+']').val())
+					"reference_contact": String(id),
+					"reference_contact_name": String($(".reference_contact").find('input[data-fieldname='+id+']').val())
 				},
 				callback: function(r) {
 					if (r.message){
-						//$(me.page).find(".contacts").empty();
-						//$(me.page).find(".add_contact").empty();
-						//$(me.page).find(".add-contact").empty();
 						$(me.page).find('.render_contact').empty();
 						__html = frappe.render_template("contact_search",{"data":r.message})
 						me.page.find('.render_contact').append(__html)
@@ -177,52 +169,37 @@ render_contact = Class.extend({
 						me.update_contact();
 					}
 					else{
-						console.log("in else cond")
-						//$(me.page).find(".contacts").empty();
-						//$(me.page).find(".add_contact").empty();
-						//$(me.page).find(".add-contact").empty();
-						/*html = "<div class='row add_contact'>\
-								<div class='col-xs-6'>\
-								<button type='button' class='add_contact'>Add Contact</button>\
-								</div>\
-								<div class='col-xs-6'></div>\
-								</div>"*/
 						$(me.page).find('.render_contact').empty();
 						__html = frappe.render_template("contact_search",{"data":""})
 						me.page.find('.render_contact').append(__html)
-						//me.page.append(html)
 						me.add_contact();
 					}
 				}
 			});
-		})
 	},
 	add_contact:function(){
 		var me =this;
 		$(me.page).find(".add_contact").click(function(){
-			tn = frappe.model.make_new_doc_and_get_name('Contact');
+			me.tn = frappe.model.make_new_doc_and_get_name('Contact');
 			if(String($(this).attr("number-type")) == "mobile"){
-				locals['Contact'][tn].mobile_no = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];
+				locals['Contact'][me.tn].mobile_no = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];
 			}
 			else if(String($(this).attr("number-type")) == "phone"){
-				locals['Contact'][tn].phone = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];		
+				locals['Contact'][me.tn].phone = String($(me.page).find("input[data-fieldname='mobile_no']").val()).split("/")[0];		
 			}
 			if (String(me.active) == "customer"){
 				me.doctype = "Customer"
-				locals['Contact'][tn].customer = me.contact_name
+				me.add_child()
 			}
 			else if (String(me.active) == "supplier"){
 				me.doctype = "Supplier"
-				locals['Contact'][tn].supplier = me.contact_name
+				me.add_child()
 			}
 			else if (String(me.active) == "sales_partner"){
 				me.doctype = "Sales Partner"
-				locals['Contact'][tn].sales_partner = me.contact_name
+				me.add_child()
 			}
-			/*else if (String(me.active) == "user"){
-				me.doctype = "User"
-				locals['Contact'][tn].user = me.contact_name
-			}*/	
+
 			frappe.route_options = {
 				"doctype":me.doctype, 
 				"doc_name":me.contact_name,
@@ -232,8 +209,15 @@ render_contact = Class.extend({
 				"contact_type":me.doctype,
 				"call_type":"Incoming"
 			};
-			frappe.set_route('Form', 'Contact', tn);
+			frappe.set_route('Form', 'Contact', me.tn);
 		})
+	},
+	add_child:function(){
+		var me = this;
+		var row = frappe.model.add_child(locals['Contact'][me.tn], "Dynamic Link", "links");
+		row.link_doctype = me.doctype
+		row.link_name = me.contact_name
+		refresh_field("links")
 	},
 	update_contact:function(){
 		var me =this;
@@ -247,9 +231,6 @@ render_contact = Class.extend({
 			else if (String(me.active) == "sales_partner"){
 				me.doctype = "Sales Partner"
 			}
-			/*else if (String(me.active) == "user"){
-				me.doctype = "User"
-			}*/
 			frappe.route_options = {
 				"doctype":me.doctype, 
 				"doc_name":me.contact_name,

@@ -7,12 +7,17 @@
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "modified": "2016-10-10 14:57:32.635972", 
+ "modified": "2017-09-19 15:23:10.229870", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "Call Logs Report", 
  "owner": "Administrator", 
  "ref_doctype": "Call Logs", 
  "report_name": "Call Logs Report", 
- "report_type": "Script Report"
+ "report_type": "Script Report", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ]
 }

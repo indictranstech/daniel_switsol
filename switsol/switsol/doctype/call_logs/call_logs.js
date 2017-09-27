@@ -11,7 +11,6 @@ frappe.ui.form.on('Call Logs', {
 		
 		}
 		if(sessionStorage.length && cur_frm.doc.__islocal){
-			console.log(sessionStorage['call_attendant'])
 			cur_frm.set_value('phone_number',sessionStorage['phone_number'])
 			cur_frm.set_value('contact_type',sessionStorage['contact_type'])
 			cur_frm.set_value('contact_person',sessionStorage['contact_person'])
@@ -24,7 +23,6 @@ frappe.ui.form.on('Call Logs', {
 });
 
 make_new_call_log = function(){
-	console.log("make_new_call_log")
 	sessionStorage.clear();
 	tn = frappe.model.make_new_doc_and_get_name('Call Logs');
 	locals['Call Logs'][tn].phone_number = cur_frm.doc.phone_number

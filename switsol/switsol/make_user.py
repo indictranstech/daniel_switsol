@@ -53,7 +53,7 @@ def make_redirect_url(email,contact_no,flag=None):
 		contact_person_list = frappe.db.sql("""select name,CASE WHEN customer IS NULL AND supplier IS NULL THEN concat("sales_partner","-",sales_partner) 
 													WHEN sales_partner IS NULL AND supplier IS NULL THEN concat("customer","-",customer) 
 													WHEN customer IS NULL AND sales_partner IS NULL THEN concat("supplier","-",supplier) ELSE "" 
-												END as contact_person from `tabContact` where mobile_no = '{0}' or phone = '{0}' """.format(contact_no),as_dict=1)
+												END as contact_person from `tabContact` where mobile_no = '{0}' or phone = '{0}' """.format(contact_no),as_dict=1,debug=1)
 		if len(contact_person_list) > 1:
 			contact_person_name_str = ""
 			for e in contact_person_list:
