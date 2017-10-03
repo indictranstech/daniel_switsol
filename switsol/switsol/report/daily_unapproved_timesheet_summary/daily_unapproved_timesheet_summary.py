@@ -5,7 +5,11 @@ from __future__ import unicode_literals
 import frappe
 import json
 from datetime import datetime,date
+from frappe.utils import flt, cstr, cint
+from random import randrange,uniform
 from frappe import _
+import frappe.utils.file_manager
+from frappe.desk.form.load import get_attachments
 
 def execute(filters=None):
 	if not filters:
@@ -32,25 +36,32 @@ def get_data():
 								ts.employee,td.customer,
 								td.project,ts.name,ts.status from  
 								`tabTimesheet` ts,`tabTimesheet Detail` td 
-								where td.parent = ts.name and ts.docstatus = 0 and td.idx = 1 order by ts.name""", as_list=1,debug=1)
-	#time_sheet_details = frappe.db.sql("""select td.project,td""")
+								where td.parent = ts.name and ts.docstatus = 0 and td.idx = 1 order by ts.name""", as_list=1)
 	return time_sheet
 
-
 @frappe.whitelist()
-def update_timesheet(list_of_timesheet,signature,signature_svg):
+def update_timesheet(list_of_timesheet,signature_svg):
 	signature_svg = json.loads(signature_svg)
-	#print signature_svg,"\n\n\n\n"
-	#str(signature_svg).split("\n")
-	#signature_svg = "image/svg+xml, " + signature_svg
-	# frappe.errprint(signature_svg)
-	# frappe.errprint("image/svg+xml, " + str(signature_svg))
+	from frappe.handler import uploadfile
 	list_of_timesheet = json.loads(list_of_timesheet)
 	for time_sheet in list_of_timesheet:
-		time_sheet_doc = frappe.get_doc("Timesheet",time_sheet)
-		time_sheet_doc.signature_json = str(signature)
-		time_sheet_doc.docstatus = 1
-		time_sheet_doc.signatre_svg = signature_svg
-		time_sheet_doc.signature_time = datetime.now()
-		time_sheet_doc.save(ignore_permissions=True);
-	return "Sucees"
+		frappe.form_dict['from_form'] = 1
+		frappe.form_dict['doctype'] = "Timesheet"
+		frappe.form_dict['docname'] = time_sheet
+		frappe.form_dict['filename'] = cstr(randrange(0, 10000))+cstr(time_sheet)
+		frappe.form_dict['filedata'] = signature_svg.split(",")[1]
+		attachment = uploadfile()
+		if attachment.get('file_url'):
+			time_sheet_doc = frappe.get_doc("Timesheet", time_sheet)
+			time_sheet_doc.signature_base64 = attachment.get('file_url')
+			time_sheet_doc.docstatus = 1
+			time_sheet_doc.signature_time = datetime.now()
+			time_sheet_doc.save(ignore_permissions=True)
+	return True
+
+def remove_attachment(self,method=None):
+	self.signature_base64 = ""
+	attachment = get_attachments("Timesheet",self.name)
+	file_id = [data.get('name') for data in attachment]
+	for fid in file_id:
+		frappe.utils.file_manager.remove_file(fid)

@@ -7,12 +7,17 @@
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "modified": "2016-09-03 15:35:22.707748", 
+ "modified": "2017-09-19 15:22:42.238329", 
  "modified_by": "Administrator", 
  "module": "Switsol", 
  "name": "Daily Unapproved Timesheet Summary", 
  "owner": "Administrator", 
  "ref_doctype": "Timesheet", 
  "report_name": "Daily Unapproved Timesheet Summary", 
- "report_type": "Script Report"
+ "report_type": "Script Report", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ]
 }
