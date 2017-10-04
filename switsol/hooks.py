@@ -32,6 +32,14 @@ doctype_js = {
     # "Sales Invoice":["custom_scripts/sales_invoice.js"]
 }
 
+doc_events = {
+	"Timesheet":{
+		"on_cancel": "switsol.switsol.report.daily_unapproved_timesheet_summary.daily_unapproved_timesheet_summary.remove_attachment"
+
+	}
+}
+
+
 # include js, css files in header of web template
 # web_include_css = "/assets/switsol/css/switsol.css"
 # web_include_js = "/assets/switsol/js/switsol.js"
