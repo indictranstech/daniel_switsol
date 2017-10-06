@@ -18,7 +18,6 @@ frappe.ui.form.on('Contact',{
 			// show log button
 			cur_frm.add_custom_button(__('Anrufe anzeigen'),
 			function() {
-				console.log("hihihi")
 				show_logs_contact();                      
 			});		
 		}

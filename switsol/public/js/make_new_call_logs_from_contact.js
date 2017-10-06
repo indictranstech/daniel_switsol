@@ -1,16 +1,23 @@
-$.extend(erpnext.utils, {
+frappe.provide('frappe.contacts')
+
+$.extend(frappe.contacts, {
+	clear_address_and_contact: function(frm) {
+		$(frm.fields_dict['address_html'].wrapper).html("");
+		frm.fields_dict['contact_html'] && $(frm.fields_dict['contact_html'].wrapper).html("");
+	},
 	render_address_and_contact: function(frm) {
 		// render address
-		$(frm.fields_dict['address_html'].wrapper)
-			.html(frappe.render_template("address_list",
-				cur_frm.doc.__onload))
-			.find(".btn-address").on("click", function() {
-				console.log("my file trigger of address")
-				frappe.new_doc("Address");
-			});
+		if(frm.fields_dict['address_html'] && "addr_list" in frm.doc.__onload) {
+			$(frm.fields_dict['address_html'].wrapper)
+				.html(frappe.render_template("address_list",
+					cur_frm.doc.__onload))
+				.find(".btn-address").on("click", function() {
+					frappe.new_doc("Address");
+				});
+		}
 
 		// render contact
-		if(frm.fields_dict['contact_html']) {
+		if(frm.fields_dict['contact_html'] && "contact_list" in frm.doc.__onload) {
 			$(frm.fields_dict['contact_html'].wrapper)
 				.html(frappe.render_template("contact_list",
 					cur_frm.doc.__onload))
@@ -20,7 +27,6 @@ $.extend(erpnext.utils, {
 			);
 		}
 		
-		console.log("my file trigger")
 		if(frm.fields_dict['contact_html']) {
 			$(frm.fields_dict['contact_html'].wrapper).find(".outgoing-call").on("click", function() {
 					make_new_call_log_from_contact($(this).attr("contact-name"),$(this).attr("phone-number"));
@@ -32,7 +38,6 @@ $.extend(erpnext.utils, {
 
 
 make_new_call_log_from_contact = function(contact_person,phone_number){
-	console.log("inside make_new_call_log")
 	sessionStorage.clear();
 	tn = frappe.model.make_new_doc_and_get_name('Call Logs');
 	locals['Call Logs'][tn].phone_number = phone_number

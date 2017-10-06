@@ -57,7 +57,6 @@ frappe.ui.form.on("Call Logs",{
 			// Show Logs	
 			cur_frm.add_custom_button(__('Show Log'), 
 			function() {
-				console.log("hihihi")
 				show_logs()                      
 			});		
 		}

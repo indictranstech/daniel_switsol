@@ -3,7 +3,6 @@ frappe.ui.form.on("Sales Partner", "refresh", function(frm) {
 		// Make Log button
 		cur_frm.add_custom_button(__('Anrufe eintragen'), 
 		function() {
-			console.log("hihihi")
 			make_log_sales_partner()                      
 		});	
 	}
@@ -11,7 +10,6 @@ frappe.ui.form.on("Sales Partner", "refresh", function(frm) {
 	// show log button
 	cur_frm.add_custom_button(__('Anrufe anzeigen'), 
 		function() {
-			console.log("hihihi")
 			show_logs_sales_partner()                      
 		});	
 	}
