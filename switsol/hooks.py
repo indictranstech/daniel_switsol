@@ -16,7 +16,7 @@ boot_session = "switsol.boot.boot_session"
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/js/switsol.desk.min.css"
-app_include_js = "/assets/js/switsol.desk.min.js"
+app_include_js = ["/assets/js/switsol.desk.min.js","/assets/js/call.desk.min.js"]
 
 
 
@@ -27,7 +27,7 @@ doctype_js = {
     "Sales Partner":["custom_scripts/sales_partner.js"],
     "Supplier":["custom_scripts/supplier.js"],
     "Timesheet":["custom_scripts/timesheet.js"],
-    "User":["custom_scripts/user.js"],
+    "User":["custom_scripts/user.js"]
     # "Customer":["custom_scripts/customer.js"]
     # "Sales Invoice":["custom_scripts/sales_invoice.js"]
 }
