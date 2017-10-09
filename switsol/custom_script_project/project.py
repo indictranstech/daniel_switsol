@@ -16,8 +16,7 @@ import datetime
 	   with attachement of print format as certificate 
     """  
 @frappe.whitelist()
-def certificate_creation(**kwargs):
-	 
+def certificate_creation(**kwargs):	 
 	name_of_certificate = []
 	data = json.loads(kwargs.get('args'))
 	email_id_of_cc = []
@@ -26,7 +25,7 @@ def certificate_creation(**kwargs):
 			email_id_of_cc = (data.get('cc').encode('utf-8')).split(",")
 		if data.get('send_by_mail') == 1:
 			predefined_text_content = data.get('predefined_text').encode('utf-8')
-			predefined_text_value =  frappe.db.get_value("Predefined Text Container",predefined_text_content,"predefined_text_container".encode('utf-8'))
+			predefined_text_value =  data.get('predefined_text_value') 
 	
 	student_data = json.loads(kwargs['student_data'])
 	student_not_have_certficate = []
