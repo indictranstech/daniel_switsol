@@ -198,7 +198,7 @@ dialog_for_SC_MS_certificate = function(print_format){
 					},
 					{fieldtype: "Data", fieldname: "instructor_name", label: __("Name of the signature person"),read_only: 1},
 					{fieldtype: "Check", fieldname: "send_by_mail", label: __("Send certificate by mail")},
-					{fieldtype: "Data", fieldname: "cc", label: __("CC"),depends_on: 'eval:doc.send_by_mail == "1"'},
+					{fieldtype: "Data", fieldname: "cc", label: __("CC"),depends_on: 'eval:doc.send_by_mail == "1"',default:'operations@newhorizons.ch'},
 					{fieldtype: "Link", fieldname: "predefined_text", label: __("Email Content"),options: "Predefined Text Container",default: "Zertifikat für Ihr besuchtes New Horizons Training",
 					 depends_on: 'eval:doc.send_by_mail == "1"',
 					 change: function(){
