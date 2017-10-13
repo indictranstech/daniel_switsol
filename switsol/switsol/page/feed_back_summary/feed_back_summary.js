@@ -168,18 +168,19 @@ feed_back_summary = Class.extend({
 			}
 		})		
 	},
+
 	set_chart: function(){
 		var me = this;
 		me.color_codes = {
-					1: '#f20e0e',
-            		2: '#f20e0e',
-            		3: '#f20e0e',
-            		4: '#ffe83a',
-            		5: '#ffe83a',
-            		6: '#ffe83a', 
-            		7: '#3bf42e',
-            		8: '#3bf42e',
-            		9: '#3bf42e'
+					1: '#e6194b',
+            		2: '#3cb44b',
+            		3: '#ffe119',
+            		4: '#0082c8',
+            		5: '#f58231',
+            		6: '#911eb4', 
+            		7: '#46f0f0',
+            		8: '#f032e6',
+            		9: '#d2f53c'
         		}
 		var chart1 = c3.generate({
 	        bindto:'#total_of_leader',
