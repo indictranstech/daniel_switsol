@@ -66,7 +66,7 @@ def certificate_creation(**kwargs):
 			certificate.item = kwargs['item']
 			certificate.item_name = item_name if item_name else kwargs.get('item_name')
 			certificate.training_name = kwargs.get('training_name')
-			certificate.training_center = kwargs.get('training_center')
+			certificate.training_center_new = kwargs.get('training_center_new')
 			certificate.instructor = data.get('instructor')
 			if data.get('instructor'):
 				certificate.employee = instructor_employee_name[0]['employee']
