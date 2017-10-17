@@ -8,6 +8,7 @@ from frappe.model.document import Document
 import urllib
 from frappe import _
 import datetime
+import json
 from frappe.desk.form.load import get_attachments
 # from frappe.utils.file_manager import save_file
 # from frappe.utils.pdf import get_pdf
@@ -62,7 +63,14 @@ def get_item_template_name(item):
 	return template_item_name if template_item_name else item_name
 
 
-
+@frappe.whitelist()
+def checking_training_center(doc_name):
+	certificate = frappe.get_doc("Certificate",doc_name)
+	if certificate.training_center:
+		certificate.training_center_new = certificate.training_center
+		certificate.training_center = ""
+		certificate.save(ignore_permissions=True)
+		return True
 
 
 
