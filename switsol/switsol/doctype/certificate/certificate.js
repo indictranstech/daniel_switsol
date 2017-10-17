@@ -7,7 +7,7 @@ cur_frm.add_fetch('instructor','instructor_name','instructor_name');
 cur_frm.add_fetch('instructor','employee','employee');
 cur_frm.add_fetch('student','student_email_id','student_email_id');
 cur_frm.add_fetch('predefined_text_container','predefined_text_container','predefined_text_container_value');
-cur_frm.add_fetch("project","training_center","training_center")
+cur_frm.add_fetch("project","training_center","training_center_new")
 
 frappe.ui.form.on('Certificate', {
 	item : function(){
@@ -17,7 +17,12 @@ frappe.ui.form.on('Certificate', {
 		else{
 			cur_frm.set_value("item_name","")
 		}
+	},
+	refresh:function(){
+		if(!cur_frm.doc.__islocal){
+			checking_training_center()
 	}
+}
 	
 });
 
@@ -35,6 +40,19 @@ get_item_template_name = function(){
 		});
 }
 
+checking_training_center = function(){
+	frappe.call({
+			method:"switsol.switsol.doctype.certificate.certificate.checking_training_center",
+			args : {
+				"doc_name":cur_frm.doc.name
+			},
+			callback: function(r){
+				if(r.message) {
+					cur_frm.reload_doc();
+				}
+			}
+		})
+}
 /*frappe.ui.form.on('Certificate', {
 	validate : function(frm){
 		if (frm.doc.__islocal){

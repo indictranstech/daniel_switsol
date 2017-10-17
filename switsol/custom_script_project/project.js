@@ -252,7 +252,7 @@ make_certificate = function(student_data,print_format,dialog){
 			"project_name":cur_frm.doc.name,
 			"item": cur_frm.doc.item,
 			"item_name":cur_frm.doc.item_name,
-			"training_center":cur_frm.doc.training_center,
+			"training_center_new":cur_frm.doc.training_center,
 			"print_format" : print_format,
 			"start_date" : cur_frm.doc.expected_start_date,
 			"args" : dialog.get_values(),
