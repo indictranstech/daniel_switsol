@@ -7,8 +7,7 @@ cur_frm.add_fetch('instructor','instructor_name','instructor_name');
 cur_frm.add_fetch('instructor','employee','employee');
 cur_frm.add_fetch('student','student_email_id','student_email_id');
 cur_frm.add_fetch('predefined_text_container','predefined_text_container','predefined_text_container_value');
-
-
+cur_frm.add_fetch("project","training_center","training_center")
 
 frappe.ui.form.on('Certificate', {
 	item : function(){
