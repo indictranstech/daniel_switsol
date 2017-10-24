@@ -171,13 +171,13 @@ feed_back_summary = Class.extend({
 	set_chart: function(){
 		var me = this;
 		me.color_codes = {
-					1: '#e6194b',
-            		2: '#f032e6',
-            		3: '#911eb4',
-            		4: '#ffe119',
-            		5: '#daa520',
-            		6: '#ff4500', 
-            		7: '#adff2f',
+					1: '#8b1a1a',
+            		2: '#FF0000',
+            		3: '#FF6347',
+            		4: '#FF7F00',
+            		5: '#FFA500',
+            		6: '#ffd700', 
+            		7: '#7fff00',
             		8: '#3cb44b',
             		9: '#006400'
         		}
