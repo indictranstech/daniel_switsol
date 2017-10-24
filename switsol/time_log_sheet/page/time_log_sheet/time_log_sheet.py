@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 import frappe
 import datetime
-from frappe.utils import flt, cstr, get_datetime, getdate, today, date_diff, cint, nowdate, now
+import json
+from frappe.utils import flt, cstr, get_datetime, getdate, today, date_diff, cint, nowdate, now,time_diff_in_hours
 from frappe import _, msgprint
 
 @frappe.whitelist()
 def make_timesheet(activity,project,customer,from_date_time,to_date_time,hours):
-	print from_date_time,to_date_time,"\n\n\n\n\n\n"
 	emp = frappe.db.get_values("Employee", {"user_id":frappe.session.user}, ["name","employee_name"], as_dict= True)
 	date = from_date_time.split(" ")[0]
 	if emp:
@@ -14,7 +14,6 @@ def make_timesheet(activity,project,customer,from_date_time,to_date_time,hours):
 				where ts.employee = '%s' and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent
 				"""%(emp[0]['name'],date+ "%"), as_list=1)
 		if sheet:
-			print "if sheet","\n\n\n\n\n\n"
 			ts = frappe.get_doc("Timesheet", sheet[0][0])
 			ts.total_hours = flt(sheet[0][1]) + flt(hours)
 			tsd = ts.append('time_logs', {})
@@ -26,7 +25,6 @@ def make_timesheet(activity,project,customer,from_date_time,to_date_time,hours):
 			tsd.customer = customer
 			ts.save(ignore_permissions=True)
 		else:
-			print "else sheet","\n\n\n\n\n\n"
 			ts = frappe.new_doc("Timesheet")
 			ts.status = "Draft"
 			ts.company = frappe.db.get_single_value('Global Defaults', 'default_company')
@@ -80,16 +78,12 @@ def calculate_total_hours(week_start, week_end, month_start, month_end):
 
 @frappe.whitelist()
 def get_loged_timesheets(date):
+	logged_date = frappe.utils.datetime.datetime.strptime(date,'%d.%m.%Y').strftime('%Y-%m-%d')
 	emp = frappe.db.get_values("Employee", {"user_id":frappe.session.user}, ["name"], as_dict= True)
 	if emp:
 		timesheets = frappe.db.sql(""" select tsd.customer, tsd.project, tsd.activity_type, tsd.from_time, tsd.to_time, 
 				tsd.hours, ts.status from `tabTimesheet`ts , `tabTimesheet Detail` tsd where ts.employee = '%s' 
-				and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent """%(emp[0]['name'],date+ " %"), as_dict=1)
+				and ts.docstatus != 2 and tsd.from_time like '%s' and ts.name = tsd.parent """%(emp[0]['name'],logged_date+ " %"), as_dict=1)
 		return timesheets
 	else:
 		frappe.throw(_("Logged In user has not an Employee to create Timesheet. Please create Employee at first."))
-
-# def ping(request=None,usr=None):
-# 	return {"req_data":request,"usr":usr, "message":"success"}				
-	# user_data = frappe.db.get_values("User",{"username":user_name,"email":email},["username","email"],as_dict=True)
-	# return {"user_data":user_data,"message":"success"}
