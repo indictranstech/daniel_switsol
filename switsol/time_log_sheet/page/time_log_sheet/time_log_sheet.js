@@ -5,7 +5,6 @@ frappe.pages['time-log-sheet'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 	wrapper.timelog = new timelog(wrapper)
-	//frappe.breadcrumbs.add("Time Log Sheet");
 }
 
 timelog = Class.extend({
@@ -15,7 +14,6 @@ timelog = Class.extend({
 		this.page = $(wrapper).find('.layout-main-section-wrapper');
 		this.wrapper = $(wrapper).find('.page-content');
 		this.set_fields();
-		// this.on_submit();
 	},
 	set_fields: function() {
 		var me = this;
@@ -258,57 +256,52 @@ timelog = Class.extend({
 	on_submit:function(){
 		var me = this;
 		$(".submit").click(function(){
-			date = $(".date").find("input[data-fieldname='date']").val()
+			logged_date = $(".date").find("input[data-fieldname='date']").val()
 			client = $(".customer").find("input[data-fieldname='customer']").val()
 			project = $(".project").find("input[data-fieldname='project']").val()
 			activity = $(".activity").find("input[data-fieldname='activity']").val()
-
-			if (date && client && project && activity){
-				me.date = date.split("-")
-				me.date = me.date[0]+"-"+me.date[1]+"-"+me.date[2]
-				//me.date = me.date[2]+"-"+me.date[1]+"-"+me.date[0]
+			if (logged_date && client && project && activity){
+				me.logged_date = logged_date
 				if($(".start_input_hours").val() && $(".end_input_hours").val() && $(".start_input_minute").val() && $(".end_input_minute").val()){
-					if ((flt($(".start_input_hours").val()) < flt($(".end_input_hours").val())) && (flt($(".start_input_minute").val()) <= flt($(".end_input_minute").val()))) {
-						me.start = String(me.date)+" "+ $(".start_input_hours").val()+":"+$(".start_input_minute").val()+":"+"00"
-						me.end	= String(me.date)+" "+ $(".end_input_hours").val()+":"+ $(".end_input_minute").val()+":"+"00"
-						if(frappe.datetime.now_datetime() >= me.end){
+					me.start = String(me.logged_date)+" "+ $(".start_input_hours").val()+":"+$(".start_input_minute").val()+":"+"00"
+					me.end	= String(me.logged_date)+" "+ $(".end_input_hours").val()+":"+ $(".end_input_minute").val()+":"+"00"
+					var from_time = moment(me.start,'DD.MM.YYYY HH:mm:ss').format(moment.defaultDatetimeFormat)
+					var to_time = moment(me.end,'DD.MM.YYYY HH:mm:ss').format(moment.defaultDatetimeFormat)
+					var hours = moment(to_time).diff(moment(from_time),"seconds") / 3600
+					if (hours >= 0) {
+						if(frappe.datetime.now_datetime() >= moment(me.end,'DD.MM.YYYY HH:mm:ss').format(moment.defaultDatetimeFormat)){
 							me.make_timesheet();
 						}
 						else{
-							msgprint(__("Timesheet log creation should be valid up to current time. Please chose valide date & time"));
+							frappe.msgprint(__("Timesheet log creation should be valid up to current time. Please choose valid date & time"));
 						}												
 					}
 					else{
-						msgprint(__("End Time should be greater then Start Time."));
+						frappe.msgprint(__("End Time should be greater then Start Time."));
 					}
 				}
 				else{
-					msgprint(__("Please select Start Time and End Time before Submit"));
+					frappe.msgprint(__("Please select Start Time and End Time before Submit"));
 				}
 			}
 			else{
-				msgprint(__("Please select Client, Project, Activity and Date before Submit"));
+				frappe.msgprint(__("Please select Client, Project, Activity and Date before Submit"));
 			}
 		})
 	},
 	make_timesheet: function() {
 		var me = this;
-		start = me.start
-		var d = new Date(me.start);
-		d.setHours(d.getHours() + cint($(".input_hours").val()));
-		d.setMinutes(d.getMinutes() + cint($(".input_minute").val()));	
-		end = moment(d).format("YYYY-MM-DD HH:mm:ss")
-		hours = moment(end).diff(moment(start),"seconds") / 3600
-		
-		console.log("start",start,"end",end)
+		var from_time = moment(me.start,'DD.MM.YYYY HH:mm:ss').format(moment.defaultDatetimeFormat)
+		var to_time = moment(me.end,'DD.MM.YYYY HH:mm:ss').format(moment.defaultDatetimeFormat)
+		var hours = moment(to_time).diff(moment(from_time),"seconds") / 3600
 		frappe.call({
 			method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.make_timesheet",
 			args: {
 				"activity":me.activity.$input.val(),
 				"project": me.project.$input.val(),
 				"customer":me.customer_link.$input.val(),
-				"from_date_time": start,
-				"to_date_time": end,
+				"from_date_time": from_time,
+				"to_date_time": to_time,
 				"hours": hours
 			},
 			freeze: true,
@@ -325,7 +318,7 @@ timelog = Class.extend({
 				$(".input_hours").val("")
 				$(".input_minute").val("")
 				me.calulate_hours();
-				msgprint(__("Timesheet log created successfully"))
+				frappe.msgprint(__("Timesheet log created successfully"))
 			}
 		})
 	},
@@ -355,14 +348,12 @@ timelog = Class.extend({
 		var me = this;
 		me.page.find('.logsheet').css("width", "150px")
 		$(".logsheet").find("button[data-fieldname='logsheet']").on("click", function(){
-			date = $(".date").find("input[data-fieldname='date']").val()
-			if (date){
-				date = date.split("-")
-				date = date[2]+"-"+date[1]+"-"+date[0]
+			logged_date = $(".date").find("input[data-fieldname='date']").val()
+			if (logged_date){
 				frappe.call({
 					method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.get_loged_timesheets",
 					args: {
-						"date": date
+						"date": logged_date
 					},
 					callback: function(r) {
 						if (r.message){
@@ -372,27 +363,20 @@ timelog = Class.extend({
 	                                {"fieldtype":"HTML", "label":__("Loged Timesheets"), "reqd":1, "fieldname":"loged_sheets"}
 	                            ]
 	                        });
-	                        /*this.dialog.$wrapper.find('.modal-dialog').css("width", "1000px");
-       						this.dialog.$wrapper.find('.modal-dialog').css("height", "1000px");*/
-	                        //$(di.body).find("[data-fieldname='loged_sheets']").html(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
 	                        html = $(frappe.render_template("logged_time_log_sheet",{
             	   				"data":r.message
             	   			})).appendTo(this.dialog.fields_dict.loged_sheets.wrapper);
 	                        this.dialog.show();
 	                        $($(this.dialog.$wrapper).children()[1]).addClass("modal-lg")
-	                        //$(cur_dialog.$wrapper).find('.modal-dialog').css("width", "800px");
-       						//di.dialog.$wrapper.find('.modal-dialog').css("height", "1000px");
-	                        //$(di.body).find("[data-fieldname='loged_sheets']").css({"width": "710px", "height":"250px", "overflow-x": "scroll"})
-	                        //$(".modal-content").css({"width": "750px"})
 						}
 						else{
-							msgprint(__("Logged Timesheets not found for this date"))
+							frappe.msgprint(__("Logged Timesheets not found for this date"))
 						}
 					}
 				})
 			}
 			else{
-				msgprint(__("Please select Date first for populating Logged Timesheet details"));
+				frappe.msgprint(__("Please select Date first for populating Logged Timesheet details"));
 			}
 		})
 	},
@@ -400,18 +384,16 @@ timelog = Class.extend({
 		var me = this;
 		me.page.find('.dtls').hide();
 		me.page.find('.logged-sheets').hide();
-		$(".date").find("input[data-fieldname='date']").change(function(){
-			date = $(".date").find("input[data-fieldname='date']").val()
+		$(".date").find("input[data-fieldname='date']").on("change",function(){
+			logged_date = $(".date").find("input[data-fieldname='date']").val()
 			me.page.find('.dtls').hide();
 			me.page.find('.logged-sheets').hide();
 			$('.logged-sheets').empty();
-			if (date){
-				date = date.split("-")
-				date = date[2]+"-"+date[1]+"-"+date[0]
+			if (logged_date){
 				frappe.call({
 					method: "switsol.time_log_sheet.page.time_log_sheet.time_log_sheet.get_loged_timesheets",
 					args: {
-						"date": date
+						"date": logged_date
 					},
 					callback: function(r) {
 						if (r.message){
@@ -420,13 +402,13 @@ timelog = Class.extend({
 							$('.logged-sheets').append(frappe.render_template("logged_time_log_sheet", {"data":r.message}))
 						}
 						else{
-							msgprint(__("Logged Timesheets not found for this date"))
+							frappe.msgprint(__("Logged Timesheets not found for this date"))
 						}
 					}
 				})
 			}
 			else{
-				msgprint(__("Please select Date first for populating Logged Timesheet details"));
+				frappe.msgprint(__("Please select Date first for populating Logged Timesheet details"));
 			}
 		})
 	},
