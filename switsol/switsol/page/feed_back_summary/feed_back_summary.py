@@ -107,7 +107,7 @@ def set_average_rating(data_dict):
 					temp=float(rating)*float(rating_cnt)
 					average+=float(temp)
 					count+=float(rating_cnt)
-			average_rating[key] = round(average/count,2)
+			average_rating[key] = round(average/count,2) if average != 0 else 0
 	return average_rating
 
 def configuration_setting(how_satisfied):
