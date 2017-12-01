@@ -1,6 +1,6 @@
 frappe.ui.form.on("Sales Invoice", {
 	refresh : function(frm){
-		if (frm.doc.status == "Unpaid" && cur_frm.doc.reminder_count <= 3){
+		if (frm.doc.docstatus == 1 && cur_frm.doc.reminder_count <= 3){
 			frm.add_custom_button(__('Reminder')+' '+frm.doc.reminder_count,function(){
 				make_confirm_dialog()
 			})
