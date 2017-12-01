@@ -1,6 +1,26 @@
 [
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
+  "css": null, 
+  "custom_format": 1, 
+  "disabled": 0, 
+  "doc_type": "Sales Invoice", 
+  "docstatus": 0, 
+  "doctype": "Print Format", 
+  "font": "Default", 
+  "format_data": null, 
+  "html": "<style>\n\t.print-format table, .print-format tr, \n\t.print-format td, .print-format div, .print-format p {\n\t\tfont-family: Monospace;\n\t\tline-height: 200%;\n\t\tvertical-align: middle;\n\t}\n\t@media screen {\n\t\t.print-format {\n\t\t\twidth: 4in;\n\t\t\tpadding: 0.25in;\n\t\t\tmin-height: 8in;\n\t\t}\n\t}\n</style>\n\n<p class=\"text-center\">\n\t{{ doc.company }}<br>\n\t{% if doc.company_address_display %}\n\t\t{% set company_address = doc.company_address_display.replace(\"\\n\", \" \").replace(\"<br>\", \" \") %}\n\t\t{% if \"GSTIN\" not in company_address %}\n\t\t\t{{ company_address }}\n\t\t\t<b>{{ _(\"GSTIN\") }}:</b>{{ doc.company_gstin }}\n\t\t{% else %}\n\t\t\t{{ company_address.replace(\"GSTIN\", \"<br>GSTIN\") }}\n\t\t{% endif %}\n\t{% endif %}\n\t<br>\n\t<b>{{ doc.select_print_heading or _(\"Invoice\") }}</b><br>\n</p>\n<p>\n\t<b>{{ _(\"Receipt No\") }}:</b> {{ doc.name }}<br>\n\t<b>{{ _(\"Date\") }}:</b> {{ doc.get_formatted(\"posting_date\") }}<br>\n\t{% if doc.grand_total > 50000 %}\n\t\t{% set customer_address = doc.address_display.replace(\"\\n\", \" \").replace(\"<br>\", \" \") %}\n\t\t<b>{{ _(\"Customer\") }}:</b><br>\n\t\t{{ doc.customer_name }}<br>\n\t\t{{ customer_address }}\n\t{% endif %}\n</p>\n\n<hr>\n<table class=\"table table-condensed cart no-border\">\n\t<thead>\n\t\t<tr>\n\t\t\t<th width=\"40%\">{{ _(\"Item\") }}</b></th>\n\t\t\t<th width=\"30%\" class=\"text-right\">{{ _(\"Qty\") }}</th>\n\t\t\t<th width=\"30%\" class=\"text-right\">{{ _(\"Amount\") }}</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t{%- for item in doc.items -%}\n\t\t<tr>\n\t\t\t<td>\n\t\t\t\t{{ item.item_code }}\n\t\t\t\t{%- if item.item_name != item.item_code -%}\n\t\t\t\t\t<br>{{ item.item_name }}\n\t\t\t\t{%- endif -%}\n\t\t\t\t{%- if item.gst_hsn_code -%}\n\t\t\t\t\t<br><b>{{ _(\"HSN/SAC\") }}:</b> {{ item.gst_hsn_code }}\n\t\t\t\t{%- endif -%}\n\t\t\t\t{%- if item.serial_no -%}\n\t\t\t\t\t<br><b>{{ _(\"Serial No\") }}:</b> {{ item.serial_no }}\n\t\t\t\t{%- endif -%}\n\t\t\t</td>\n\t\t\t<td class=\"text-right\">{{ item.qty }}<br>@ {{ item.rate }}</td>\n\t\t\t<td class=\"text-right\">{{ item.get_formatted(\"amount\") }}</td>\n\t\t</tr>\n\t\t{%- endfor -%}\n\t</tbody>\n</table>\n<table class=\"table table-condensed no-border\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td class=\"text-right\" style=\"width: 70%\">\n\t\t\t\t{{ _(\"Net Total\") }}\n\t\t\t</td>\n\t\t\t<td class=\"text-right\">\n\t\t\t\t{{ doc.get_formatted(\"net_total\") }}\n\t\t\t</td>\n\t\t</tr>\n\t\t{%- for row in doc.taxes -%}\n\t\t{%- if not row.included_in_print_rate -%}\n\t\t<tr>\n\t\t\t<td class=\"text-right\" style=\"width: 70%\">\n\t\t\t\t{{ row.description }}\n\t\t\t</td>\n\t\t\t<td class=\"text-right\">\n\t\t\t\t{{ row.get_formatted(\"tax_amount\", doc) }}\n\t\t\t</td>\n\t\t</tr>\n\t\t{%- endif -%}\n\t\t{%- endfor -%}\n\t\t{%- if doc.discount_amount -%}\n\t\t<tr>\n\t\t\t<td class=\"text-right\" style=\"width: 75%\">\n\t\t\t\t{{ _(\"Discount\") }}\n\t\t\t</td>\n\t\t\t<td class=\"text-right\">\n\t\t\t\t{{ doc.get_formatted(\"discount_amount\") }}\n\t\t\t</td>\n\t\t</tr>\n\t\t{%- endif -%}\n\t\t<tr>\n\t\t\t<td class=\"text-right\" style=\"width: 75%\">\n\t\t\t\t<b>{{ _(\"Grand Total\") }}</b>\n\t\t\t</td>\n\t\t\t<td class=\"text-right\">\n\t\t\t\t{{ doc.get_formatted(\"grand_total\") }}\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n<p><b>Tax Breakup:</b></p>\n<div style=\"font-size: 8px\">\n\t{{ doc.other_charges_calculation }}\n</div>\n<p>{{ doc.terms or \"\" }}</p>\n<p class=\"text-center\">{{ _(\"Thank you, please visit again.\") }}</p>", 
+  "line_breaks": 0, 
+  "modified": "2017-09-14 15:54:19.467642", 
+  "module": "Accounts", 
+  "name": "GST POS Invoice", 
+  "print_format_builder": 0, 
+  "print_format_type": "Server", 
+  "show_section_headings": 0, 
+  "standard": "Yes"
+ }, 
+ {
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 0, 
   "disabled": 0, 
@@ -8,7 +28,47 @@
   "docstatus": 0, 
   "doctype": "Print Format", 
   "font": "Default", 
-  "format_data": "[{\"fieldname\": \"print_heading_template\", \"fieldtype\": \"Custom HTML\", \"options\": \"<div class=\\\"print-heading\\\">\\n\\t<h2>\\n\\t\\tTAX INVOICE<br>\\n\\t\\t<small>{{ doc.name }}</small>\\n\\t</h2>\\n</div>\\n<h2 class=\\\"text-center\\\">\\n\\t{% if doc.invoice_copy -%}\\n\\t\\t<small>{{ doc.invoice_copy }}</small>\\n\\t{% endif -%}\\n</h2>\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"company\", \"label\": \"Company\"}, {\"print_hide\": 0, \"fieldname\": \"company_address_display\", \"label\": \"Company Address\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"posting_date\", \"label\": \"Date\"}, {\"print_hide\": 0, \"fieldname\": \"due_date\", \"label\": \"Payment Due Date\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"label\": \"Custom HTML\", \"fieldname\": \"_custom_html\", \"options\": \"<hr>\", \"fieldtype\": \"HTML\"}, {\"fieldtype\": \"Section Break\", \"label\": \"Address\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"customer_name\", \"label\": \"Customer Name\"}, {\"print_hide\": 0, \"fieldname\": \"address_display\", \"label\": \"Address\"}, {\"print_hide\": 0, \"fieldname\": \"contact_display\", \"label\": \"Contact\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"shipping_address\", \"label\": \"Shipping Address\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"visible_columns\": [{\"print_hide\": 0, \"fieldname\": \"item_code\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"description\", \"print_width\": \"200px\"}, {\"print_hide\": 0, \"fieldname\": \"gst_hsn_code\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"qty\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"uom\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"rate\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"amount\", \"print_width\": \"\"}], \"print_hide\": 0, \"fieldname\": \"items\", \"label\": \"Items\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"total\", \"label\": \"Total\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"visible_columns\": [{\"print_hide\": 0, \"fieldname\": \"description\", \"print_width\": \"300px\"}], \"print_hide\": 0, \"fieldname\": \"taxes\", \"label\": \"Sales Taxes and Charges\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"grand_total\", \"label\": \"Grand Total\"}, {\"print_hide\": 0, \"fieldname\": \"rounded_total\", \"label\": \"Rounded Total\"}, {\"print_hide\": 0, \"fieldname\": \"in_words\", \"label\": \"In Words\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"other_charges_calculation\", \"align\": \"left\", \"label\": \"Tax Breakup\"}, {\"fieldtype\": \"Section Break\", \"label\": \"Terms\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"terms\", \"label\": \"Terms and Conditions Details\"}]", 
+  "format_data": null, 
+  "html": null, 
+  "line_breaks": 0, 
+  "modified": "2017-09-21 11:25:48.270654", 
+  "module": "Accounts", 
+  "name": "Qwerty", 
+  "print_format_builder": 1, 
+  "print_format_type": "Server", 
+  "show_section_headings": 0, 
+  "standard": "No"
+ }, 
+ {
+  "align_labels_right": 0, 
+  "css": "address {\n\tmargin-bottom: 8px;\n\tfont-style: normal;\n\tline-height: 1;\n\tfont-size: 10pt;\n}\n.staff-member {\n\tline-height: 1;\n}\n.staff-name {\n\tfont-size: 10pt;\n\tpadding-top: 6mm;\n}\n.staff-function {\n\tfont-size: 10pt;\n}\n.staff-contact {\n\tpadding-top: 6.5pt;\n}\n.main-info {\n\tpadding-top: 34px;\n\tpadding-bottom: 12px;\n\tline-height: 1.3;\n}\n.additional-info {\n\tline-height: 1.3;\n}\n.page-sizes {\n\tmargin-right: 5mm;\n\tmargin-left: 5mm;\n}\n.letter-address {\n\tmargin-left: -2mm;\n}", 
+  "custom_format": 1, 
+  "disabled": 0, 
+  "doc_type": "Sales Invoice", 
+  "docstatus": 0, 
+  "doctype": "Print Format", 
+  "font": "Default", 
+  "format_data": null, 
+  "html": "{{ frappe.render_template(\"switsol_ag/switsol_ag/print_format/sales_invoice_switsol_ag/sales_invoice_switsol_ag.html\", {\"doc\": doc}) }}", 
+  "line_breaks": 0, 
+  "modified": "2017-09-25 22:48:21.683805", 
+  "module": "Switsol AG", 
+  "name": "ISR", 
+  "print_format_builder": 0, 
+  "print_format_type": "Server", 
+  "show_section_headings": 0, 
+  "standard": "Yes"
+ }, 
+ {
+  "align_labels_right": 0, 
+  "css": null, 
+  "custom_format": 0, 
+  "disabled": 0, 
+  "doc_type": "Sales Invoice", 
+  "docstatus": 0, 
+  "doctype": "Print Format", 
+  "font": "Default", 
+  "format_data": "[{\"fieldname\": \"print_heading_template\", \"fieldtype\": \"Custom HTML\", \"options\": \"<div class=\\\"print-heading\\\">\\n\\t<h2>\\n\\t\\tTAX INVOICE<br>\\n\\t\\t<small>{{ doc.name }}</small>\\n\\t</h2>\\n</div>\\n<h2 class=\\\"text-center\\\">\\n\\t{% if doc.invoice_copy -%}\\n\\t\\t<small>{{ doc.invoice_copy }}</small>\\n\\t{% endif -%}\\n</h2>\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"company\", \"label\": \"Company\"}, {\"print_hide\": 0, \"fieldname\": \"company_address_display\", \"label\": \"Company Address\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"posting_date\", \"label\": \"Date\"}, {\"print_hide\": 0, \"fieldname\": \"due_date\", \"label\": \"Payment Due Date\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"_custom_html\", \"options\": \"<hr>\", \"fieldtype\": \"HTML\", \"label\": \"Custom HTML\"}, {\"fieldtype\": \"Section Break\", \"label\": \"Address\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"customer_name\", \"label\": \"Customer Name\"}, {\"print_hide\": 0, \"fieldname\": \"address_display\", \"label\": \"Address\"}, {\"print_hide\": 0, \"fieldname\": \"contact_display\", \"label\": \"Contact\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"shipping_address\", \"label\": \"Shipping Address\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"visible_columns\": [{\"print_hide\": 0, \"fieldname\": \"item_code\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"description\", \"print_width\": \"200px\"}, {\"print_hide\": 0, \"fieldname\": \"gst_hsn_code\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"qty\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"uom\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"rate\", \"print_width\": \"\"}, {\"print_hide\": 0, \"fieldname\": \"amount\", \"print_width\": \"\"}], \"print_hide\": 0, \"fieldname\": \"items\", \"label\": \"Items\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"total\", \"label\": \"Total\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"visible_columns\": [{\"print_hide\": 0, \"fieldname\": \"description\", \"print_width\": \"300px\"}], \"print_hide\": 0, \"fieldname\": \"taxes\", \"label\": \"Sales Taxes and Charges\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"grand_total\", \"label\": \"Grand Total\"}, {\"print_hide\": 0, \"fieldname\": \"rounded_total\", \"label\": \"Rounded Total\"}, {\"print_hide\": 0, \"fieldname\": \"in_words\", \"label\": \"In Words\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"other_charges_calculation\", \"align\": \"left\", \"label\": \"Tax Breakup\"}, {\"fieldtype\": \"Section Break\", \"label\": \"Terms\"}, {\"fieldtype\": \"Column Break\"}, {\"print_hide\": 0, \"fieldname\": \"terms\", \"label\": \"Terms and Conditions Details\"}]", 
   "html": null, 
   "line_breaks": 0, 
   "modified": "2017-07-07 13:06:20.042807", 
@@ -20,7 +80,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address {\n\tmargin-bottom: 8px;\n\tfont-style: normal;\n\tline-height: 1;\n\tfont-size: 10pt;\n}\n.staff-member {\n\tline-height: 1;\n}\n.staff-name {\n\tfont-size: 10pt;\n\tpadding-top: 6mm;\n}\n.staff-function {\n\tfont-size: 10pt;\n}\n.staff-contact {\n\tpadding-top: 6.5pt;\n}\n.main-info {\n\tpadding-top: 34px;\n\tpadding-bottom: 12px;\n\tline-height: 1.3;\n}\n.additional-info {\n\tline-height: 1.3;\n}\n.page-sizes {\n\tmargin-right: 15mm;\n\tmargin-left: 15mm;\n}\n.letter-head {\n\tmargin-right: 15mm;\n\tmargin-left: 15mm;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -40,7 +100,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address {\n\tmargin-bottom: 8px;\n\tfont-style: normal;\n\tline-height: 1;\n\tfont-size: 10pt;\n}\n.staff-member {\n\tline-height: 1;\n}\n.staff-name {\n\tfont-size: 10pt;\n\tpadding-top: 6mm;\n}\n.staff-function {\n\tfont-size: 10pt;\n}\n.staff-contact {\n\tpadding-top: 6.5pt;\n}\n.main-info {\n\tpadding-top: 34px;\n\tpadding-bottom: 12px;\n\tline-height: 1.3;\n}\n.additional-info {\n\tline-height: 1.3;\n}\n.page-sizes {\n\tmargin-right: 5mm;\n\tmargin-left: 5mm;\n}\n.letter-address {\n\tmargin-left: -2mm;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -60,7 +120,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address { \n\tmargin-bottom: 8px; \n\tfont-style: normal; \n\tline-height: 1; \n\tfont-size: 8pt; \n\tpadding-left: 2mm;\n}\n.date { \n\tpadding-top: 10mm;\n}\n.staff-member { \n\tline-height: 1;\n}\n.staff-name { \n\tfont-size: 8pt; \n\t padding-top: 10mm; \n\t padding-left: 2mm;\n}\n.staff-function { \n\tcolor:rgb(64,64,64); \n\t font-size: 8pt; \n\t padding-left: 2mm;\n}\n.staff-contact { \n\tcolor:rgb(64,64,64); \n\tpadding-top: 6.5pt;\n}\n.main-info { \n\tpadding-top: 34px; \n\tpadding-bottom: 12px; \n\tline-height: 1.3;\n}\n.additional-info { \n\tline-height: 1.3;\n}\nlabel {\n\tmargin-bottom: 0;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -80,7 +140,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address {\n\tmargin-bottom: 8px;\n\tfont-style: normal;\n\tline-height: 1;\n\tfont-size: 10pt;\n}\n.staff-member {\n\tline-height: 1;\n}\n.staff-name {\n\tfont-size: 10pt;\n\tpadding-top: 6mm;\n}\n.staff-function {\n\tfont-size: 10pt;\n}\n.staff-contact {\n\tpadding-top: 6.5pt;\n}\n.main-info {\n\tpadding-top: 34px;\n\tpadding-bottom: 12px;\n\tline-height: 1.3;\n}\n.additional-info {\n\tline-height: 1.3;\n}\n.page-sizes {\n\tmargin-right: 5mm;\n\tmargin-left: 5mm;\n}\n.letter-address {\n\tmargin-left: -2mm;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -100,7 +160,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address { \n\tmargin-bottom: 8px; \n\tfont-style: normal; \n\tline-height: 1; \n\tfont-size: 8pt; \n\tpadding-left: 2mm;\n}\n.date { \n\tpadding-top: 10mm;\n}\n.staff-member { \n\tline-height: 1;\n}\n.staff-name { \n\tfont-size: 8pt; \n\t padding-top: 10mm; \n\t padding-left: 2mm;\n}\n.staff-function { \n\tcolor:rgb(64,64,64); \n\t font-size: 8pt; \n\t padding-left: 2mm;\n}\n.staff-contact { \n\tcolor:rgb(64,64,64); \n\tpadding-top: 6.5pt;\n}\n.main-info { \n\tpadding-top: 34px; \n\tpadding-bottom: 12px; \n\tline-height: 1.3;\n}\n.additional-info { \n\tline-height: 1.3;\n}\nlabel {\n\tmargin-bottom: 0;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -120,7 +180,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address { \n\tmargin-bottom: 8px; \n\tfont-style: normal; \n\tline-height: 1; \n\tfont-size: 8pt; \n\tpadding-left: 2mm;\n}\n.date { \n\tpadding-top: 10mm;\n}\n.staff-member { \n\tline-height: 1;\n}\n.staff-name { \n\tfont-size: 8pt; \n\t padding-top: 10mm; \n\t padding-left: 2mm;\n}\n.staff-function { \n\tcolor:rgb(64,64,64); \n\t font-size: 8pt; \n\t padding-left: 2mm;\n}\n.staff-contact { \n\tcolor:rgb(64,64,64); \n\tpadding-top: 6.5pt;\n}\n.main-info { \n\tpadding-top: 34px; \n\tpadding-bottom: 12px; \n\tline-height: 1.3;\n}\n.additional-info { \n\tline-height: 1.3;\n}\nlabel {\n\tmargin-bottom: 0;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -140,7 +200,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address {\n\tmargin-bottom: 8px;\n\tfont-style: normal;\n\tline-height: 1;\n\tfont-size: 10pt;\n}\n.staff-member {\n\tline-height: 1;\n}\n.staff-name {\n\tfont-size: 10pt;\n\tpadding-top: 6mm;\n}\n.staff-function {\n\tfont-size: 10pt;\n}\n.staff-contact {\n\tpadding-top: 6.5pt;\n}\n.main-info {\n\tpadding-top: 34px;\n\tpadding-bottom: 12px;\n\tline-height: 1.3;\n}\n.additional-info {\n\tline-height: 1.3;\n}\n.page-sizes {\n\tmargin-right: 5mm;\n\tmargin-left: 5mm;\n}\n.letter-address {\n\tmargin-left: -2mm;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -160,7 +220,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address { \n\tmargin-bottom: 8px; \n\tfont-style: normal; \n\tline-height: 1; \n\tfont-size: 8pt; \n\tpadding-left: 2mm;\n}\n.date { \n\tpadding-top: 10mm;\n}\n.staff-member { \n\tline-height: 1;\n}\n.staff-name { \n\tfont-size: 8pt; \n\t padding-top: 10mm; \n\t padding-left: 2mm;\n}\n.staff-function { \n\tcolor:rgb(64,64,64); \n\t font-size: 8pt; \n\t padding-left: 2mm;\n}\n.staff-contact { \n\tcolor:rgb(64,64,64); \n\tpadding-top: 6.5pt;\n}\n.main-info { \n\tpadding-top: 34px; \n\tpadding-bottom: 12px; \n\tline-height: 1.3;\n}\n.additional-info { \n\tline-height: 1.3;\n}\nlabel {\n\tmargin-bottom: 0;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -180,7 +240,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address {\n\tmargin-bottom: 8px;\n\tfont-style: normal;\n\tline-height: 1;\n\tfont-size: 10pt;\n}\n.staff-member {\n\tline-height: 1;\n}\n.staff-name {\n\tfont-size: 8pt;\n\tpadding-top: 6mm;\n}\n.staff-function {\n\tfont-size: 8pt;\n}\n.staff-contact {\n\tpadding-top: 6.5pt;\n}\n.main-info {\n\tpadding-top: 34px;\n\tpadding-bottom: 12px;\n\tline-height: 1.3;\n}\n.additional-info {\n\tline-height: 1.3;\n}\n.page-sizes {\n\tmargin-right: 15mm;\n\tmargin-left: 15mm;\n}\n.letter-head {\n\tmargin-right: 15mm;\n\tmargin-left: 15mm;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -200,7 +260,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": "address { \n\tmargin-bottom: 8px; \n\tfont-style: normal; \n\tline-height: 1; \n\tfont-size: 8pt; \n\tpadding-left: 2mm;\n}\n.date { \n\tpadding-top: 10mm;\n}\n.staff-member { \n\tline-height: 1;\n}\n.staff-name { \n\tfont-size: 8pt; \n\t padding-top: 10mm; \n\t padding-left: 2mm;\n}\n.staff-function { \n\tcolor:rgb(64,64,64); \n\t font-size: 8pt; \n\t padding-left: 2mm;\n}\n.staff-contact { \n\tcolor:rgb(64,64,64); \n\tpadding-top: 6.5pt;\n}\n.main-info { \n\tpadding-top: 34px; \n\tpadding-bottom: 12px; \n\tline-height: 1.3;\n}\n.additional-info { \n\tline-height: 1.3;\n}\nlabel {\n\tmargin-bottom: 0;\n}", 
   "custom_format": 1, 
   "disabled": 0, 
@@ -220,7 +280,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 1, 
   "disabled": 0, 
@@ -240,7 +300,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 1, 
   "disabled": 0, 
@@ -260,7 +320,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 0, 
   "disabled": 0, 
@@ -280,7 +340,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 0, 
   "disabled": 0, 
@@ -300,7 +360,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 1, 
   "disabled": 0, 
@@ -320,7 +380,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 1, 
   "disabled": 0, 
@@ -340,7 +400,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 1, 
   "disabled": 0, 
@@ -360,7 +420,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 0, 
   "disabled": 0, 
@@ -380,7 +440,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 0, 
   "disabled": 0, 
@@ -400,7 +460,7 @@
   "standard": "Yes"
  }, 
  {
-  "align_labels_left": 0, 
+  "align_labels_right": 0, 
   "css": null, 
   "custom_format": 1, 
   "disabled": 0, 
